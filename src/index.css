@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  
+  --color-mint: #00B074;
+  --color-mint-hover: #009662;
+  --color-mint-light: #e6f7f1;
+  
+  --color-lemon: #FFD200;
+  --color-lemon-hover: #e6bd00;
+  --color-lemon-light: #FFFDF0;
+  
+  --color-snow: #F4F9F6;
+  
+  --color-primary-text: #1F2937;
+  --color-secondary-text: #6B7280;
+}
+
+:root {
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #F4F9F6; /* Snow White */
+  color: #1F2937; /* Primary Text */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Professional clean layout shadows */
+.shadow-card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 10px 15px -3px rgba(31, 41, 55, 0.05), 0 4px 6px -4px rgba(31, 41, 55, 0.05);
+}
