@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Salad, 
@@ -10,7 +9,6 @@ import {
   PauseCircle, 
   ArrowRight,
   ShieldCheck,
-  CheckCircle2,
   Gift
 } from 'lucide-react';
 

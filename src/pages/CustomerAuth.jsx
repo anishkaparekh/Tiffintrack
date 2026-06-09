@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
-  ShoppingBag, 
   Eye, 
   EyeOff, 
-  Check, 
   AlertCircle, 
   Utensils, 
   CheckCircle2,
@@ -43,44 +41,38 @@ export default function CustomerAuth() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null); // { type: 'success'|'error', text: '' }
-  const [passwordStrength, setPasswordStrength] = useState(''); // 'Weak', 'Medium', 'Strong'
-  const [strengthColor, setStrengthColor] = useState('bg-slate-200');
 
-  // Password strength checker logic
-  useEffect(() => {
-    const pass = signUpData.password;
-    if (!pass) {
-      setPasswordStrength('');
-      setStrengthColor('bg-slate-200');
-      return;
-    }
-
+  // Derived Password strength checker logic
+  const pass = signUpData.password;
+  let passwordStrength = '';
+  let strengthColor = 'bg-slate-200';
+  if (pass) {
     if (pass.length < 6) {
-      setPasswordStrength('Weak');
-      setStrengthColor('bg-red-500 w-1/3');
+      passwordStrength = 'Weak';
+      strengthColor = 'bg-red-500 w-1/3';
     } else if (pass.length >= 6 && pass.length < 10) {
       const hasLetters = /[a-zA-Z]/.test(pass);
       const hasNumbersOrSymbols = /[\d\W]/.test(pass);
       if (hasLetters && hasNumbersOrSymbols) {
-        setPasswordStrength('Medium');
-        setStrengthColor('bg-amber-400 w-2/3');
+        passwordStrength = 'Medium';
+        strengthColor = 'bg-amber-400 w-2/3';
       } else {
-        setPasswordStrength('Weak');
-        setStrengthColor('bg-red-500 w-1/3');
+        passwordStrength = 'Weak';
+        strengthColor = 'bg-red-500 w-1/3';
       }
     } else {
       const hasUppercase = /[A-Z]/.test(pass);
       const hasNumbers = /\d/.test(pass);
       const hasSymbols = /[\W_]/.test(pass);
       if (hasUppercase && hasNumbers && hasSymbols) {
-        setPasswordStrength('Strong');
-        setStrengthColor('bg-mint w-full');
+        passwordStrength = 'Strong';
+        strengthColor = 'bg-mint w-full';
       } else {
-        setPasswordStrength('Medium');
-        setStrengthColor('bg-amber-400 w-2/3');
+        passwordStrength = 'Medium';
+        strengthColor = 'bg-amber-400 w-2/3';
       }
     }
-  }, [signUpData.password]);
+  }
 
   // Form input handlers
   const handleSignInChange = (e) => {
@@ -175,6 +167,9 @@ export default function CustomerAuth() {
         type: 'success',
         text: 'Login successful! Redirecting to dashboard...'
       });
+      setTimeout(() => {
+        navigate('/customer-dashboard');
+      }, 1000);
     }, 1500);
   };
 
