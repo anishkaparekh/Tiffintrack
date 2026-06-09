@@ -1,18 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Menu as MenuIcon, 
   Bell, 
   MapPin, 
-  Phone, 
   Calendar, 
   AlertCircle, 
   CheckCircle2, 
   Utensils, 
-  ExternalLink,
   ChevronRight,
   Inbox,
-  ShieldAlert,
-  Loader2
+  Loader2,
+  Search,
+  Star,
+  Heart,
+  Clock,
+  Compass,
+  ArrowLeft
 } from 'lucide-react';
 
 // Import Reusable Components
@@ -21,54 +24,270 @@ import StatCard from '../components/StatCard';
 import NotificationCard from '../components/NotificationCard';
 import OrderTable from '../components/OrderTable';
 
+// Mock Vendors Database
+const initialVendors = [
+  {
+    id: 1,
+    name: "Priya's Home Kitchen",
+    owner: "Priya Patel",
+    area: "Anand",
+    locality: "Mota Bazar",
+    rating: 4.8,
+    distance: 1.2,
+    startingPrice: 120,
+    mealType: "Veg",
+    description: "Traditional Gujarati daily meal prep with low oil and premium organic spices. Healthy and fresh daily.",
+    categories: ["Gujarati Meals", "Family Plans"],
+    plans: [
+      { id: "p1_1", name: "Weekly Veg Subscription", price: 800, duration: "7 Days", details: "1 Lunch daily: 3 Roti, Dal, Rice, Seasonal Sabji, Buttermilk" },
+      { id: "p1_2", name: "Monthly Veg Plan", price: 3200, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: 3 Roti, Dal, Rice, Seasonal Sabji, Buttermilk" }
+    ]
+  },
+  {
+    id: 2,
+    name: "Healthy Meals Hub",
+    owner: "Meeta Shah",
+    area: "Vallabh Vidyanagar",
+    locality: "Shastri Marg",
+    rating: 4.5,
+    distance: 2.5,
+    startingPrice: 150,
+    mealType: "Veg",
+    description: "Dietitian-curated high-protein tiffins, multi-grain rotis, salad bowls, and low-carb daily dinners.",
+    categories: ["Healthy Diet Meals", "Student Budget Meals"],
+    plans: [
+      { id: "p2_1", name: "Weekly Fitness Diet Plan", price: 1000, duration: "7 Days", details: "1 Protein Lunch daily: Brown Rice/Quinoa, Grilled Paneer, Sprout Salad, Dal" },
+      { id: "p2_2", name: "Monthly Healthy Diet Sub", price: 3800, duration: "30 Days", details: "1 Protein Lunch & 1 Diet Dinner daily: Healthy salads, fiber rotis, high protein sabjis" }
+    ]
+  },
+  {
+    id: 3,
+    name: "Kathiyawadi Swad Kitchen",
+    owner: "Arvindbhai Ghelani",
+    area: "Anand",
+    locality: "Amul Dairy Road",
+    rating: 4.7,
+    distance: 0.8,
+    startingPrice: 130,
+    mealType: "Veg",
+    description: "Authentic Kathiyawadi cuisine. Famous for daily fresh Ringan No Oro, Lasaniya Bateta, and Bajra Rotla.",
+    categories: ["Gujarati Meals", "Student Budget Meals"],
+    plans: [
+      { id: "p3_1", name: "Weekly Kathiyawadi Thali", price: 850, duration: "7 Days", details: "1 Lunch daily: 2 Bajra Rotla/3 Roti, Kathiyawadi Sabji, Kadhi, Khichdi, Garlic Chutney" },
+      { id: "p3_2", name: "Monthly Kathiyawadi Regular", price: 3300, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Regular rotis, special subjis, kadhi-khichdi, buttermilk" }
+    ]
+  },
+  {
+    id: 4,
+    name: "Mom's Punjabi Rasoi",
+    owner: "Manpreet Kaur",
+    area: "Ahmedabad",
+    locality: "Vastrapur",
+    rating: 4.9,
+    distance: 3.1,
+    startingPrice: 140,
+    mealType: "Both",
+    description: "Ghar jaisa Punjabi khana. Butter-soft tandoori rotis, aromatic rajma-chawal, paneer subjis, and rich chicken curry.",
+    categories: ["Punjabi Meals", "Family Plans"],
+    plans: [
+      { id: "p4_1", name: "Weekly Punjabi Veg Plan", price: 900, duration: "7 Days", details: "1 Veg Lunch daily: 3 Butter Phulkas, Special Paneer/Aloo, Dal Fry, Jeera Rice, Curd" },
+      { id: "p4_2", name: "Weekly Punjabi Non-Veg Plan", price: 1200, duration: "7 Days", details: "1 Non-Veg Lunch daily: Chicken Curry / Egg Curry, 3 Rotis, Dal, Rice, Salad" },
+      { id: "p4_3", name: "Monthly Punjabi Veg Feast", price: 3500, duration: "30 Days", details: "1 Veg Lunch & 1 Veg Dinner daily: Premium North Indian variety, raita, sweet dish twice a week" }
+    ]
+  },
+  {
+    id: 5,
+    name: "Jain Satvik Rasoi",
+    owner: "Samyak Shah",
+    area: "Vadodara",
+    locality: "Alkapuri",
+    rating: 4.6,
+    distance: 1.9,
+    startingPrice: 110,
+    mealType: "Veg",
+    description: "100% Satvik preparations made strictly without onion, garlic, potatoes, or root vegetables. Extremely hygienic.",
+    categories: ["Jain Meals", "Healthy Diet Meals"],
+    plans: [
+      { id: "p5_1", name: "Weekly Satvik Plan", price: 750, duration: "7 Days", details: "1 Satvik Lunch: Ghee Roti, Satvik Dal, Rice, Gourd/Cabbage Sabji, Jain Khichdi" },
+      { id: "p5_2", name: "Monthly Satvik Regular", price: 2900, duration: "30 Days", details: "1 Satvik Lunch & 1 Dinner daily: Strictly audited Jain ingredients, fresh seasonal vegetables" }
+    ]
+  },
+  {
+    id: 6,
+    name: "South India Express",
+    owner: "S. Ramakrishnan",
+    area: "Vallabh Vidyanagar",
+    locality: "Amul Dairy Road",
+    rating: 4.4,
+    distance: 2.2,
+    startingPrice: 100,
+    mealType: "Veg",
+    description: "Traditional Tamil and Keralite home dinners: soft idlis, lemon rice, healthy sambar, and home-cooked rasam.",
+    categories: ["South Indian Meals", "Student Budget Meals"],
+    plans: [
+      { id: "p6_1", name: "Weekly South Special", price: 700, duration: "7 Days", details: "1 Meal daily: Variety Rice (Lemon/Tamarind/Tomato), Rasam Vada, Sambar Rice, Coconut Chutney" },
+      { id: "p6_2", name: "Monthly Rice & Sambar", price: 2600, duration: "30 Days", details: "1 Daily Lunch: Organic Rice, Authentic sambar, 2 dry vegetable poriyals, appalam" }
+    ]
+  },
+  {
+    id: 7,
+    name: "Student Budget Tiffins",
+    owner: "Karan Sharma",
+    area: "Vallabh Vidyanagar",
+    locality: "Mota Bazar",
+    rating: 4.3,
+    distance: 1.1,
+    startingPrice: 90,
+    mealType: "Veg",
+    description: "Highly affordable, homestyle food tailored for university students. Budget-friendly, clean, and filling.",
+    categories: ["Student Budget Meals"],
+    plans: [
+      { id: "p7_1", name: "Weekly Pocket-Saver", price: 600, duration: "7 Days", details: "1 Lunch daily: 4 Roti, Dal, Veg Sabji, Rice (Simple, wholesome, budget ingredients)" },
+      { id: "p7_2", name: "Monthly Student Special", price: 2200, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Balanced nutrition, low-spiced daily meal packages" }
+    ]
+  },
+  {
+    id: 8,
+    name: "Daxaben's Kathiyawadi Rasoi",
+    owner: "Daxaben Patel",
+    area: "Nadiad",
+    locality: "College Road",
+    rating: 4.7,
+    distance: 1.5,
+    startingPrice: 125,
+    mealType: "Veg",
+    description: "Hand-rolled soft chapatis, spicy garlic potatoes, Sev Tameta, and traditional Gujarati sweet dal subscriptions.",
+    categories: ["Gujarati Meals", "Family Plans"],
+    plans: [
+      { id: "p8_1", name: "Weekly Gujarati Home Meal", price: 820, duration: "7 Days", details: "1 Lunch daily: 4 Rotli, Gujarati Dal, Rice, Dry Sabji, papad, salad" },
+      { id: "p8_2", name: "Monthly Gujarati Parivar Sub", price: 3100, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Authentic Kathiyawadi & Gujarati home-cooked meals" }
+    ]
+  }
+];
+
+// Reusable Skeleton Loader Components
+
+const VendorSkeleton = () => (
+  <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card animate-pulse flex flex-col justify-between min-w-[280px] w-full h-[320px]">
+    <div>
+      <div className="flex justify-between items-center mb-3">
+        <div className="h-5 bg-slate-200 rounded w-36"></div>
+        <div className="h-6 bg-slate-200 rounded-full w-10"></div>
+      </div>
+      <div className="h-4 bg-slate-200 rounded w-20 mb-4"></div>
+      <div className="h-3 bg-slate-200 rounded w-full mb-2"></div>
+      <div className="h-3 bg-slate-200 rounded w-5/6 mb-4"></div>
+      <div className="flex space-x-2 mb-4">
+        <div className="h-5 bg-slate-200 rounded-full w-12"></div>
+        <div className="h-5 bg-slate-200 rounded-full w-16"></div>
+      </div>
+    </div>
+    <div className="flex space-x-2 pt-2 border-t border-slate-100">
+      <div className="h-9 bg-slate-200 rounded-xl flex-1"></div>
+      <div className="h-9 bg-slate-200 rounded-xl flex-1"></div>
+    </div>
+  </div>
+);
+
+const ActivitySkeleton = () => (
+  <div className="space-y-3 animate-pulse">
+    {[1, 2, 3].map(i => (
+      <div key={i} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-slate-200/20">
+        <div className="w-6 h-6 bg-slate-200 rounded-full"></div>
+        <div className="flex-1 space-y-2">
+          <div className="h-3 bg-slate-200 rounded w-3/4"></div>
+          <div className="h-2 bg-slate-200 rounded w-1/4"></div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 export default function CustomerDashboard() {
   const [currentTab, setCurrentTab] = useState('dashboard');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const nextActivityId = useRef(4);
 
-  // Toggle controls to show empty/loading states for review
+  // Search & Filter States
+  const [searchText, setSearchText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedArea, setSelectedArea] = useState('All');
+  const [selectedVendor, setSelectedVendor] = useState(null);
+
+  // Developer Sandbox Controls
   const [forceLoadingState, setForceLoadingState] = useState(false);
-  const [emptyOrders, setEmptyOrders] = useState(false);
-  const [emptyNotifications, setEmptyNotifications] = useState(false);
+  const [emptyVendors, setEmptyVendors] = useState(false);
   const [emptySubscription, setEmptySubscription] = useState(false);
+  const [emptyActivity, setEmptyActivity] = useState(false);
 
-  // Mock Data States
+  // Mock User Settings
   const [profile, setProfile] = useState({
     fullName: 'Anishka Parekh',
     email: 'parekhanishka@gmail.com',
     phone: '9876543210',
-    address: 'Flat 402, Green Meadows, Linking Road',
-    city: 'Mumbai',
-    pincode: '400054'
+    address: 'Flat 402, Green Meadows, Shastri Marg',
+    city: 'Vallabh Vidyanagar',
+    pincode: '388120'
   });
-  
+
+  // Saved Vendor IDs State
+  const [savedVendorIds, setSavedVendorIds] = useState([1, 3, 5]);
+
+  // Active Subscription State
   const [subscription, setSubscription] = useState({
-    planName: 'Monthly Veg Plan',
-    mealsRemaining: 18,
+    vendorId: 1,
+    vendorName: "Priya's Home Kitchen",
+    planName: "Monthly Veg Plan",
+    mealsRemaining: 22,
     status: 'Active', // 'Active', 'Paused', 'None'
     nextDelivery: 'Today, 12:45 PM',
-    vendorName: 'Mama\'s Kitchen'
+    price: 3200
   });
 
-  const [orders] = useState([
-    { id: 1, date: 'June 09, 2026', mealType: 'Lunch (Roti, Dal, Rice, Bhindi)', vendor: 'Mama\'s Kitchen', status: 'In Progress' },
-    { id: 2, date: 'June 08, 2026', mealType: 'Dinner (Paneer Masala + Roti)', vendor: 'Mama\'s Kitchen', status: 'Delivered' },
-    { id: 3, date: 'June 08, 2026', mealType: 'Lunch (Roti, Dal, Rice, Aloo Gobhi)', vendor: 'Mama\'s Kitchen', status: 'Delivered' },
-    { id: 4, date: 'June 07, 2026', mealType: 'Dinner (Veg Biryani + Raita)', vendor: 'Mama\'s Kitchen', status: 'Delivered' },
-    { id: 5, date: 'June 07, 2026', mealType: 'Lunch (Roti, Dal, Rice, Mix Veg)', vendor: 'Mama\'s Kitchen', status: 'Delivered' },
+  // Recent Activity log state
+  const [activities, setActivities] = useState([
+    { id: 1, text: "You viewed Priya's Home Kitchen", time: "10 mins ago" },
+    { id: 2, text: "You saved Healthy Meals Hub to favorites", time: "2 hours ago" },
+    { id: 3, text: "Subscription renewed successfully", time: "2 days ago" }
   ]);
 
+  // Order history state
+  const [orders] = useState([
+    { id: 1, date: 'June 09, 2026', mealType: 'Lunch (Roti, Dal, Rice, Bhindi)', vendor: "Priya's Home Kitchen", status: 'In Progress' },
+    { id: 2, date: 'June 08, 2026', mealType: 'Dinner (Paneer Masala + Roti)', vendor: "Priya's Home Kitchen", status: 'Delivered' },
+    { id: 3, date: 'June 08, 2026', mealType: 'Lunch (Roti, Dal, Rice, Aloo)', vendor: "Priya's Home Kitchen", status: 'Delivered' },
+    { id: 4, date: 'June 07, 2026', mealType: 'Dinner (Veg Biryani + Raita)', vendor: "Priya's Home Kitchen", status: 'Delivered' },
+    { id: 5, date: 'June 06, 2026', mealType: 'Lunch (Roti, Dal, Rice, Mix Veg)', vendor: "Priya's Home Kitchen", status: 'Delivered' },
+  ]);
+
+  // System Notifications
   const [notifications, setNotifications] = useState([
-    { id: 1, text: 'Your lunch is being prepared by Mama\'s Kitchen.', time: '10 mins ago', isRead: false },
-    { id: 2, text: 'Subscription renewal due in 5 days (Monthly Veg Plan).', time: '2 hours ago', isRead: false },
-    { id: 3, text: 'New menu available for next week. Review and update choices.', time: '1 day ago', isRead: true },
+    { id: 1, text: "Rahul Kumar dispatched your tiffin from Priya's Kitchen.", time: '15 mins ago', isRead: false },
+    { id: 2, text: "Weekly menu changes submitted for Healthy Meals Hub.", time: '1 day ago', isRead: false },
+    { id: 3, text: "Kathiyawadi Swad is offering 15% discount for Student budget plans.", time: '2 days ago', isRead: true },
   ]);
 
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState(null);
   const [message, setMessage] = useState(null);
 
-  // Auto-clear message after 4 seconds
+  // Tab change loading simulation
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+    setIsLoading(true);
+    setSelectedVendor(null); // Reset detail view when changing tabs
+  };
+
+  // Simulated initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [currentTab]);
+
+  // Auto-clear success messages
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -78,65 +297,129 @@ export default function CustomerDashboard() {
     }
   }, [message]);
 
-  const handleTabChange = (tab) => {
-    setCurrentTab(tab);
-    setIsLoading(true);
+  // Favorites heart toggle
+  const toggleSaveVendor = (vendorId) => {
+    const isSaved = savedVendorIds.includes(vendorId);
+    let newSaved;
+    let vendor = initialVendors.find(v => v.id === vendorId);
+
+    if (isSaved) {
+      newSaved = savedVendorIds.filter(id => id !== vendorId);
+      logActivity(`You removed ${vendor?.name || 'Vendor'} from saved list`);
+    } else {
+      newSaved = [...savedVendorIds, vendorId];
+      logActivity(`You saved ${vendor?.name || 'Vendor'} to favorites`);
+    }
+    setSavedVendorIds(newSaved);
   };
 
-  // Simulated initial loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [currentTab]);
-
-  // Handle Mark Notification as Read
-  const handleMarkAsRead = (id) => {
-    setNotifications(prev => 
-      prev.map(notif => notif.id === id ? { ...notif, isRead: true } : notif)
-    );
+  // Log activity helper
+  const logActivity = (text) => {
+    const newAct = {
+      id: nextActivityId.current++,
+      text,
+      time: "Just now"
+    };
+    setActivities(prev => [newAct, ...prev]);
   };
 
-  // Toggle Subscription Pause/Resume
+  // Complete subscription handler
+  const handleSubscribe = (vendor, plan) => {
+    setSubscription({
+      vendorId: vendor.id,
+      vendorName: vendor.name,
+      planName: plan.name,
+      mealsRemaining: plan.duration.includes("30") ? 30 : 7,
+      status: 'Active',
+      nextDelivery: 'Tomorrow, 12:45 PM',
+      price: plan.price
+    });
+    setEmptySubscription(false);
+    logActivity(`Subscribed to ${vendor.name} - ${plan.name}`);
+    setMessage({
+      type: 'success',
+      text: `Subscription initiated! Welcome to ${vendor.name}. First delivery set for tomorrow.`
+    });
+    setCurrentTab('subscriptions');
+    setSelectedVendor(null);
+  };
+
+  // Pause/Resume subscription
   const handleToggleSubscription = () => {
-    setSubscription(prev => {
-      const newStatus = prev.status === 'Active' ? 'Paused' : 'Active';
-      return {
-        ...prev,
-        status: newStatus,
-        nextDelivery: newStatus === 'Active' ? 'Today, 12:45 PM' : 'Suspended (Paused)'
-      };
+    if (!subscription) return;
+    const isPaused = subscription.status === 'Paused';
+    const newStatus = isPaused ? 'Active' : 'Paused';
+    setSubscription(prev => ({
+      ...prev,
+      status: newStatus,
+      nextDelivery: newStatus === 'Active' ? 'Today, 12:45 PM' : 'Suspended (Paused)'
+    }));
+    logActivity(`${isPaused ? 'Resumed' : 'Paused'} subscription at ${subscription.vendorName}`);
+    setMessage({
+      type: 'success',
+      text: `Subscription ${isPaused ? 'resumed' : 'paused'} successfully.`
     });
   };
 
-  // Profile Form Handler
+  // Cancel subscription
+  const handleCancelSubscription = () => {
+    if (!subscription) return;
+    logActivity(`Cancelled subscription at ${subscription.vendorName}`);
+    setSubscription(null);
+    setMessage({
+      type: 'success',
+      text: "Subscription cancelled successfully. You will not be billed further."
+    });
+  };
+
+  // Profile forms
   const handleProfileSave = (e) => {
     e.preventDefault();
     setProfileSaving(true);
     setProfileMessage(null);
-    
     setTimeout(() => {
       setProfileSaving(false);
-      setProfileMessage({ type: 'success', text: 'Profile changes saved successfully!' });
+      setProfileMessage({ type: 'success', text: 'Settings updated successfully!' });
     }, 1200);
   };
 
-  const getFormattedDate = () => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date().toLocaleDateString('en-US', options);
+  const handleMarkAsRead = (id) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
   };
 
+
+
   const activeLoading = isLoading || forceLoadingState;
+
+  // Marketplace filter calculations
+  const filteredVendors = emptyVendors ? [] : initialVendors.filter(v => {
+    const matchesSearch = searchText ? (
+      v.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      v.area.toLowerCase().includes(searchText.toLowerCase()) ||
+      v.locality.toLowerCase().includes(searchText.toLowerCase()) ||
+      v.mealType.toLowerCase().includes(searchText.toLowerCase()) ||
+      v.description.toLowerCase().includes(searchText.toLowerCase())
+    ) : true;
+    
+    const matchesCategory = selectedCategory !== 'All' ? (
+      v.categories.includes(selectedCategory)
+    ) : true;
+    
+    const matchesArea = selectedArea !== 'All' ? (
+      v.area === selectedArea
+    ) : true;
+
+    return matchesSearch && matchesCategory && matchesArea;
+  });
 
   return (
     <div className="min-h-screen bg-snow text-primary-text font-sans flex flex-col justify-between">
       
-      {/* Top Header Navigation */}
-      <header className="bg-white border-b border-slate-200/60 sticky top-0 z-30">
+      {/* App Header Navigation */}
+      <header className="bg-white border-b border-slate-200/60 sticky top-0 z-35">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            {/* Mobile menu trigger */}
+            {/* Mobile Sidebar Trigger */}
             <button 
               onClick={() => setIsMobileSidebarOpen(true)}
               className="p-1.5 text-secondary-text hover:text-primary-text lg:hidden rounded-lg hover:bg-slate-100 cursor-pointer"
@@ -155,16 +438,15 @@ export default function CustomerDashboard() {
             </div>
             
             <span className="hidden md:inline-block h-4 w-[1px] bg-slate-200 mx-2"></span>
-            <span className="hidden md:inline-block text-[11px] font-bold text-mint uppercase tracking-wider bg-mint-light px-2.5 py-0.5 rounded-full">
-              Customer Portal
+            <span className="hidden md:inline-block text-[10px] font-bold text-mint uppercase tracking-wider bg-mint-light px-2.5 py-0.5 rounded-full">
+              Meal Subscription Marketplace
             </span>
           </div>
 
-          {/* Right Top Header Options */}
           <div className="flex items-center space-x-4">
-            {/* Interactive State Demo Controls (Aesthetic Toggle Switches) */}
-            <div className="hidden lg:flex items-center space-x-4 border border-slate-200/50 bg-slate-50 px-3 py-1.5 rounded-xl text-[10px]">
-              <span className="font-bold text-secondary-text">Developer Sandbox:</span>
+            {/* Developer Sandbox Panel */}
+            <div className="hidden xl:flex items-center space-x-4 border border-slate-200/50 bg-slate-50 px-3 py-1.5 rounded-xl text-[10px]">
+              <span className="font-bold text-secondary-text">Mock Sandbox:</span>
               <label className="flex items-center space-x-1 cursor-pointer">
                 <input 
                   type="checkbox" 
@@ -177,20 +459,11 @@ export default function CustomerDashboard() {
               <label className="flex items-center space-x-1 cursor-pointer">
                 <input 
                   type="checkbox" 
-                  checked={emptyOrders} 
-                  onChange={(e) => setEmptyOrders(e.target.checked)} 
+                  checked={emptyVendors} 
+                  onChange={(e) => setEmptyVendors(e.target.checked)} 
                   className="rounded border-slate-300 text-mint focus:ring-mint"
                 />
-                <span>No Orders</span>
-              </label>
-              <label className="flex items-center space-x-1 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={emptyNotifications} 
-                  onChange={(e) => setEmptyNotifications(e.target.checked)} 
-                  className="rounded border-slate-300 text-mint focus:ring-mint"
-                />
-                <span>No Notif</span>
+                <span>No Vendors</span>
               </label>
               <label className="flex items-center space-x-1 cursor-pointer">
                 <input 
@@ -199,24 +472,33 @@ export default function CustomerDashboard() {
                   onChange={(e) => setEmptySubscription(e.target.checked)} 
                   className="rounded border-slate-300 text-mint focus:ring-mint"
                 />
-                <span>No Sub</span>
+                <span>No Active Sub</span>
+              </label>
+              <label className="flex items-center space-x-1 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={emptyActivity} 
+                  onChange={(e) => setEmptyActivity(e.target.checked)} 
+                  className="rounded border-slate-300 text-mint focus:ring-mint"
+                />
+                <span>No Activity</span>
               </label>
             </div>
 
-            {/* Notification Icon & Badge */}
+            {/* Notifications Shortcut */}
             <button 
-              onClick={() => setCurrentTab('notifications')}
+              onClick={() => handleTabChange('notifications')}
               className="p-1.5 text-secondary-text hover:text-primary-text hover:bg-slate-100 rounded-lg relative cursor-pointer"
             >
               <Bell size={20} />
-              {notifications.filter(n => !n.isRead).length > 0 && !emptyNotifications && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-mint rounded-full"></span>
+              {notifications.filter(n => !n.isRead).length > 0 && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-mint border-2 border-white rounded-full"></span>
               )}
             </button>
 
-            {/* User Dropdown indicator */}
+            {/* Profile Avatar Trigger */}
             <button 
-              onClick={() => setCurrentTab('settings')}
+              onClick={() => handleTabChange('settings')}
               className="flex items-center space-x-2 pl-2 border-l border-slate-200 cursor-pointer group"
             >
               <div className="w-8 h-8 rounded-full bg-mint-light text-mint flex items-center justify-center font-bold text-sm">
@@ -230,10 +512,10 @@ export default function CustomerDashboard() {
         </div>
       </header>
 
-      {/* Main Layout Area */}
+      {/* Main Framework Grid */}
       <div className="flex-grow max-w-7xl mx-auto w-full flex flex-col lg:flex-row p-4 gap-6">
         
-        {/* Navigation Sidebar Drawer */}
+        {/* Navigation Sidebar */}
         <Sidebar 
           currentTab={currentTab} 
           onTabChange={handleTabChange} 
@@ -241,23 +523,12 @@ export default function CustomerDashboard() {
           onClose={() => setIsMobileSidebarOpen(false)}
         />
 
-        {/* Content Container Panel */}
+        {/* Dynamic Content Panel */}
         <main className="flex-grow lg:max-w-[calc(100%-17rem)] flex flex-col">
           
-          {/* Welcome Banner */}
-          <div className="mb-6">
-            <h1 className="text-xl md:text-3xl font-extrabold text-primary-text tracking-tight">
-              Good Morning, {profile.fullName.split(' ')[0]} 👋
-            </h1>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-1 text-xs md:text-sm text-secondary-text gap-1">
-              <p>Here's what's happening with your meal subscriptions today.</p>
-              <p className="font-bold text-primary-text">{getFormattedDate()}</p>
-            </div>
-          </div>
-
-          {/* Status Message Banners */}
+          {/* Dashboard Notifications and Banners */}
           {message && (
-            <div className={`p-4 rounded-xl mb-6 flex items-start space-x-3 border ${
+            <div className={`p-4 rounded-xl mb-6 flex items-start space-x-3 border shadow-sm transition-all duration-300 ${
               message.type === 'success' 
                 ? 'bg-mint-light border-mint/20 text-mint' 
                 : 'bg-red-50 border-red-200 text-red-600'
@@ -267,7 +538,7 @@ export default function CustomerDashboard() {
               ) : (
                 <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
               )}
-              <span className="text-xs font-medium flex-grow">{message.text}</span>
+              <span className="text-xs font-semibold flex-grow">{message.text}</span>
               <button 
                 onClick={() => setMessage(null)} 
                 className="text-slate-400 hover:text-slate-600 text-xs font-bold focus:outline-none cursor-pointer"
@@ -277,409 +548,690 @@ export default function CustomerDashboard() {
             </div>
           )}
 
-          {/* TAB 1: MAIN DASHBOARD OVERVIEW */}
+          {/* TAB 1: MAIN DISCOVERY MARKETPLACE DASHBOARD */}
           {currentTab === 'dashboard' && (
             <div className="space-y-6">
               
-              {/* Summary Overview Cards */}
+              {/* Hero Header Section */}
+              <div className="bg-white border border-slate-200/50 rounded-3xl p-6 md:p-8 shadow-card relative overflow-hidden">
+                <div className="absolute -right-8 -top-8 w-32 h-32 bg-mint/5 rounded-full pointer-events-none"></div>
+                <div className="relative z-10 max-w-xl">
+                  <span className="text-[10px] font-extrabold text-mint uppercase tracking-wider bg-mint-light px-2.5 py-1 rounded-md">
+                    Daily Subscriptions Made Wholesome
+                  </span>
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-primary-text mt-3 tracking-tight">
+                    Find Fresh Home-Cooked Meals Near You 🍱
+                  </h1>
+                  <p className="text-xs md:text-sm text-secondary-text mt-2 leading-relaxed">
+                    Discover trusted home chefs and clean tiffin providers in your area. Choose a plan that fits your diet, budget, and taste.
+                  </p>
+                  
+                  {/* Hero Search Bar */}
+                  <div className="mt-6 flex flex-col sm:flex-row gap-2">
+                    <div className="relative flex-grow">
+                      <Search className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+                      <input 
+                        type="text"
+                        placeholder="Search by vendor name, area, locality, or meal type..."
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleTabChange('vendors');
+                        }}
+                        className="w-full pl-10 pr-4 py-3 bg-snow border border-slate-200 rounded-xl text-xs text-primary-text focus:outline-none focus:border-mint placeholder-slate-400 font-medium shadow-inner"
+                      />
+                      {searchText && (
+                        <button 
+                          onClick={() => setSearchText('')}
+                          className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 font-bold text-xs"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                    <button 
+                      onClick={() => handleTabChange('vendors')}
+                      className="px-5 py-3 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-xl transition-all duration-150 flex items-center justify-center space-x-2 cursor-pointer shadow-sm shadow-mint/10"
+                    >
+                      <Compass size={14} />
+                      <span>Search Marketplace</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Statistics Overview Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard 
-                  title="Active Subscription" 
-                  value={emptySubscription ? "No Active Plan" : subscription.planName} 
-                  subtext={emptySubscription ? "Choose a plan to start" : `From ${subscription.vendorName}`}
-                  icon={Utensils}
+                  title="Nearby Vendors" 
+                  value={activeLoading ? null : (emptyVendors ? "0 Vendors" : "25 Vendors")} 
+                  subtext={emptyVendors ? "No kitchens servicing area" : "In Anand & Vidyanagar"}
+                  icon={Compass}
                   isLoading={activeLoading}
                   accent={true}
                 />
                 <StatCard 
-                  title="Meals Remaining" 
-                  value={emptySubscription ? "0 Meals" : `${subscription.mealsRemaining} Meals Left`}
-                  subtext={emptySubscription ? "Top up to get meals" : "Valid for this cycle"}
+                  title="Active Subscriptions" 
+                  value={activeLoading ? null : (emptySubscription || !subscription ? "0 Plans" : "1 Active Plan")}
+                  subtext={emptySubscription || !subscription ? "Discover chefs below" : `With ${subscription.vendorName}`}
                   icon={Calendar}
                   isLoading={activeLoading}
                 />
                 <StatCard 
-                  title="Next Delivery" 
-                  value={emptySubscription ? "--:--" : subscription.nextDelivery} 
-                  subtext={emptySubscription ? "No scheduled delivery" : "Estimated at door"}
-                  icon={MapPin}
+                  title="Today's Deliveries" 
+                  value={activeLoading ? null : (emptySubscription || !subscription ? "0 Deliveries" : (subscription.status === 'Paused' ? "Suspended" : "1 Scheduled"))} 
+                  subtext={emptySubscription || !subscription ? "No pending drop-offs" : (subscription.status === 'Paused' ? "Plan is paused" : "Est. arrival 12:45 PM")}
+                  icon={Clock}
                   isLoading={activeLoading}
                 />
                 <StatCard 
-                  title="Subscription Status" 
-                  value={emptySubscription ? "Inactive" : subscription.status} 
-                  subtext={emptySubscription ? "No payments logged" : "Renewal due in 12 days"}
-                  icon={ShieldAlert}
+                  title="Saved Vendors" 
+                  value={activeLoading ? null : `${savedVendorIds.length} Saved`} 
+                  subtext="Quick access favorites"
+                  icon={Heart}
                   isLoading={activeLoading}
                 />
               </div>
 
-              {/* Split Content: Today's Menu & Live Status */}
+              {/* Today's Subscription Status Panel (Only shown if active subscription exists) */}
+              {subscription && !emptySubscription && (
+                <div className="bg-white border border-slate-200/50 p-6 rounded-3xl shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="p-3 bg-mint-light rounded-2xl text-mint flex-shrink-0">
+                      <Utensils size={24} />
+                    </div>
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-[10px] font-bold text-mint bg-mint-light px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          Active subscription
+                        </span>
+                        {subscription.status === 'Paused' && (
+                          <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            Paused
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-base font-bold text-primary-text mt-1.5">{subscription.planName}</h3>
+                      <p className="text-xs text-secondary-text mt-1">
+                        Chef: <span className="font-semibold text-primary-text">{subscription.vendorName}</span> • Next Tiffin: <span className="font-semibold text-primary-text">{subscription.nextDelivery}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2 w-full md:w-auto">
+                    <button 
+                      onClick={() => handleTabChange('track_orders')}
+                      disabled={subscription.status === 'Paused'}
+                      className="px-4 py-2.5 bg-mint hover:bg-mint-hover disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none text-white text-xs font-bold rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex-1 md:flex-none flex items-center justify-center space-x-2"
+                    >
+                      <MapPin size={12} />
+                      <span>Track Delivery</span>
+                    </button>
+                    <button 
+                      onClick={() => handleTabChange('subscriptions')}
+                      className="px-4 py-2.5 border border-slate-200 text-slate-600 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all duration-200 cursor-pointer flex-1 md:flex-none flex items-center justify-center"
+                    >
+                      <span>Manage Subscription</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Featured Vendors Row */}
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <div>
+                    <h3 className="text-base font-bold text-primary-text">Featured Home Kitchens</h3>
+                    <p className="text-[11px] text-secondary-text">Highly-rated tiffin providers preparing food near you.</p>
+                  </div>
+                  <button 
+                    onClick={() => handleTabChange('vendors')}
+                    className="text-xs font-bold text-mint hover:underline flex items-center space-x-1 cursor-pointer"
+                  >
+                    <span>Browse all</span>
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+
+                {/* Horizontal Scrolling Vendor Grid */}
+                {activeLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <VendorSkeleton />
+                    <VendorSkeleton />
+                    <VendorSkeleton />
+                  </div>
+                ) : (
+                  filteredVendors.length === 0 ? (
+                    <div className="bg-white border border-slate-200/50 rounded-3xl p-10 shadow-card text-center flex flex-col items-center justify-center min-h-[220px]">
+                      <Inbox size={32} className="text-slate-300 mb-2" />
+                      <p className="text-xs text-primary-text font-bold">No Vendors Available</p>
+                      <p className="text-[11px] text-secondary-text max-w-sm mt-1">There are no featured home kitchens matching your search. Try adjusting filters or searching a different area.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {filteredVendors.slice(0, 3).map((vendor) => {
+                        const isSaved = savedVendorIds.includes(vendor.id);
+                        return (
+                          <div 
+                            key={vendor.id} 
+                            className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card hover:shadow-card-hover hover:border-mint/20 transition-all duration-200 flex flex-col justify-between h-[320px] relative overflow-hidden group"
+                          >
+                            <div>
+                              {/* Top card row */}
+                              <div className="flex justify-between items-start mb-2">
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md ${
+                                  vendor.mealType === 'Veg' 
+                                    ? 'bg-mint-light text-mint border border-mint/10' 
+                                    : vendor.mealType === 'Non-Veg' 
+                                    ? 'bg-red-50 text-red-500 border border-red-100'
+                                    : 'bg-amber-50 text-amber-600 border border-amber-100'
+                                }`}>
+                                  {vendor.mealType}
+                                </span>
+                                <button 
+                                  onClick={() => toggleSaveVendor(vendor.id)}
+                                  className="text-slate-300 hover:text-red-500 transition-colors cursor-pointer animate-none"
+                                >
+                                  <Heart size={18} fill={isSaved ? "#EF4444" : "none"} className={isSaved ? "text-red-500" : ""} />
+                                </button>
+                              </div>
+
+                              <h4 className="text-sm font-extrabold text-primary-text group-hover:text-mint transition-colors">
+                                {vendor.name}
+                              </h4>
+                              
+                              {/* Rating & Distance */}
+                              <div className="flex items-center space-x-2 text-[10px] text-secondary-text mt-1 font-semibold">
+                                <span className="flex items-center text-amber-500">
+                                  <Star size={10} fill="#F59E0B" className="mr-0.5" />
+                                  {vendor.rating}
+                                </span>
+                                <span>•</span>
+                                <span>{vendor.distance} km away</span>
+                                <span>•</span>
+                                <span>{vendor.locality}, {vendor.area}</span>
+                              </div>
+
+                              <p className="text-[11px] text-secondary-text mt-3 leading-relaxed line-clamp-2">
+                                {vendor.description}
+                              </p>
+
+                              {/* Price tag */}
+                              <div className="mt-4 pt-3 border-t border-slate-100/50 flex justify-between items-center text-[11px]">
+                                <span className="text-secondary-text">Starting from:</span>
+                                <span className="font-extrabold text-primary-text text-xs">₹{vendor.startingPrice}/meal</span>
+                              </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex space-x-2 mt-4 pt-2 border-t border-slate-100">
+                              <button 
+                                onClick={() => {
+                                  setSelectedVendor(vendor);
+                                  handleTabChange('vendors');
+                                }}
+                                className="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-[10px] font-bold rounded-lg transition-colors cursor-pointer"
+                              >
+                                View Vendor
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  setSelectedVendor(vendor);
+                                  handleTabChange('vendors');
+                                }}
+                                className="flex-1 py-2 bg-mint hover:bg-mint-hover text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer shadow-sm shadow-mint/5"
+                              >
+                                View Plans
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
+                )}
+              </div>
+
+              {/* Popular Categories Section */}
+              <div>
+                <h3 className="text-base font-bold text-primary-text mb-3">Popular Meal Categories</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+                  {[
+                    { name: 'Gujarati Meals', color: 'bg-amber-50 hover:bg-amber-100/70 text-amber-700 border-amber-150' },
+                    { name: 'Jain Meals', color: 'bg-green-50 hover:bg-green-100/70 text-green-700 border-green-150' },
+                    { name: 'Punjabi Meals', color: 'bg-red-50 hover:bg-red-100/70 text-red-700 border-red-150' },
+                    { name: 'South Indian Meals', color: 'bg-indigo-50 hover:bg-indigo-100/70 text-indigo-700 border-indigo-150' },
+                    { name: 'Healthy Diet Meals', color: 'bg-emerald-50 hover:bg-emerald-100/70 text-emerald-700 border-emerald-150' },
+                    { name: 'Student Budget Meals', color: 'bg-sky-50 hover:bg-sky-100/70 text-sky-700 border-sky-150' },
+                    { name: 'Family Plans', color: 'bg-purple-50 hover:bg-purple-100/70 text-purple-700 border-purple-150' },
+                  ].map((cat) => (
+                    <button
+                      key={cat.name}
+                      onClick={() => {
+                        setSelectedCategory(cat.name);
+                        handleTabChange('vendors');
+                      }}
+                      className={`p-3 rounded-2xl border text-center font-bold text-[10px] md:text-xs transition-all duration-150 cursor-pointer shadow-sm flex items-center justify-center ${cat.color}`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Popular Areas Section */}
+              <div>
+                <h3 className="text-base font-bold text-primary-text mb-2">Commonly Searched Locations</h3>
+                <div className="flex flex-wrap gap-2">
+                  {['Anand', 'Vallabh Vidyanagar', 'Nadiad', 'Ahmedabad', 'Vadodara'].map((area) => (
+                    <button
+                      key={area}
+                      onClick={() => {
+                        setSelectedArea(area);
+                        handleTabChange('vendors');
+                      }}
+                      className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 rounded-full transition-all duration-150 flex items-center space-x-1.5 cursor-pointer shadow-sm"
+                    >
+                      <MapPin size={12} className="text-mint" />
+                      <span>{area}</span>
+                    </button>
+                  ))}
+                  <button 
+                    onClick={() => {
+                      setSelectedArea('All');
+                      handleTabChange('vendors');
+                    }}
+                    className="px-4 py-2 text-xs font-semibold text-mint hover:underline cursor-pointer"
+                  >
+                    Clear area filter
+                  </button>
+                </div>
+              </div>
+
+              {/* Split Content: Recent Activity & Customer Reviews */}
               <div className="grid md:grid-cols-12 gap-6">
                 
-                {/* Today's Meals Menu Card */}
+                {/* Recent Activity Feed */}
+                <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card md:col-span-5 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-primary-text mb-4 pb-3 border-b border-slate-100">Recent Activity Feed</h3>
+                    {activeLoading ? (
+                      <ActivitySkeleton />
+                    ) : (
+                      emptyActivity || activities.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Inbox size={20} className="mx-auto text-slate-300 mb-2" />
+                          <p className="text-[11px] text-secondary-text">No recent activity logged.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3.5">
+                          {activities.slice(0, 4).map((act) => (
+                            <div key={act.id} className="flex items-center justify-between text-[11px] text-secondary-text">
+                              <div className="flex items-center space-x-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-mint flex-shrink-0"></span>
+                                <span className="font-semibold text-slate-700">{act.text}</span>
+                              </div>
+                              <span className="text-[10px] text-slate-400 font-normal">{act.time}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    )}
+                  </div>
+                  <button 
+                    onClick={() => setActivities([])}
+                    disabled={activities.length === 0}
+                    className="w-full mt-6 py-2 bg-slate-50 hover:bg-slate-100 disabled:bg-slate-50 disabled:text-slate-300 text-slate-600 text-[10px] font-bold rounded-lg transition-colors cursor-pointer text-center"
+                  >
+                    Clear Logs
+                  </button>
+                </div>
+
+                {/* Testimonials Customer Reviews */}
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card md:col-span-7 flex flex-col justify-between">
                   <div>
-                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-                      <h3 className="text-base font-bold text-primary-text">Today's Menu Selection</h3>
-                      <span className="text-[10px] font-bold text-mint bg-mint-light px-2.5 py-1 rounded-full uppercase tracking-wider">
-                        {emptySubscription ? "Inactive" : "Scheduled"}
+                    <h3 className="text-sm font-bold text-primary-text mb-4 pb-3 border-b border-slate-100">Customer Testimonials</h3>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-snow rounded-xl border border-slate-150 text-[11px] leading-relaxed text-secondary-text">
+                        <div className="flex items-center text-amber-500 mb-1.5">
+                          {[1, 2, 3, 4, 5].map(i => <Star key={i} size={10} fill="#F59E0B" />)}
+                          <span className="text-[9px] font-bold text-slate-400 ml-2">Anand Customer</span>
+                        </div>
+                        "Subscribed to Priya Patel's Weekly Veg plan for my hostel. The food is absolutely non-greasy, tastes exactly like cooked by my mom, and deliveries are always on time! Wholesome choice."
+                      </div>
+                      
+                      <div className="p-3 bg-snow rounded-xl border border-slate-150 text-[11px] leading-relaxed text-secondary-text">
+                        <div className="flex items-center text-amber-500 mb-1.5">
+                          {[1, 2, 3, 4, 5].map(i => <Star key={i} size={10} fill="#F59E0B" />)}
+                          <span className="text-[9px] font-bold text-slate-400 ml-2">Vidyanagar Professor</span>
+                        </div>
+                        "The Healthy Meals Hub salad thali changed my lunch routine. Low carb, premium quality, and super fresh. Marketplace makes it extremely easy to pause subscriptions during university holidays."
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-slate-400 text-center font-normal pt-4 mt-2">
+                    Verified ratings audited via hygiene standards.
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB 2: BROWSE VENDORS MARKETPLACE DIRECTORY */}
+          {currentTab === 'vendors' && (
+            <div className="space-y-6">
+              
+              {/* If no selected vendor detail, show listing directory */}
+              {!selectedVendor ? (
+                <>
+                  {/* Search Directory Filter Bar */}
+                  <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card space-y-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        <h3 className="text-lg font-bold text-primary-text">Home Chef Marketplace</h3>
+                        <p className="text-xs text-secondary-text">Browse and compare daily tiffin providers servicing your area.</p>
+                      </div>
+
+                      {/* Filter stats count */}
+                      <span className="text-xs font-bold text-mint bg-mint-light px-3 py-1 rounded-full uppercase tracking-wider w-fit">
+                        {filteredVendors.length} Providers Found
                       </span>
                     </div>
 
-                    {emptySubscription ? (
-                      <div className="text-center py-6">
-                        <Utensils size={32} className="mx-auto text-slate-300 mb-2" />
-                        <p className="text-xs text-secondary-text">No meals scheduled for today. Subscriptions are inactive.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2">
+                      {/* Text Search input */}
+                      <div className="relative sm:col-span-5">
+                        <Search className="absolute left-3 top-3 text-slate-400" size={14} />
+                        <input
+                          type="text"
+                          placeholder="Search kitchen name or keyword..."
+                          value={searchText}
+                          onChange={(e) => setSearchText(e.target.value)}
+                          className="w-full pl-9 pr-4 py-2 bg-snow border border-slate-200 rounded-xl text-xs text-primary-text focus:outline-none focus:border-mint font-medium placeholder-slate-400"
+                        />
                       </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center p-3 bg-snow rounded-xl border border-slate-200/20">
-                          <div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">Breakfast (8:30 AM)</span>
-                            <span className="text-xs md:text-sm font-semibold text-primary-text">Poha + Ginger Tea</span>
-                          </div>
-                          <span className="text-[10px] font-semibold text-secondary-text">Completed</span>
-                        </div>
 
-                        <div className="flex justify-between items-center p-3 bg-snow rounded-xl border border-slate-200/20">
-                          <div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-mint block">Lunch (12:45 PM)</span>
-                            <span className="text-xs md:text-sm font-semibold text-primary-text">Butter Roti (3), Dal Tadka, Jeera Rice, Bhindi Masala</span>
-                          </div>
-                          <span className="text-[10px] font-bold text-mint bg-mint-light px-2 py-0.5 rounded-full">Active</span>
-                        </div>
-
-                        <div className="flex justify-between items-center p-3 bg-snow rounded-xl border border-slate-200/20">
-                          <div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">Dinner (8:15 PM)</span>
-                            <span className="text-xs md:text-sm font-semibold text-primary-text">Paneer Butter Masala + Phulka Roti (3)</span>
-                          </div>
-                          <span className="text-[10px] font-semibold text-secondary-text">Scheduled</span>
-                        </div>
+                      {/* Area Select */}
+                      <div className="sm:col-span-2.5">
+                        <select
+                          value={selectedArea}
+                          onChange={(e) => setSelectedArea(e.target.value)}
+                          className="w-full px-3 py-2 bg-snow border border-slate-200 rounded-xl text-xs text-primary-text focus:outline-none focus:border-mint font-medium"
+                        >
+                          <option value="All">All Locations</option>
+                          <option value="Anand">Anand</option>
+                          <option value="Vallabh Vidyanagar">Vidyanagar</option>
+                          <option value="Nadiad">Nadiad</option>
+                          <option value="Ahmedabad">Ahmedabad</option>
+                          <option value="Vadodara">Vadodara</option>
+                        </select>
                       </div>
-                    )}
-                  </div>
 
-                  <button 
-                    onClick={() => setCurrentTab('plans')}
-                    className="w-full mt-6 py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-primary-text font-bold text-xs transition-colors duration-200 flex items-center justify-center space-x-2 cursor-pointer border border-slate-200/20"
-                  >
-                    <span>Change Subscription Menu Choices</span>
-                    <ExternalLink size={12} />
-                  </button>
-                </div>
-
-                {/* Delivery Status Progress Timeline Card */}
-                <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card md:col-span-5 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-base font-bold text-primary-text mb-4 pb-3 border-b border-slate-100">Live Delivery Tracking</h3>
-                    
-                    {emptySubscription ? (
-                      <div className="text-center py-12">
-                        <MapPin size={32} className="mx-auto text-slate-300 mb-2" />
-                        <p className="text-xs text-secondary-text">No delivery tracking available today.</p>
+                      {/* Category Select */}
+                      <div className="sm:col-span-2.5">
+                        <select
+                          value={selectedCategory}
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          className="w-full px-3 py-2 bg-snow border border-slate-200 rounded-xl text-xs text-primary-text focus:outline-none focus:border-mint font-medium"
+                        >
+                          <option value="All">All Categories</option>
+                          <option value="Gujarati Meals">Gujarati Meals</option>
+                          <option value="Jain Meals">Jain Meals</option>
+                          <option value="Punjabi Meals">Punjabi Meals</option>
+                          <option value="South Indian Meals">South Indian Meals</option>
+                          <option value="Healthy Diet Meals">Healthy Diet Meals</option>
+                          <option value="Student Budget Meals">Student Budget Meals</option>
+                          <option value="Family Plans">Family Plans</option>
+                        </select>
                       </div>
-                    ) : (
-                      <div className="space-y-4 text-xs">
-                        {/* Timeline Step 1 */}
-                        <div className="flex items-start space-x-3">
-                          <div className="flex flex-col items-center">
-                            <div className="w-5 h-5 rounded-full bg-mint text-white flex items-center justify-center text-[10px]">✓</div>
-                            <div className="w-0.5 h-6 bg-mint"></div>
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-primary-text">Meal Prepared</h4>
-                            <p className="text-[10px] text-secondary-text">Completed at 11:30 AM</p>
-                          </div>
-                        </div>
 
-                        {/* Timeline Step 2 */}
-                        <div className="flex items-start space-x-3">
-                          <div className="flex flex-col items-center">
-                            <div className="w-5 h-5 rounded-full bg-mint text-white flex items-center justify-center text-[10px]">✓</div>
-                            <div className="w-0.5 h-6 bg-slate-200"></div>
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-primary-text">Packed & Sealed</h4>
-                            <p className="text-[10px] text-secondary-text">Completed at 11:55 AM</p>
-                          </div>
-                        </div>
-
-                        {/* Timeline Step 3 */}
-                        <div className="flex items-start space-x-3">
-                          <div className="flex flex-col items-center">
-                            <div className="w-5 h-5 rounded-full border border-slate-300 bg-white text-slate-400 flex items-center justify-center text-[10px]">•</div>
-                            <div className="w-0.5 h-6 bg-slate-200"></div>
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-secondary-text">Out For Delivery</h4>
-                            <p className="text-[10px] text-secondary-text font-normal">Dispatches shortly from kitchen</p>
-                          </div>
-                        </div>
-
-                        {/* Timeline Step 4 */}
-                        <div className="flex items-start space-x-3">
-                          <div className="flex flex-col items-center">
-                            <div className="w-5 h-5 rounded-full border border-slate-300 bg-white text-slate-400 flex items-center justify-center text-[10px]">•</div>
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-secondary-text">Delivered</h4>
-                            <p className="text-[10px] text-secondary-text font-normal">Expected by 12:45 PM</p>
-                          </div>
-                        </div>
+                      {/* Clear Filters Button */}
+                      <div className="sm:col-span-2">
+                        <button
+                          onClick={() => {
+                            setSearchText('');
+                            setSelectedCategory('All');
+                            setSelectedArea('All');
+                          }}
+                          className="w-full py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"
+                        >
+                          Reset Filters
+                        </button>
                       </div>
-                    )}
-                  </div>
-
-                  {!emptySubscription && (
-                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="text-secondary-text">Expected Arrival:</span>
-                      <span className="font-bold text-mint">12:45 PM</span>
                     </div>
-                  )}
-                </div>
-
-              </div>
-
-              {/* Quick Action Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button 
-                  onClick={() => setCurrentTab('plans')}
-                  className="bg-white hover:bg-slate-50 border border-slate-200/50 p-4 rounded-2xl shadow-card transition-colors duration-200 text-center font-bold text-xs text-primary-text flex flex-col items-center justify-center space-y-2 cursor-pointer"
-                >
-                  <Utensils size={18} className="text-mint" />
-                  <span>View Subscribed Menus</span>
-                </button>
-                
-                <button 
-                  onClick={() => setCurrentTab('track')}
-                  className="bg-white hover:bg-slate-50 border border-slate-200/50 p-4 rounded-2xl shadow-card transition-colors duration-200 text-center font-bold text-xs text-primary-text flex flex-col items-center justify-center space-y-2 cursor-pointer"
-                >
-                  <MapPin size={18} className="text-mint" />
-                  <span>Track Live Delivery</span>
-                </button>
-
-                <button 
-                  onClick={() => setCurrentTab('mysub')}
-                  className="bg-white hover:bg-slate-50 border border-slate-200/50 p-4 rounded-2xl shadow-card transition-colors duration-200 text-center font-bold text-xs text-primary-text flex flex-col items-center justify-center space-y-2 cursor-pointer"
-                >
-                  <Calendar size={18} className="text-mint" />
-                  <span>Manage Subscriptions</span>
-                </button>
-
-                <button 
-                  onClick={() => setMessage({ type: 'success', text: `Contacting Vendor: Call +91-9898989898 (${subscription.vendorName})` })}
-                  className="bg-white hover:bg-slate-50 border border-slate-200/50 p-4 rounded-2xl shadow-card transition-colors duration-200 text-center font-bold text-xs text-primary-text flex flex-col items-center justify-center space-y-2 cursor-pointer"
-                >
-                  <Phone size={18} className="text-mint" />
-                  <span>Contact Home Chef</span>
-                </button>
-              </div>
-
-              {/* Grid: Recent Orders & Notifications Preview */}
-              <div className="grid lg:grid-cols-12 gap-6">
-                {/* Recent Orders table */}
-                <div className="lg:col-span-8">
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-base font-bold text-primary-text">Recent Tiffin Orders</h3>
-                    <button 
-                      onClick={() => setCurrentTab('history')}
-                      className="text-xs font-bold text-mint hover:underline flex items-center space-x-1 cursor-pointer"
-                    >
-                      <span>Full history</span>
-                      <ChevronRight size={14} />
-                    </button>
-                  </div>
-                  <OrderTable 
-                    orders={emptyOrders ? [] : orders} 
-                    isLoading={activeLoading}
-                    onReset={() => setEmptyOrders(false)}
-                  />
-                </div>
-
-                {/* Notifications Preview */}
-                <div className="lg:col-span-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-base font-bold text-primary-text">Notifications</h3>
-                    <button 
-                      onClick={() => setCurrentTab('notifications')}
-                      className="text-xs font-bold text-mint hover:underline cursor-pointer"
-                    >
-                      View all
-                    </button>
                   </div>
 
-                  {emptyNotifications ? (
-                    <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card text-center flex flex-col items-center justify-center min-h-[200px]">
-                      <Inbox size={24} className="text-slate-300 mb-2" />
-                      <p className="text-xs text-secondary-text">No active alerts found.</p>
+                  {/* Listings Grid */}
+                  {activeLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <VendorSkeleton />
+                      <VendorSkeleton />
+                      <VendorSkeleton />
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      {notifications.slice(0, 3).map((notif) => (
-                        <NotificationCard 
-                          key={notif.id}
-                          text={notif.text}
-                          time={notif.time}
-                          isRead={notif.isRead}
-                          isLoading={activeLoading}
-                          onRead={() => handleMarkAsRead(notif.id)}
-                        />
+                    filteredVendors.length === 0 ? (
+                      <div className="bg-white border border-slate-200/50 rounded-3xl p-16 shadow-card text-center flex flex-col items-center justify-center min-h-[300px]">
+                        <Inbox size={48} className="text-slate-300 mb-3" />
+                        <h3 className="text-base font-bold text-primary-text">No Vendors Available</h3>
+                        <p className="text-xs text-secondary-text max-w-sm mt-1 mb-6 leading-relaxed">
+                          We couldn't find any home kitchen tiffin providers matching your search filters in the local database.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setSearchText('');
+                            setSelectedCategory('All');
+                            setSelectedArea('All');
+                          }}
+                          className="px-4 py-2 bg-mint text-white text-xs font-bold rounded-xl hover:bg-mint-hover transition-colors cursor-pointer"
+                        >
+                          Reset All Filters
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {filteredVendors.map((vendor) => {
+                          const isSaved = savedVendorIds.includes(vendor.id);
+                          return (
+                            <div 
+                              key={vendor.id} 
+                              className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card hover:shadow-card-hover transition-all duration-200 flex flex-col justify-between min-h-[320px] relative overflow-hidden group"
+                            >
+                              <div>
+                                <div className="flex justify-between items-start mb-2">
+                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md ${
+                                    vendor.mealType === 'Veg' 
+                                      ? 'bg-mint-light text-mint border border-mint/10' 
+                                      : vendor.mealType === 'Non-Veg' 
+                                      ? 'bg-red-50 text-red-500 border border-red-100'
+                                      : 'bg-amber-50 text-amber-600 border border-amber-100'
+                                  }`}>{vendor.mealType}</span>
+                                  
+                                  <button 
+                                    onClick={() => toggleSaveVendor(vendor.id)}
+                                    className="text-slate-350 hover:text-red-500 transition-colors cursor-pointer"
+                                  >
+                                    <Heart size={18} fill={isSaved ? "#EF4444" : "none"} className={isSaved ? "text-red-500" : ""} />
+                                  </button>
+                                </div>
+
+                                <h4 className="text-sm font-extrabold text-primary-text group-hover:text-mint transition-colors mt-1">
+                                  {vendor.name}
+                                </h4>
+                                
+                                <div className="flex items-center space-x-2 text-[10px] text-secondary-text mt-1 font-semibold">
+                                  <span className="flex items-center text-amber-500">
+                                    <Star size={10} fill="#F59E0B" className="mr-0.5" />
+                                    {vendor.rating}
+                                  </span>
+                                  <span>•</span>
+                                  <span>{vendor.distance} km</span>
+                                  <span>•</span>
+                                  <span>{vendor.locality}, {vendor.area}</span>
+                                </div>
+
+                                <p className="text-[11px] text-secondary-text mt-3 leading-relaxed line-clamp-3">
+                                  {vendor.description}
+                                </p>
+
+                                <div className="flex flex-wrap gap-1.5 mt-4">
+                                  {vendor.categories.map((c) => (
+                                    <span key={c} className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                                      {c}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <div className="text-[11px]">
+                                  <span className="text-slate-400 block text-[9px] uppercase font-bold">Starts from</span>
+                                  <span className="font-extrabold text-primary-text">₹{vendor.startingPrice}/meal</span>
+                                </div>
+                                <button
+                                  onClick={() => setSelectedVendor(vendor)}
+                                  className="px-3.5 py-2 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                                >
+                                  View Details & Menu
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )
+                  )}
+                </>
+              ) : (
+                /* Selected Vendor Detailed Menu Sub-view */
+                <div className="space-y-6">
+                  
+                  {/* Detailed Page Header */}
+                  <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card">
+                    <button
+                      onClick={() => setSelectedVendor(null)}
+                      className="inline-flex items-center space-x-2 text-xs font-bold text-secondary-text hover:text-primary-text cursor-pointer mb-5"
+                    >
+                      <ArrowLeft size={14} />
+                      <span>Back to Marketplace Directory</span>
+                    </button>
+
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h2 className="text-xl font-extrabold text-primary-text">{selectedVendor.name}</h2>
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md ${
+                            selectedVendor.mealType === 'Veg' ? 'bg-mint-light text-mint' : 'bg-red-50 text-red-500'
+                          }`}>{selectedVendor.mealType}</span>
+                        </div>
+                        <p className="text-xs text-secondary-text mt-1">
+                          Managed by Home Chef: <span className="font-semibold text-primary-text">{selectedVendor.owner}</span> • Kitchen Locality: <span className="font-semibold text-primary-text">{selectedVendor.locality}, {selectedVendor.area}</span>
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center space-x-3 text-xs">
+                        <div className="text-right">
+                          <span className="text-secondary-text block text-[9px] uppercase font-bold">Rating</span>
+                          <span className="font-extrabold text-primary-text flex items-center justify-end text-sm">
+                            <Star size={12} fill="#F59E0B" className="text-amber-500 mr-1" />
+                            {selectedVendor.rating} / 5.0
+                          </span>
+                        </div>
+                        <div className="h-8 w-[1px] bg-slate-200"></div>
+                        <div className="text-right">
+                          <span className="text-secondary-text block text-[9px] uppercase font-bold">Distance</span>
+                          <span className="font-extrabold text-primary-text text-sm">{selectedVendor.distance} km away</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-secondary-text mt-4 leading-relaxed border-t border-slate-100 pt-4">
+                      {selectedVendor.description}
+                    </p>
+                  </div>
+
+                  {/* Plans & Subscriptions List */}
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-extrabold text-primary-text">Select Subscription Plan</h3>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {selectedVendor.plans.map((plan) => (
+                        <div 
+                          key={plan.id}
+                          className="bg-white border-2 border-slate-100 hover:border-mint/20 rounded-3xl p-6 shadow-card flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="text-base font-bold text-primary-text">{plan.name}</h4>
+                              <span className="text-[10px] font-bold text-mint bg-mint-light px-2.5 py-1 rounded-md uppercase tracking-wider">
+                                {plan.duration}
+                              </span>
+                            </div>
+                            
+                            <p className="text-xs text-secondary-text mt-1 font-semibold">Includes: {plan.details}</p>
+                            <div className="h-6"></div>
+                          </div>
+
+                          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                              <span className="text-[9px] font-bold text-slate-400 block uppercase">Price</span>
+                              <span className="text-lg font-black text-primary-text">₹{plan.price}</span>
+                            </div>
+                            <button
+                              onClick={() => handleSubscribe(selectedVendor, plan)}
+                              className="px-4 py-2.5 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-xl transition-all duration-200 cursor-pointer shadow-sm shadow-mint/5"
+                            >
+                              Subscribe to Plan
+                            </button>
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  )}
+                  </div>
+
                 </div>
-              </div>
+              )}
 
             </div>
           )}
 
-          {/* TAB 2: SUBSCRIPTION PLANS */}
-          {currentTab === 'plans' && (
-            <div className="space-y-6">
-              <div className="bg-white border border-slate-200/50 p-6 rounded-3xl shadow-card">
-                <h3 className="text-lg font-bold text-primary-text mb-2">Available Subscription Plans</h3>
-                <p className="text-xs text-secondary-text">Select a clean package below to setup daily home-cooked deliveries.</p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6">
-                {/* Plan 1 */}
-                <div className="bg-white border-2 border-slate-100 hover:border-mint/30 rounded-3xl p-6 shadow-card flex flex-col justify-between relative overflow-hidden transition-all duration-200">
-                  <div className="absolute top-0 right-0 bg-lemon text-primary-text font-bold text-[9px] px-3 py-1 rounded-bl-xl uppercase tracking-wider">
-                    Popular
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-primary-text mb-1">Weekly Veg Subscription</h4>
-                    <span className="text-xs text-mint font-semibold block mb-4">7 Days Plan</span>
-                    <p className="text-xs text-secondary-text mb-6">
-                      Perfect for a short test. Includes 1 standard lunch (Roti, Sabzi, Dal, Rice) and 1 light dinner meal daily.
-                    </p>
-                    <div className="text-2xl font-extrabold text-primary-text mb-6">
-                      $45 <span className="text-xs text-secondary-text font-normal">/ week</span>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setSubscription({
-                        planName: 'Weekly Veg Subscription',
-                        mealsRemaining: 7,
-                        status: 'Active',
-                        nextDelivery: 'Tomorrow, 12:45 PM',
-                        vendorName: 'Mama\'s Kitchen'
-                      });
-                      setEmptySubscription(false);
-                      setCurrentTab('mysub');
-                    }}
-                    className="w-full py-3 px-4 rounded-xl bg-mint hover:bg-mint-hover text-white font-bold text-xs transition-colors duration-200 cursor-pointer shadow-sm"
-                  >
-                    Select Plan
-                  </button>
-                </div>
-
-                {/* Plan 2 */}
-                <div className="bg-white border-2 border-mint rounded-3xl p-6 shadow-card flex flex-col justify-between relative overflow-hidden transition-all duration-200">
-                  <div className="absolute top-0 right-0 bg-mint text-white font-bold text-[9px] px-3 py-1 rounded-bl-xl uppercase tracking-wider">
-                    Best Value
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-primary-text mb-1">Monthly Veg Plan</h4>
-                    <span className="text-xs text-mint font-semibold block mb-4">30 Days Plan</span>
-                    <p className="text-xs text-secondary-text mb-6">
-                      Our signature vegetable subscription. Prepared with low oil, fresh produce, and strictly sanitary conditions.
-                    </p>
-                    <div className="text-2xl font-extrabold text-primary-text mb-6">
-                      $160 <span className="text-xs text-secondary-text font-normal">/ month</span>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setSubscription({
-                        planName: 'Monthly Veg Plan',
-                        mealsRemaining: 30,
-                        status: 'Active',
-                        nextDelivery: 'Today, 12:45 PM',
-                        vendorName: 'Mama\'s Kitchen'
-                      });
-                      setEmptySubscription(false);
-                      setCurrentTab('mysub');
-                    }}
-                    className="w-full py-3 px-4 rounded-xl bg-mint hover:bg-mint-hover text-white font-bold text-xs transition-colors duration-200 cursor-pointer shadow-sm"
-                  >
-                    Select Plan
-                  </button>
-                </div>
-
-                {/* Plan 3 */}
-                <div className="bg-white border-2 border-slate-100 hover:border-mint/30 rounded-3xl p-6 shadow-card flex flex-col justify-between relative overflow-hidden transition-all duration-200">
-                  <div>
-                    <h4 className="text-base font-bold text-primary-text mb-1">Monthly Non-Veg Plan</h4>
-                    <span className="text-xs text-mint font-semibold block mb-4">30 Days Plan</span>
-                    <p className="text-xs text-secondary-text mb-6">
-                      Enjoy a balanced diet. Includes poultry/fish dishes 3 times a week, combined with light fresh veggies on other days.
-                    </p>
-                    <div className="text-2xl font-extrabold text-primary-text mb-6">
-                      $190 <span className="text-xs text-secondary-text font-normal">/ month</span>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setSubscription({
-                        planName: 'Monthly Non-Veg Plan',
-                        mealsRemaining: 30,
-                        status: 'Active',
-                        nextDelivery: 'Today, 12:45 PM',
-                        vendorName: 'Mama\'s Kitchen'
-                      });
-                      setEmptySubscription(false);
-                      setCurrentTab('mysub');
-                    }}
-                    className="w-full py-3 px-4 rounded-xl bg-mint hover:bg-mint-hover text-white font-bold text-xs transition-colors duration-200 cursor-pointer shadow-sm"
-                  >
-                    Select Plan
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: MY SUBSCRIPTION */}
-          {currentTab === 'mysub' && (
+          {/* TAB 3: MY ACTIVE SUBSCRIPTIONS */}
+          {currentTab === 'subscriptions' && (
             <div className="space-y-6">
               
-              {emptySubscription ? (
+              {emptySubscription || !subscription ? (
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-12 shadow-card text-center flex flex-col items-center justify-center min-h-[350px]">
                   <div className="p-4 bg-slate-100 rounded-full text-slate-400 mb-4">
                     <Calendar size={36} />
                   </div>
                   <h3 className="text-base font-bold text-primary-text mb-1">No Active Subscription</h3>
-                  <p className="text-xs text-secondary-text max-w-sm mb-6">
-                    You aren't subscribed to any home kitchen meal plans currently.
+                  <p className="text-xs text-secondary-text max-w-sm mb-6 leading-relaxed">
+                    You aren't subscribed to any home kitchen meal plans currently. Tap below to search nearby chefs and pick a plan.
                   </p>
                   <button
-                    onClick={() => setCurrentTab('plans')}
-                    className="px-5 py-3 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-xl transition-colors duration-200 cursor-pointer shadow-sm"
+                    onClick={() => handleTabChange('vendors')}
+                    className="px-5 py-3 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-xl transition-colors duration-200 cursor-pointer shadow-sm shadow-mint/10"
                   >
-                    Browse Subscription Plans
+                    Browse Local Vendors
                   </button>
                 </div>
               ) : (
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card space-y-6">
                   
-                  {/* Subscription details */}
+                  {/* Active Header */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
                     <div>
-                      <span className="text-[10px] font-bold text-mint uppercase tracking-wider px-2.5 py-1 bg-mint-light rounded-md">
-                        Subscribed
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-wider px-2.5 py-1 bg-mint-light rounded-md border border-mint/10">
+                        Subscribed Marketplace Plan
                       </span>
                       <h3 className="text-xl font-bold text-primary-text mt-2">{subscription.planName}</h3>
-                      <p className="text-xs text-secondary-text mt-1">Prepared by: <span className="font-semibold text-primary-text">{subscription.vendorName}</span></p>
+                      <p className="text-xs text-secondary-text mt-1">Prepared by chef: <span className="font-semibold text-primary-text">{subscription.vendorName}</span></p>
                     </div>
 
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 w-full sm:w-auto">
                       <button
                         onClick={handleToggleSubscription}
-                        className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-colors duration-200 cursor-pointer border shadow-sm ${
+                        className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-colors duration-200 cursor-pointer border shadow-sm flex-1 sm:flex-none ${
                           subscription.status === 'Active'
                             ? 'bg-amber-50 hover:bg-amber-100 text-amber-600 border-amber-200/30'
                             : 'bg-mint-light hover:bg-mint-light/80 text-mint border-mint/10'
@@ -689,17 +1241,15 @@ export default function CustomerDashboard() {
                       </button>
 
                       <button
-                        onClick={() => {
-                          setEmptySubscription(true);
-                        }}
-                        className="px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/20 font-bold text-xs transition-colors duration-200 cursor-pointer"
+                        onClick={handleCancelSubscription}
+                        className="px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/20 font-bold text-xs transition-colors duration-205 cursor-pointer flex-1 sm:flex-none"
                       >
                         Cancel Plan
                       </button>
                     </div>
                   </div>
 
-                  {/* Stat grids */}
+                  {/* Active Stats */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
                     <div className="p-4 bg-snow border border-slate-200/40 rounded-2xl">
                       <span className="text-[10px] font-bold text-secondary-text uppercase tracking-wider block mb-1">Status</span>
@@ -714,56 +1264,56 @@ export default function CustomerDashboard() {
                     </div>
 
                     <div className="p-4 bg-snow border border-slate-200/40 rounded-2xl">
-                      <span className="text-[10px] font-bold text-secondary-text uppercase tracking-wider block mb-1">Billing Period</span>
-                      <span className="text-base font-bold text-primary-text">30 Days (Monthly)</span>
+                      <span className="text-[10px] font-bold text-secondary-text uppercase tracking-wider block mb-1">Billing Value</span>
+                      <span className="text-base font-bold text-primary-text">₹{subscription.price} / cycle</span>
                     </div>
                   </div>
 
-                  {/* Pause notes alert */}
+                  {/* Status paused alert check */}
                   {subscription.status === 'Paused' && (
                     <div className="p-4 bg-amber-50 border border-amber-200/30 rounded-2xl text-amber-600 text-xs leading-relaxed flex items-start space-x-2.5">
                       <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
                       <span>
-                        <strong>Your subscription is paused.</strong> No meals will be prepared or delivered until you tap "Resume Plan". You will not lose any meals while your plan is suspended.
+                        <strong>Your subscription is paused.</strong> No daily tiffin daily boxes will be delivered until you tap \"Resume Plan\". You will not lose remaining meals while your account is suspended.
                       </span>
                     </div>
                   )}
 
-                  {/* Calendar view placeholder */}
+                  {/* Calendar details */}
                   <div className="pt-4 space-y-3">
                     <h4 className="text-sm font-bold text-primary-text">Delivery Calendar Schedule</h4>
                     <p className="text-xs text-secondary-text leading-relaxed">
-                      Meal deliveries are active on weekdays (Monday - Friday) by default. You can pause specific single days by editing the calendar below.
+                      Meal subscriptions default to active Monday through Friday. You can block or skip individual dates via the scheduling grid below.
                     </p>
                     <div className="border border-slate-200/60 rounded-2xl p-6 bg-snow text-center text-xs text-secondary-text">
-                      [ Interactive Calendar Interface Mockup - Manage weekly schedules ]
+                      [ Interactive Subscription Calendar - Skip and shift dates ]
                     </div>
                   </div>
 
                 </div>
               )}
-              
+
             </div>
           )}
 
-          {/* TAB 4: TRACK DELIVERY */}
-          {currentTab === 'track' && (
+          {/* TAB 4: TRACK ACTIVE ORDERS */}
+          {currentTab === 'track_orders' && (
             <div className="space-y-6">
               
-              {emptySubscription ? (
+              {emptySubscription || !subscription || subscription.status === 'Paused' ? (
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-12 shadow-card text-center flex flex-col items-center justify-center min-h-[350px]">
                   <div className="p-4 bg-slate-100 rounded-full text-slate-400 mb-4">
                     <MapPin size={36} />
                   </div>
-                  <h3 className="text-base font-bold text-primary-text mb-1">No Deliveries in Progress</h3>
-                  <p className="text-xs text-secondary-text max-w-sm mb-6">
-                    Activate a subscription plan to track deliveries in real-time.
+                  <h3 className="text-base font-bold text-primary-text mb-1">No Active Deliveries Today</h3>
+                  <p className="text-xs text-secondary-text max-w-sm mb-6 leading-relaxed">
+                    There are no active dispatches today. Start a subscription or resume your paused plans to view courier status.
                   </p>
                 </div>
               ) : (
                 <div className="grid lg:grid-cols-12 gap-6">
                   
-                  {/* Left Column: Courier Details */}
+                  {/* Courier Card details */}
                   <div className="lg:col-span-4 space-y-6">
                     <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card space-y-5">
                       <h3 className="text-base font-bold text-primary-text border-b border-slate-100 pb-3">Delivery Partner</h3>
@@ -774,22 +1324,22 @@ export default function CustomerDashboard() {
                         </div>
                         <div>
                           <h4 className="text-sm font-bold text-primary-text">Rahul Kumar</h4>
-                          <span className="text-[10px] text-secondary-text block">Express Logistics Courier</span>
+                          <span className="text-[10px] text-secondary-text block">TiffinTrack Express Logistics</span>
                         </div>
                       </div>
 
                       <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-secondary-text">Contact:</span>
+                          <span className="text-secondary-text">Mobile No:</span>
                           <span className="font-semibold text-primary-text">+91-9999911111</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-secondary-text">Delivery Code:</span>
+                          <span className="text-secondary-text">Tiffin Code:</span>
                           <span className="font-bold text-mint">TT-402</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-secondary-text">Expected:</span>
-                          <span className="font-bold text-primary-text">12:45 PM</span>
+                          <span className="text-secondary-text">Est. Delivery:</span>
+                          <span className="font-bold text-primary-text">{subscription.nextDelivery}</span>
                         </div>
                       </div>
 
@@ -802,25 +1352,24 @@ export default function CustomerDashboard() {
                     </div>
                   </div>
 
-                  {/* Right Column: Tracking Map Mockup */}
+                  {/* Tracking map details */}
                   <div className="lg:col-span-8">
                     <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card h-full flex flex-col justify-between min-h-[350px]">
                       <div>
-                        <h3 className="text-base font-bold text-primary-text border-b border-slate-100 pb-3">Live Tracking Map</h3>
+                        <h3 className="text-base font-bold text-primary-text border-b border-slate-100 pb-3">Live Map Overview</h3>
                         <p className="text-xs text-secondary-text mt-2 leading-relaxed">
-                          Your tiffin is currently departing from <span className="font-bold text-primary-text">{subscription.vendorName}</span> heading towards <span className="font-bold text-primary-text">{profile.address}</span>.
+                          Your tiffin box is departing from <span className="font-bold text-primary-text">{subscription.vendorName}</span> to your home at <span className="font-bold text-primary-text">{profile.address}</span>.
                         </p>
                       </div>
 
-                      {/* Map Container Box Mockup */}
                       <div className="border border-slate-200 rounded-2xl bg-snow h-64 flex flex-col items-center justify-center text-xs text-secondary-text relative overflow-hidden my-4">
                         <MapPin size={32} className="text-mint animate-bounce mb-2" />
-                        <span className="font-semibold">Simulated GPS Live Tracking Grid</span>
-                        <span className="text-[10px] mt-1 text-slate-400">Map updates live in production</span>
+                        <span className="font-semibold text-slate-700">GPS Logistics Map Simulation</span>
+                        <span className="text-[10px] mt-1 text-slate-400">Map updates live during delivery hours</span>
                       </div>
 
-                      <div className="text-[10px] text-secondary-text text-center">
-                        Secure packaging & sanitation logs are verified prior to pickup.
+                      <div className="text-[10px] text-slate-400 text-center font-normal">
+                        Packaging seal integrity and hygienic guidelines are logged before pickup.
                       </div>
                     </div>
                   </div>
@@ -831,77 +1380,46 @@ export default function CustomerDashboard() {
             </div>
           )}
 
-          {/* TAB 5: ORDER HISTORY */}
+          {/* TAB 5: ORDER HISTORY LOGS */}
           {currentTab === 'history' && (
             <div className="space-y-4">
-              <div className="flex justify-between items-center bg-white border border-slate-200/50 p-6 rounded-3xl shadow-card">
-                <div>
-                  <h3 className="text-lg font-bold text-primary-text mb-1">Order History Log</h3>
-                  <p className="text-xs text-secondary-text">Comprehensive record of all tiffin meals received.</p>
-                </div>
-                <button
-                  onClick={() => setEmptyOrders(!emptyOrders)}
-                  className="px-3 py-1.5 border border-slate-200 rounded-xl text-[10px] font-bold text-secondary-text hover:text-primary-text cursor-pointer"
-                >
-                  {emptyOrders ? "Load Orders" : "Simulate No Orders"}
-                </button>
+              <div className="bg-white border border-slate-200/50 p-6 rounded-3xl shadow-card">
+                <h3 className="text-lg font-bold text-primary-text mb-1">Order History Log</h3>
+                <p className="text-xs text-secondary-text">Comprehensive record of all tiffin deliveries logged under your account.</p>
               </div>
 
               <OrderTable 
-                orders={emptyOrders ? [] : orders} 
+                orders={orders} 
                 isLoading={activeLoading}
-                onReset={() => setEmptyOrders(false)}
               />
             </div>
           )}
 
-          {/* TAB 6: NOTIFICATIONS */}
+          {/* TAB 6: INBOX NOTIFICATIONS ALERTS */}
           {currentTab === 'notifications' && (
             <div className="space-y-4">
               <div className="flex justify-between items-center bg-white border border-slate-200/50 p-6 rounded-3xl shadow-card">
                 <div>
-                  <h3 className="text-lg font-bold text-primary-text mb-1">Inbox Alerts</h3>
-                  <p className="text-xs text-secondary-text">Platform updates regarding tiffin preparation and dispatch cycles.</p>
+                  <h3 className="text-lg font-bold text-primary-text mb-1">Alert Notifications</h3>
+                  <p className="text-xs text-secondary-text">Updates from home kitchen chefs and platform compliance.</p>
                 </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setEmptyNotifications(!emptyNotifications)}
-                    className="px-3 py-1.5 border border-slate-200 rounded-xl text-[10px] font-bold text-secondary-text hover:text-primary-text cursor-pointer"
+                {notifications.length > 0 && (
+                  <button 
+                    onClick={() => setNotifications([])}
+                    className="px-3 py-1.5 bg-red-50 text-red-650 rounded-xl text-[10px] font-bold hover:bg-red-100 cursor-pointer"
                   >
-                    {emptyNotifications ? "Load Notifications" : "Simulate Empty State"}
+                    Clear All
                   </button>
-                  {notifications.length > 0 && !emptyNotifications && (
-                    <button 
-                      onClick={() => setNotifications([])}
-                      className="px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-bold hover:bg-red-100 cursor-pointer"
-                    >
-                      Clear All
-                    </button>
-                  )}
-                </div>
+                )}
               </div>
 
-              {notifications.length === 0 || emptyNotifications ? (
+              {notifications.length === 0 ? (
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-12 shadow-card text-center flex flex-col items-center justify-center min-h-[300px]">
                   <div className="p-4 bg-slate-100 rounded-full text-slate-400 mb-4">
                     <Bell size={36} />
                   </div>
                   <h3 className="text-base font-bold text-primary-text mb-1">Inbox Clear</h3>
-                  <p className="text-xs text-secondary-text max-w-sm mb-6">
-                    You have read all notifications. There are no new subscription alerts at this time.
-                  </p>
-                  <button 
-                    onClick={() => {
-                      setNotifications([
-                        { id: 1, text: 'Your lunch is being prepared by Mama\'s Kitchen.', time: 'Just now', isRead: false },
-                        { id: 2, text: 'Subscription renewal due in 5 days (Monthly Veg Plan).', time: '1 hour ago', isRead: false }
-                      ]);
-                      setEmptyNotifications(false);
-                    }}
-                    className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-primary-text hover:bg-slate-50 cursor-pointer"
-                  >
-                    Generate Test Notifications
-                  </button>
+                  <p className="text-xs text-secondary-text max-w-sm mb-6">You have read all system alerts.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -926,11 +1444,10 @@ export default function CustomerDashboard() {
               
               <div className="bg-white border border-slate-200/50 p-6 rounded-3xl shadow-card">
                 <h3 className="text-lg font-bold text-primary-text mb-1">Account & Delivery Settings</h3>
-                <p className="text-xs text-secondary-text">Configure personal information and tiffin delivery addresses.</p>
+                <p className="text-xs text-secondary-text">Update your personal account credentials and delivery routes.</p>
               </div>
 
               <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card">
-                
                 {profileMessage && (
                   <div className="p-4 rounded-xl mb-6 bg-mint-light border border-mint/20 text-mint flex items-start space-x-2 text-xs font-semibold">
                     <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0" />
@@ -1046,9 +1563,9 @@ export default function CustomerDashboard() {
         </main>
       </div>
 
-      {/* Global Footer Banner */}
+      {/* Page Footer */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-secondary-text text-xs relative z-25 mt-8">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} TiffinTrack. All rights reserved.</p>
           <div className="flex space-x-4">
             <a href="#" className="hover:text-primary-text transition-colors">Privacy Policy</a>

@@ -17,9 +17,9 @@ export default function Sidebar({ currentTab, onTabChange, isOpen, onClose }) {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'plans', label: 'Subscription Plans', icon: CalendarRange },
-    { id: 'mysub', label: 'My Subscription', icon: UserCheck },
-    { id: 'track', label: 'Track Delivery', icon: MapPin },
+    { id: 'vendors', label: 'Browse Vendors', icon: CalendarRange },
+    { id: 'subscriptions', label: 'My Subscriptions', icon: UserCheck },
+    { id: 'track_orders', label: 'Track Orders', icon: MapPin },
     { id: 'history', label: 'Order History', icon: History },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'settings', label: 'Profile Settings', icon: Settings },
