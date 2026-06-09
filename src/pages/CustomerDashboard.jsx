@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Menu as MenuIcon, 
   Bell, 
-  User as UserIcon, 
   MapPin, 
   Phone, 
   Calendar, 
@@ -11,7 +10,6 @@ import {
   Utensils, 
   ExternalLink,
   ChevronRight,
-  TrendingUp,
   Inbox,
   ShieldAlert,
   Loader2
@@ -52,7 +50,7 @@ export default function CustomerDashboard() {
     vendorName: 'Mama\'s Kitchen'
   });
 
-  const [orders, setOrders] = useState([
+  const [orders] = useState([
     { id: 1, date: 'June 09, 2026', mealType: 'Lunch (Roti, Dal, Rice, Bhindi)', vendor: 'Mama\'s Kitchen', status: 'In Progress' },
     { id: 2, date: 'June 08, 2026', mealType: 'Dinner (Paneer Masala + Roti)', vendor: 'Mama\'s Kitchen', status: 'Delivered' },
     { id: 3, date: 'June 08, 2026', mealType: 'Lunch (Roti, Dal, Rice, Aloo Gobhi)', vendor: 'Mama\'s Kitchen', status: 'Delivered' },
@@ -68,10 +66,25 @@ export default function CustomerDashboard() {
 
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState(null);
+  const [message, setMessage] = useState(null);
+
+  // Auto-clear message after 4 seconds
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+    setIsLoading(true);
+  };
 
   // Simulated initial loading
   useEffect(() => {
-    setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -223,7 +236,7 @@ export default function CustomerDashboard() {
         {/* Navigation Sidebar Drawer */}
         <Sidebar 
           currentTab={currentTab} 
-          onTabChange={setCurrentTab} 
+          onTabChange={handleTabChange} 
           isOpen={isMobileSidebarOpen}
           onClose={() => setIsMobileSidebarOpen(false)}
         />
@@ -241,6 +254,28 @@ export default function CustomerDashboard() {
               <p className="font-bold text-primary-text">{getFormattedDate()}</p>
             </div>
           </div>
+
+          {/* Status Message Banners */}
+          {message && (
+            <div className={`p-4 rounded-xl mb-6 flex items-start space-x-3 border ${
+              message.type === 'success' 
+                ? 'bg-mint-light border-mint/20 text-mint' 
+                : 'bg-red-50 border-red-200 text-red-600'
+            }`}>
+              {message.type === 'success' ? (
+                <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0" />
+              ) : (
+                <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+              )}
+              <span className="text-xs font-medium flex-grow">{message.text}</span>
+              <button 
+                onClick={() => setMessage(null)} 
+                className="text-slate-400 hover:text-slate-600 text-xs font-bold focus:outline-none cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
           {/* TAB 1: MAIN DASHBOARD OVERVIEW */}
           {currentTab === 'dashboard' && (

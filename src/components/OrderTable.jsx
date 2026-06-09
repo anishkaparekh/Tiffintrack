@@ -1,4 +1,3 @@
-import React from 'react';
 import { ClipboardList, CheckCircle, Clock, RotateCcw } from 'lucide-react';
 
 export default function OrderTable({ orders, isLoading, onReset }) {

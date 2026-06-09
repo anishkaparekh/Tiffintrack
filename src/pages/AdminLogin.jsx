@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Shield, 
@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 
 export default function AdminLogin() {
-  const navigate = useNavigate();
   
   // Form State
   const [email, setEmail] = useState('');
@@ -29,7 +28,7 @@ export default function AdminLogin() {
   const [message, setMessage] = useState(null); // { type: 'success'|'error', text: '' }
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, checked } = e.target;
     if (name === 'email') setEmail(value);
     if (name === 'password') setPassword(value);
     if (name === 'rememberMe') setRememberMe(checked);

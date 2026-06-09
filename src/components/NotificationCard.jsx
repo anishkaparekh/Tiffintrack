@@ -1,5 +1,4 @@
-import React from 'react';
-import { Bell, Info } from 'lucide-react';
+import { Bell } from 'lucide-react';
 
 export default function NotificationCard({ text, time, isRead, isLoading, onRead }) {
   if (isLoading) {

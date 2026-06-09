@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function StatCard({ title, value, subtext, icon: Icon, isLoading, accent }) {
   if (isLoading) {
