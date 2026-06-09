@@ -28,6 +28,7 @@ import {
 
 import { Sparkles, CheckCircle } from 'lucide-react';
 import { VendorProfile, KitchenDetails, DeliveryDetails, OperatingHours } from '../../types/profile';
+import { signOutVendor } from '../../auth/mockAuth';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -69,8 +70,10 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    showToast("Demo Session Terminated. Redirecting to auth gateway...", "info");
-    setTimeout(() => navigate('/'), 2000);
+    console.log('[ProfilePage] Logging out vendor and redirecting to /vendor/login');
+    signOutVendor();
+    showToast("Session terminated. Redirecting to login...", "info");
+    setTimeout(() => navigate('/vendor/login'), 1500);
   };
 
   const handlePasswordChange = () => {

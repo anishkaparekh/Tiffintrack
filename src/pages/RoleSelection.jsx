@@ -105,7 +105,7 @@ export default function RoleSelection() {
               </div>
 
               <button 
-                onClick={() => navigate('/vendor-auth')}
+                onClick={() => navigate('/vendor/login')}
                 className="w-full py-3 px-4 rounded-xl bg-mint hover:bg-mint-hover text-white font-bold text-xs transition-colors duration-200 flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
               >
                 <span>Enter Vendor Portal</span>

@@ -14,6 +14,7 @@ import VendorCustomers from './pages/vendor/VendorCustomers';
 import VendorRevenue from './pages/vendor/VendorRevenue';
 import ProfilePage from './pages/vendor/ProfilePage';
 import VendorNotifications from './pages/vendor/VendorNotifications';
+import VendorProtectedRoute from './components/vendor/VendorProtectedRoute';
 
 // Customer Side Components
 import CustomerDashboard from './pages/CustomerDashboard';
@@ -34,18 +35,19 @@ function App() {
       <Routes>
         <Route path="/" element={<RoleSelection />} />
         <Route path="/customer-auth" element={<CustomerAuth />} />
-        <Route path="/vendor-auth" element={<VendorAuth />} />
+        <Route path="/vendor-auth" element={<Navigate to="/vendor/login" replace />} />
+        <Route path="/vendor/login" element={<VendorAuth />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         
         {/* Vendor Dashboard routes */}
-        <Route path="/vendor-dashboard" element={<VendorDashboard />} />
-        <Route path="/vendor/meals" element={<VendorMeals />} />
-        <Route path="/vendor/plans" element={<VendorPlans />} />
-        <Route path="/vendor/orders" element={<VendorOrders />} />
-        <Route path="/vendor/customers" element={<VendorCustomers />} />
-        <Route path="/vendor/revenue" element={<VendorRevenue />} />
-        <Route path="/vendor/profile" element={<ProfilePage />} />
-        <Route path="/vendor/notifications" element={<VendorNotifications />} />
+        <Route path="/vendor-dashboard" element={<VendorProtectedRoute><VendorDashboard /></VendorProtectedRoute>} />
+        <Route path="/vendor/meals" element={<VendorProtectedRoute><VendorMeals /></VendorProtectedRoute>} />
+        <Route path="/vendor/plans" element={<VendorProtectedRoute><VendorPlans /></VendorProtectedRoute>} />
+        <Route path="/vendor/orders" element={<VendorProtectedRoute><VendorOrders /></VendorProtectedRoute>} />
+        <Route path="/vendor/customers" element={<VendorProtectedRoute><VendorCustomers /></VendorProtectedRoute>} />
+        <Route path="/vendor/revenue" element={<VendorProtectedRoute><VendorRevenue /></VendorProtectedRoute>} />
+        <Route path="/vendor/profile" element={<VendorProtectedRoute><ProfilePage /></VendorProtectedRoute>} />
+        <Route path="/vendor/notifications" element={<VendorProtectedRoute><VendorNotifications /></VendorProtectedRoute>} />
 
         {/* Customer Dashboard routes */}
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />

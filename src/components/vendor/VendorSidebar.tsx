@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { signOutVendor } from '../../auth/mockAuth';
 import { 
   LayoutDashboard, Utensils, CalendarRange, ShoppingBag, 
   Users, TrendingUp, Bell, Settings, LogOut, X 
@@ -36,8 +37,9 @@ export default function VendorSidebar({ activeTab, onTabSelect, isOpen, onClose 
   
   const handleItemClick = (tab: SidebarTab | 'logout') => {
     if (tab === 'logout') {
-      alert("Demo Logout: Session cleared.");
-      navigate('/');
+      console.log('[VendorSidebar] Logging out vendor and redirecting to /vendor/login');
+      signOutVendor();
+      navigate('/vendor/login');
     } else {
       onTabSelect(tab);
       if (tab === 'dashboard') {

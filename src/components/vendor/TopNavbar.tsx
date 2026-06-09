@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, X, ArrowUpRight } from 'lucide-react';
 import { mockProfile, mockNotifications } from '../../data/vendorMockData';
+import { signOutVendor } from '../../auth/mockAuth';
 
 interface TopNavbarProps {
   onMenuToggle: () => void;
@@ -9,6 +11,7 @@ interface TopNavbarProps {
 }
 
 export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotifications }: TopNavbarProps) {
+  const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
 
@@ -130,7 +133,12 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
                 </button>
                 <div className="border-t border-[#E5E7EB] my-1" />
                 <button
-                  onClick={() => setShowProfileMenu(false)}
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    console.log('[TopNavbar] Logging out vendor and redirecting to /vendor/login');
+                    signOutVendor();
+                    navigate('/vendor/login');
+                  }}
                   className="w-full text-left px-4 py-2 text-xs font-bold text-[#DC2626] hover:bg-red-50 transition-colors"
                 >
                   Logout
