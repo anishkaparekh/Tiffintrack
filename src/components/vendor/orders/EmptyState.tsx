@@ -1,0 +1,39 @@
+import React from 'react';
+import { ClipboardList, SearchX } from 'lucide-react';
+
+interface EmptyStateProps {
+  type: 'no_orders' | 'no_search';
+  onActionClick?: () => void;
+}
+
+export default function EmptyState({ type, onActionClick }: EmptyStateProps) {
+  const isNoOrders = type === 'no_orders';
+
+  return (
+    <div className="bg-white border border-[#E5E7EB] rounded-2xl p-10 shadow-sm text-center flex flex-col items-center justify-center space-y-5 max-w-md mx-auto my-10 animate-scaleUp">
+      {/* Icon circle */}
+      <div className="w-16 h-16 rounded-2xl bg-[#F4F9F6] border border-[#E5E7EB] text-[#00B074] flex items-center justify-center shadow-inner">
+        {isNoOrders ? <ClipboardList size={28} /> : <SearchX size={28} />}
+      </div>
+
+      <div className="space-y-1.5 max-w-xs">
+        <h4 className="font-extrabold text-base text-[#1F2937] leading-snug">
+          {isNoOrders ? "No customer orders scheduled for today." : "No orders match your search criteria."}
+        </h4>
+        <p className="text-xs text-slate-400 font-semibold leading-relaxed">
+          {isNoOrders 
+            ? "When customers subscribe to your tiffin meal plans, daily scheduled orders will appear here for you to prepare." 
+            : "Try adjusting your search terms, status filters, or delivery slot selections to locate specific orders."
+          }
+        </p>
+      </div>
+
+      <button
+        onClick={onActionClick}
+        className="px-6 py-3 rounded-xl bg-[#00B074] hover:bg-[#00B074]/90 text-white font-bold text-xs shadow-md shadow-[#00B074]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+      >
+        {isNoOrders ? "Explore Subscription Plans" : "Clear Filters"}
+      </button>
+    </div>
+  );
+}
