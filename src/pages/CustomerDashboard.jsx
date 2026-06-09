@@ -23,6 +23,7 @@ import Sidebar from '../components/Sidebar';
 import StatCard from '../components/StatCard';
 import NotificationCard from '../components/NotificationCard';
 import OrderTable from '../components/OrderTable';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // Mock Vendors Database
 const initialVendors = [
@@ -204,7 +205,37 @@ const ActivitySkeleton = () => (
 );
 
 export default function CustomerDashboard() {
-  const [currentTab, setCurrentTab] = useState('dashboard');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  const [currentTab, setCurrentTab] = useState(() => {
+    if (location.pathname === '/my-subscriptions') {
+      return 'subscriptions';
+    }
+    if (location.pathname === '/track-orders') {
+      return 'track_orders';
+    }
+    if (location.pathname === '/browse-vendors') {
+      return 'vendors';
+    }
+    return 'dashboard';
+  });
+
+  // Adjust state when path changes (prevents set-state-in-effect warnings)
+  if (location.pathname !== prevPath) {
+    setPrevPath(location.pathname);
+    if (location.pathname === '/my-subscriptions') {
+      setCurrentTab('subscriptions');
+    } else if (location.pathname === '/track-orders') {
+      setCurrentTab('track_orders');
+    } else if (location.pathname === '/browse-vendors') {
+      setCurrentTab('vendors');
+    } else if (location.pathname === '/customer-dashboard') {
+      setCurrentTab('dashboard');
+    }
+  }
+
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const nextActivityId = useRef(4);
@@ -235,14 +266,25 @@ export default function CustomerDashboard() {
   const [savedVendorIds, setSavedVendorIds] = useState([1, 3, 5]);
 
   // Active Subscription State
-  const [subscription, setSubscription] = useState({
-    vendorId: 1,
-    vendorName: "Priya's Home Kitchen",
-    planName: "Monthly Veg Plan",
-    mealsRemaining: 22,
-    status: 'Active', // 'Active', 'Paused', 'None'
-    nextDelivery: 'Today, 12:45 PM',
-    price: 3200
+  const [subscription, setSubscription] = useState(() => {
+    const saved = localStorage.getItem('tiffintrack_active_subscription');
+    if (saved === 'none') return null;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed parsing subscription", e);
+      }
+    }
+    return {
+      vendorId: 1,
+      vendorName: "Priya's Home Kitchen",
+      planName: "Monthly Veg Plan",
+      mealsRemaining: 22,
+      status: 'Active', // 'Active', 'Paused', 'None'
+      nextDelivery: 'Today, 12:45 PM',
+      price: 3200
+    };
   });
 
   // Recent Activity log state
@@ -274,6 +316,30 @@ export default function CustomerDashboard() {
 
   // Tab change loading simulation
   const handleTabChange = (tab) => {
+    if (tab === 'subscriptions') {
+      navigate('/my-subscriptions');
+      return;
+    }
+    if (tab === 'track_orders') {
+      navigate('/track-orders');
+      return;
+    }
+    if (tab === 'vendors') {
+      navigate('/browse-vendors');
+      return;
+    }
+    if (tab === 'history') {
+      navigate('/order-history');
+      return;
+    }
+    if (tab === 'settings') {
+      navigate('/profile-settings');
+      return;
+    }
+    if (tab === 'notifications') {
+      navigate('/notifications');
+      return;
+    }
     setCurrentTab(tab);
     setIsLoading(true);
     setSelectedVendor(null); // Reset detail view when changing tabs
@@ -325,7 +391,7 @@ export default function CustomerDashboard() {
 
   // Complete subscription handler
   const handleSubscribe = (vendor, plan) => {
-    setSubscription({
+    const newSub = {
       vendorId: vendor.id,
       vendorName: vendor.name,
       planName: plan.name,
@@ -333,7 +399,9 @@ export default function CustomerDashboard() {
       status: 'Active',
       nextDelivery: 'Tomorrow, 12:45 PM',
       price: plan.price
-    });
+    };
+    setSubscription(newSub);
+    localStorage.setItem('tiffintrack_active_subscription', JSON.stringify(newSub));
     setEmptySubscription(false);
     logActivity(`Subscribed to ${vendor.name} - ${plan.name}`);
     setMessage({
@@ -349,11 +417,13 @@ export default function CustomerDashboard() {
     if (!subscription) return;
     const isPaused = subscription.status === 'Paused';
     const newStatus = isPaused ? 'Active' : 'Paused';
-    setSubscription(prev => ({
-      ...prev,
+    const updatedSub = {
+      ...subscription,
       status: newStatus,
       nextDelivery: newStatus === 'Active' ? 'Today, 12:45 PM' : 'Suspended (Paused)'
-    }));
+    };
+    setSubscription(updatedSub);
+    localStorage.setItem('tiffintrack_active_subscription', JSON.stringify(updatedSub));
     logActivity(`${isPaused ? 'Resumed' : 'Paused'} subscription at ${subscription.vendorName}`);
     setMessage({
       type: 'success',
@@ -366,6 +436,7 @@ export default function CustomerDashboard() {
     if (!subscription) return;
     logActivity(`Cancelled subscription at ${subscription.vendorName}`);
     setSubscription(null);
+    localStorage.setItem('tiffintrack_active_subscription', 'none');
     setMessage({
       type: 'success',
       text: "Subscription cancelled successfully. You will not be billed further."
@@ -765,19 +836,13 @@ export default function CustomerDashboard() {
                             {/* Action Buttons */}
                             <div className="flex space-x-2 mt-4 pt-2 border-t border-slate-100">
                               <button 
-                                onClick={() => {
-                                  setSelectedVendor(vendor);
-                                  handleTabChange('vendors');
-                                }}
+                                onClick={() => navigate(`/vendor/${vendor.id}`)}
                                 className="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-[10px] font-bold rounded-lg transition-colors cursor-pointer"
                               >
                                 View Vendor
                               </button>
                               <button 
-                                onClick={() => {
-                                  setSelectedVendor(vendor);
-                                  handleTabChange('vendors');
-                                }}
+                                onClick={() => navigate(`/vendor/${vendor.id}/plans`)}
                                 className="flex-1 py-2 bg-mint hover:bg-mint-hover text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer shadow-sm shadow-mint/5"
                               >
                                 View Plans
@@ -1089,7 +1154,7 @@ export default function CustomerDashboard() {
                                   <span className="font-extrabold text-primary-text">₹{vendor.startingPrice}/meal</span>
                                 </div>
                                 <button
-                                  onClick={() => setSelectedVendor(vendor)}
+                                  onClick={() => navigate(`/vendor/${vendor.id}`)}
                                   className="px-3.5 py-2 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
                                 >
                                   View Details & Menu
