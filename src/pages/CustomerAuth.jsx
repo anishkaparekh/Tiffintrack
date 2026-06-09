@@ -175,6 +175,9 @@ export default function CustomerAuth() {
         type: 'success',
         text: 'Login successful! Redirecting to dashboard...'
       });
+      setTimeout(() => {
+        navigate('/customer-dashboard');
+      }, 1000);
     }, 1500);
   };
 
