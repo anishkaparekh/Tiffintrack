@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Shield, 
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminLogin() {
+  const navigate = useNavigate();
   
   // Form State
   const [email, setEmail] = useState('');
@@ -71,6 +72,9 @@ export default function AdminLogin() {
         type: 'success',
         text: 'Access granted. Initializing administrative dashboard...'
       });
+      setTimeout(() => {
+        navigate('/admin-dashboard');
+      }, 800);
     }, 1500);
   };
 

@@ -1,9 +1,9 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import RoleSelection from './pages/RoleSelection';
 import CustomerAuth from './pages/CustomerAuth';
 import VendorAuth from './pages/VendorAuth';
 import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Vendor Side Components
 import VendorDashboard from './pages/vendor/VendorDashboard';
@@ -38,6 +38,16 @@ function App() {
         <Route path="/vendor-auth" element={<Navigate to="/vendor/login" replace />} />
         <Route path="/vendor/login" element={<VendorAuth />} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        
+        {/* Admin Dashboard routes */}
+        <Route path="/admin-dashboard" element={<AdminDashboard defaultTab="dashboard" />} />
+        <Route path="/admin/vendor-verification" element={<AdminDashboard defaultTab="verification" />} />
+        <Route path="/admin/reports" element={<AdminDashboard defaultTab="reports" />} />
+        <Route path="/admin/vendor-monitoring" element={<AdminDashboard defaultTab="vendor-monitoring" />} />
+        <Route path="/admin/customer-monitoring" element={<AdminDashboard defaultTab="customer-monitoring" />} />
+        <Route path="/admin/analytics" element={<AdminDashboard defaultTab="analytics" />} />
+        <Route path="/admin/settings" element={<AdminDashboard defaultTab="settings" />} />
+        <Route path="/admin/notifications" element={<AdminDashboard defaultTab="notifications" />} />
         
         {/* Vendor Dashboard routes */}
         <Route path="/vendor-dashboard" element={<VendorProtectedRoute><VendorDashboard /></VendorProtectedRoute>} />

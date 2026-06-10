@@ -39,6 +39,7 @@ const initialVendors = [
     mealType: "Veg",
     description: "Traditional Gujarati daily meal prep with low oil and premium organic spices. Healthy and fresh daily.",
     categories: ["Gujarati Meals", "Family Plans"],
+    status: "Approved",
     plans: [
       { id: "p1_1", name: "Weekly Veg Subscription", price: 800, duration: "7 Days", details: "1 Lunch daily: 3 Roti, Dal, Rice, Seasonal Sabji, Buttermilk" },
       { id: "p1_2", name: "Monthly Veg Plan", price: 3200, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: 3 Roti, Dal, Rice, Seasonal Sabji, Buttermilk" }
@@ -56,6 +57,7 @@ const initialVendors = [
     mealType: "Veg",
     description: "Dietitian-curated high-protein tiffins, multi-grain rotis, salad bowls, and low-carb daily dinners.",
     categories: ["Healthy Diet Meals", "Student Budget Meals"],
+    status: "Approved",
     plans: [
       { id: "p2_1", name: "Weekly Fitness Diet Plan", price: 1000, duration: "7 Days", details: "1 Protein Lunch daily: Brown Rice/Quinoa, Grilled Paneer, Sprout Salad, Dal" },
       { id: "p2_2", name: "Monthly Healthy Diet Sub", price: 3800, duration: "30 Days", details: "1 Protein Lunch & 1 Diet Dinner daily: Healthy salads, fiber rotis, high protein sabjis" }
@@ -73,6 +75,7 @@ const initialVendors = [
     mealType: "Veg",
     description: "Authentic Kathiyawadi cuisine. Famous for daily fresh Ringan No Oro, Lasaniya Bateta, and Bajra Rotla.",
     categories: ["Gujarati Meals", "Student Budget Meals"],
+    status: "Approved",
     plans: [
       { id: "p3_1", name: "Weekly Kathiyawadi Thali", price: 850, duration: "7 Days", details: "1 Lunch daily: 2 Bajra Rotla/3 Roti, Kathiyawadi Sabji, Kadhi, Khichdi, Garlic Chutney" },
       { id: "p3_2", name: "Monthly Kathiyawadi Regular", price: 3300, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Regular rotis, special subjis, kadhi-khichdi, buttermilk" }
@@ -90,6 +93,7 @@ const initialVendors = [
     mealType: "Both",
     description: "Ghar jaisa Punjabi khana. Butter-soft tandoori rotis, aromatic rajma-chawal, paneer subjis, and rich chicken curry.",
     categories: ["Punjabi Meals", "Family Plans"],
+    status: "Approved",
     plans: [
       { id: "p4_1", name: "Weekly Punjabi Veg Plan", price: 900, duration: "7 Days", details: "1 Veg Lunch daily: 3 Butter Phulkas, Special Paneer/Aloo, Dal Fry, Jeera Rice, Curd" },
       { id: "p4_2", name: "Weekly Punjabi Non-Veg Plan", price: 1200, duration: "7 Days", details: "1 Non-Veg Lunch daily: Chicken Curry / Egg Curry, 3 Rotis, Dal, Rice, Salad" },
@@ -108,6 +112,7 @@ const initialVendors = [
     mealType: "Veg",
     description: "100% Satvik preparations made strictly without onion, garlic, potatoes, or root vegetables. Extremely hygienic.",
     categories: ["Jain Meals", "Healthy Diet Meals"],
+    status: "Approved",
     plans: [
       { id: "p5_1", name: "Weekly Satvik Plan", price: 750, duration: "7 Days", details: "1 Satvik Lunch: Ghee Roti, Satvik Dal, Rice, Gourd/Cabbage Sabji, Jain Khichdi" },
       { id: "p5_2", name: "Monthly Satvik Regular", price: 2900, duration: "30 Days", details: "1 Satvik Lunch & 1 Dinner daily: Strictly audited Jain ingredients, fresh seasonal vegetables" }
@@ -125,6 +130,7 @@ const initialVendors = [
     mealType: "Veg",
     description: "Traditional Tamil and Keralite home dinners: soft idlis, lemon rice, healthy sambar, and home-cooked rasam.",
     categories: ["South Indian Meals", "Student Budget Meals"],
+    status: "Approved",
     plans: [
       { id: "p6_1", name: "Weekly South Special", price: 700, duration: "7 Days", details: "1 Meal daily: Variety Rice (Lemon/Tamarind/Tomato), Rasam Vada, Sambar Rice, Coconut Chutney" },
       { id: "p6_2", name: "Monthly Rice & Sambar", price: 2600, duration: "30 Days", details: "1 Daily Lunch: Organic Rice, Authentic sambar, 2 dry vegetable poriyals, appalam" }
@@ -142,6 +148,7 @@ const initialVendors = [
     mealType: "Veg",
     description: "Highly affordable, homestyle food tailored for university students. Budget-friendly, clean, and filling.",
     categories: ["Student Budget Meals"],
+    status: "Pending Review",
     plans: [
       { id: "p7_1", name: "Weekly Pocket-Saver", price: 600, duration: "7 Days", details: "1 Lunch daily: 4 Roti, Dal, Veg Sabji, Rice (Simple, wholesome, budget ingredients)" },
       { id: "p7_2", name: "Monthly Student Special", price: 2200, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Balanced nutrition, low-spiced daily meal packages" }
@@ -159,6 +166,7 @@ const initialVendors = [
     mealType: "Veg",
     description: "Hand-rolled soft chapatis, spicy garlic potatoes, Sev Tameta, and traditional Gujarati sweet dal subscriptions.",
     categories: ["Gujarati Meals", "Family Plans"],
+    status: "Suspended",
     plans: [
       { id: "p8_1", name: "Weekly Gujarati Home Meal", price: 820, duration: "7 Days", details: "1 Lunch daily: 4 Rotli, Gujarati Dal, Rice, Dry Sabji, papad, salad" },
       { id: "p8_2", name: "Monthly Gujarati Parivar Sub", price: 3100, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Authentic Kathiyawadi & Gujarati home-cooked meals" }
@@ -464,6 +472,9 @@ export default function CustomerDashboard() {
 
   // Marketplace filter calculations
   const filteredVendors = emptyVendors ? [] : initialVendors.filter(v => {
+    // Only approved vendors are visible to customers
+    if (v.status !== "Approved") return false;
+
     const matchesSearch = searchText ? (
       v.name.toLowerCase().includes(searchText.toLowerCase()) ||
       v.area.toLowerCase().includes(searchText.toLowerCase()) ||

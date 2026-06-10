@@ -12,8 +12,22 @@ import {
   ChevronDown, 
   ChevronUp, 
   Inbox,
-  Sparkles
+  Sparkles,
+  AlertTriangle
 } from 'lucide-react';
+
+// Verification status mapping (Only Approved vendors are customer-visible)
+const VENDOR_STATUSES = {
+  1: "Approved",
+  2: "Approved",
+  3: "Approved",
+  4: "Approved",
+  5: "Approved",
+  6: "Approved",
+  7: "Pending Review",
+  8: "Suspended"
+};
+
 
 // Unified mock chef database
 const vendorsDb = {
@@ -141,6 +155,7 @@ export default function VendorPlans() {
 
   // Resolve current chef summary
   const chefId = parseInt(id) || 1;
+  const chefStatus = VENDOR_STATUSES[chefId] || "Approved";
   const chef = vendorsDb[chefId] || vendorsDb[1];
 
   // FAQ Toggle State
@@ -170,6 +185,38 @@ export default function VendorPlans() {
       return () => clearTimeout(timer);
     }
   }, [isLoading]);
+
+  if (chefStatus !== "Approved") {
+    return (
+      <div className="min-h-screen bg-snow flex flex-col justify-between font-sans">
+        <header className="bg-white border-b border-slate-200/60 sticky top-0 z-35 font-semibold">
+          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <button onClick={() => navigate('/browse-vendors')} className="flex items-center space-x-2 text-slate-600 hover:text-primary-text font-bold text-xs cursor-pointer border-0 bg-transparent">
+              <ArrowLeft size={16} />
+              <span>Back to Marketplace</span>
+            </button>
+          </div>
+        </header>
+        <div className="flex-grow flex flex-col items-center justify-center p-6 text-center space-y-4 max-w-md mx-auto">
+          <div className="w-16 h-16 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500">
+            <AlertTriangle size={32} />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-black text-primary-text font-bold">Plans Locked</h1>
+            <p className="text-xs text-secondary-text leading-relaxed">
+              This vendor kitchen is currently undergoing platform verification (FSSAI/hygiene audit) or is temporarily suspended. Subscription plans are currently locked.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/browse-vendors')}
+            className="px-5 py-2.5 bg-mint hover:bg-mint-hover text-white text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm font-bold"
+          >
+            Browse Other Home Chefs
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
