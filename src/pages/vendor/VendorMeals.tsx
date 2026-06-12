@@ -18,7 +18,8 @@ import { MealItem, MealAvailability, MealCategory } from '../../types/meals';
 import { Sparkles, Eye, Plus, ShieldAlert, Layers } from 'lucide-react';
 
 export default function VendorMeals() {
-  const [meals, setMeals] = useState<MealItem[]>(mockMealsList);
+  const [meals, setMeals] = useState<MealItem[]>([]);
+  const [vendorId, setVendorId] = useState('');
   
   // Filtering states
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,57 +34,204 @@ export default function VendorMeals() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMeal, setEditingMeal] = useState<MealItem | null>(null);
 
+  const fetchMeals = async (vId: string) => {
+    if (!vId) return;
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/v1/meals/vendor/${vId}`);
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mappedMeals: MealItem[] = resData.data.map((m: any) => ({
+            id: m._id,
+            name: m.mealName,
+            category: m.mealType === 'Jain' ? 'Jain Special' : 'Traditional',
+            description: m.description,
+            price: m.price,
+            weeklyOrders: 0,
+            status: m.availability ? 'Available' : 'Unavailable',
+            type: m.mealType === 'Jain' ? 'Jain' : 'Veg',
+            imageUrl: m.imageUrl
+          }));
+          setMeals(mappedMeals);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_vendor_user');
+    let vId = '';
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        vId = u.id || u._id || '';
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (!vId) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          vId = payload.id || '';
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    setVendorId(vId);
+    if (vId) {
+      fetchMeals(vId);
+    }
+  }, []);
+
   // Handle new meal submit or edit save
-  const handleSaveMeal = (mealData: Omit<MealItem, 'id' | 'weeklyOrders'>) => {
-    if (editingMeal) {
-      // Edit mode
-      setMeals(prev => 
-        prev.map(m => m.id === editingMeal.id ? { ...m, ...mealData } : m)
-      );
-      alert(`Success: "${mealData.name}" has been updated.`);
-      setEditingMeal(null);
-    } else {
-      // Add mode
-      const newMeal: MealItem = {
-        id: `M${Date.now()}`,
-        name: mealData.name,
-        category: mealData.category as MealCategory,
+  const handleSaveMeal = async (mealData: Omit<MealItem, 'id' | 'weeklyOrders'>) => {
+    try {
+      const token = localStorage.getItem('token');
+      const payload = {
+        mealName: mealData.name,
         description: mealData.description,
         price: mealData.price,
-        weeklyOrders: 0,
-        status: mealData.status as MealAvailability,
-        type: mealData.type,
+        mealType: mealData.type === 'Jain' || mealData.category === 'Jain Special' ? 'Jain' : 'Veg',
+        availability: mealData.status === 'Available'
       };
-      setMeals([newMeal, ...meals]);
-      alert(`Success: "${newMeal.name}" has been listed on TiffinTrack.`);
+
+      if (editingMeal) {
+        // Edit mode
+        const response = await fetch(`/api/v1/meals/${editingMeal.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        const resData = await response.json();
+        if (!response.ok || !resData.success) {
+          alert(`Error: ${resData.message || 'Failed to update meal.'}`);
+          return;
+        }
+        alert(`Success: "${mealData.name}" has been updated.`);
+        setEditingMeal(null);
+      } else {
+        // Add mode
+        const response = await fetch('/api/v1/meals', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        const resData = await response.json();
+        if (!response.ok || !resData.success) {
+          alert(`Error: ${resData.message || 'Failed to list meal.'}`);
+          return;
+        }
+        alert(`Success: "${mealData.name}" has been listed on TiffinTrack.`);
+      }
+      if (vendorId) {
+        fetchMeals(vendorId);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server. Please try again.");
     }
   };
 
   // Dropdown operations
-  const handleStatusChange = (id: string, newStatus: MealAvailability) => {
-    setMeals(prev => 
-      prev.map(m => m.id === id ? { ...m, status: newStatus } : m)
-    );
+  const handleStatusChange = async (id: string, newStatus: MealAvailability) => {
     const mealName = meals.find(m => m.id === id)?.name;
-    alert(`Success: "${mealName}" availability marked as ${newStatus}.`);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/meals/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          availability: newStatus === 'Available'
+        })
+      });
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        alert(`Error: ${resData.message || 'Failed to update status.'}`);
+        return;
+      }
+      alert(`Success: "${mealName}" availability marked as ${newStatus}.`);
+      if (vendorId) {
+        fetchMeals(vendorId);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server. Please try again.");
+    }
   };
 
-  const handleDuplicate = (meal: MealItem) => {
-    const duplicated: MealItem = {
-      ...meal,
-      id: `M${Date.now()}`,
-      name: `${meal.name} (Copy)`,
-      weeklyOrders: 0
-    };
-    setMeals([duplicated, ...meals]);
-    alert(`Success: Duplicated "${meal.name}" as "${duplicated.name}".`);
+  const handleDuplicate = async (meal: MealItem) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/v1/meals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          mealName: `${meal.name} (Copy)`,
+          description: meal.description,
+          price: meal.price,
+          mealType: meal.type,
+          availability: meal.status === 'Available'
+        })
+      });
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        alert(`Error: ${resData.message || 'Failed to duplicate meal.'}`);
+        return;
+      }
+      alert(`Success: Duplicated "${meal.name}" as "${meal.name} (Copy)".`);
+      if (vendorId) {
+        fetchMeals(vendorId);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server. Please try again.");
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     const mealName = meals.find(m => m.id === id)?.name;
     if (confirm(`Are you sure you want to delete "${mealName}"?`)) {
-      setMeals(prev => prev.filter(m => m.id !== id));
-      alert(`Deleted: "${mealName}" has been removed.`);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/v1/meals/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const resData = await response.json();
+        if (!response.ok || !resData.success) {
+          alert(`Error: ${resData.message || 'Failed to delete meal.'}`);
+          return;
+        }
+        alert(`Deleted: "${mealName}" has been removed.`);
+        if (vendorId) {
+          fetchMeals(vendorId);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error connecting to server. Please try again.");
+      }
     }
   };
 

@@ -26,7 +26,9 @@ export default function Sidebar({ currentTab, onTabChange, isOpen, onClose }) {
   ];
 
   const handleLogout = () => {
-    // Navigate back to Role Selection (or customer login)
+    // Clear token and customer session details on logout
+    localStorage.removeItem('token');
+    localStorage.removeItem('customer_user');
     navigate('/');
   };
 

@@ -58,16 +58,45 @@ export default function AdminLogin() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsLoading(true);
     setMessage(null);
 
-    // Simulate Admin Authentication Verification
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const resData = await response.json();
       setIsLoading(false);
+
+      if (!response.ok || !resData.success) {
+        setMessage({
+          type: 'error',
+          text: resData.message || 'Invalid email or password.'
+        });
+        return;
+      }
+
+      if (resData.data.user.role !== 'admin') {
+        setMessage({
+          type: 'error',
+          text: 'Access denied. Admin privileges required.'
+        });
+        return;
+      }
+
+      // Store JWT token and user info
+      localStorage.setItem('token', resData.data.token);
+      localStorage.setItem('admin_user', JSON.stringify(resData.data.user));
+
       setMessage({
         type: 'success',
         text: 'Access granted. Initializing administrative dashboard...'
@@ -75,7 +104,13 @@ export default function AdminLogin() {
       setTimeout(() => {
         navigate('/admin-dashboard');
       }, 800);
-    }, 1500);
+    } catch (err) {
+      setIsLoading(false);
+      setMessage({
+        type: 'error',
+        text: 'Connection error. Please ensure the backend is running.'
+      });
+    }
   };
 
   return (

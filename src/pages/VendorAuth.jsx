@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInVendor } from '../auth/mockAuth';
 import { 
   ArrowLeft, 
   Eye, 
@@ -171,7 +170,7 @@ export default function VendorAuth() {
   };
 
   // Submit Sign In Form
-  const handleSignInSubmit = (e) => {
+  const handleSignInSubmit = async (e) => {
     e.preventDefault();
     if (!validateSignIn()) return;
     
@@ -179,39 +178,110 @@ export default function VendorAuth() {
     setMessage(null);
     console.log(`[VendorAuth] Form submitted. Email: ${signInData.email}`);
     
-    setTimeout(() => {
-      const result = signInVendor(signInData.email, signInData.password);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: signInData.email,
+          password: signInData.password,
+        }),
+      });
+
+      const resData = await response.json();
       setIsLoading(false);
-      
-      if (result.success) {
-        console.log('[VendorAuth] Login success. Redirecting to /vendor-dashboard');
-        setMessage({
-          type: 'success',
-          text: 'Vendor login successful! Redirecting to merchant dashboard...'
-        });
-        setTimeout(() => {
-          navigate('/vendor-dashboard');
-        }, 800);
-      } else {
-        console.error('[VendorAuth] Login failed:', result.error);
+
+      if (!response.ok || !resData.success) {
+        console.error('[VendorAuth] Login failed:', resData.message);
         setMessage({
           type: 'error',
-          text: result.error || 'Invalid email or password.'
+          text: resData.message || 'Invalid email or password.'
         });
+        return;
       }
-    }, 1500);
+
+      if (resData.data.user.role !== 'vendor') {
+        console.error('[VendorAuth] Access denied: User role is not vendor');
+        setMessage({
+          type: 'error',
+          text: 'Access denied. Vendor account required.'
+        });
+        return;
+      }
+
+      // Store JWT token and vendor details in localStorage
+      localStorage.setItem('token', resData.data.token);
+      localStorage.setItem('tiffintrack_vendor_user', JSON.stringify({
+        id: resData.data.user.id,
+        name: resData.data.user.name,
+        email: resData.data.user.email,
+        role: resData.data.user.role,
+        isAuthenticated: true,
+        businessName: resData.data.user.businessName,
+        kitchenAddress: resData.data.user.kitchenAddress,
+        city: resData.data.user.city,
+        phone: resData.data.user.phone,
+        description: resData.data.user.description
+      }));
+
+      console.log('[VendorAuth] Login success. Redirecting to /vendor-dashboard');
+      setMessage({
+        type: 'success',
+        text: 'Vendor login successful! Redirecting to merchant dashboard...'
+      });
+      setTimeout(() => {
+        navigate('/vendor-dashboard');
+      }, 800);
+    } catch (err) {
+      setIsLoading(false);
+      setMessage({
+        type: 'error',
+        text: 'Connection error. Please ensure the backend is running.'
+      });
+    }
   };
 
   // Submit Sign Up Form
-  const handleSignUpSubmit = (e) => {
+  const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     if (!validateSignUp()) return;
     
     setIsLoading(true);
     setMessage(null);
     
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/v1/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: signUpData.ownerName,
+          email: signUpData.email,
+          password: signUpData.password,
+          phone: signUpData.phone,
+          businessName: signUpData.businessName,
+          kitchenAddress: signUpData.kitchenAddress,
+          city: signUpData.city,
+          mealsPerDay: signUpData.mealsPerDay,
+          description: signUpData.description,
+          role: 'vendor',
+        }),
+      });
+
+      const resData = await response.json();
       setIsLoading(false);
+
+      if (!response.ok || !resData.success) {
+        setMessage({
+          type: 'error',
+          text: resData.message || 'Registration failed. Please try again.'
+        });
+        return;
+      }
+
       setMessage({
         type: 'success',
         text: 'Vendor account created successfully! Redirecting to setup portal...'
@@ -233,7 +303,13 @@ export default function VendorAuth() {
           termsAccepted: false
         });
       }, 2000);
-    }, 1500);
+    } catch (err) {
+      setIsLoading(false);
+      setMessage({
+        type: 'error',
+        text: 'Connection error. Please ensure the backend is running.'
+      });
+    }
   };
 
   return (
@@ -486,45 +562,6 @@ export default function VendorAuth() {
                   </button>
                 </form>
 
-                {/* Demo Credentials Helper Box (Requirement 10) */}
-                <div className="mt-6 p-4 bg-lemon/10 border border-slate-200/60 rounded-2xl space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold text-[#1F2937] uppercase tracking-wider">
-                      Demo Vendor Credentials
-                    </span>
-                    <span className="bg-mint/10 text-mint text-[9px] font-bold px-2 py-0.5 rounded-full border border-mint/20">
-                      Sandbox Helper
-                    </span>
-                  </div>
-                  
-                  <div className="text-[11px] font-semibold text-slate-500 space-y-1">
-                    <p className="flex justify-between">
-                      <span>Email:</span>
-                      <span className="font-bold text-[#1F2937]">vendor@tiffintrack.com</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>Password:</span>
-                      <span className="font-bold text-[#1F2937]">Vendor@123</span>
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSignInData({
-                        email: 'vendor@tiffintrack.com',
-                        password: 'Vendor@123',
-                        rememberMe: true
-                      });
-                      setErrors({});
-                      setMessage(null);
-                      console.log('[VendorAuth] Populated sign-in form with demo vendor credentials.');
-                    }}
-                    className="w-full py-2 bg-white hover:bg-snow border border-slate-200/80 rounded-xl text-[10px] font-bold text-[#1F2937] transition-all cursor-pointer shadow-xs"
-                  >
-                    Fill Demo Credentials
-                  </button>
-                </div>
               </>
             )}
 

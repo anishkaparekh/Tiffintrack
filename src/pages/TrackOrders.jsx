@@ -177,9 +177,10 @@ export default function TrackOrders() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Developer Sandbox overrides
+  const [order, setOrder] = useState(null);
   const [forceLoadingState, setForceLoadingState] = useState(false);
   const [simulatedEmptyState, setSimulatedEmptyState] = useState(false);
-  const [timelineStep, setTimelineStep] = useState("OutForDelivery"); // Confirmed | Prepared | Packed | OutForDelivery | Delivered
+  const [timelineStep, setTimelineStep] = useState("Confirmed"); // Confirmed | Prepared | Packed | OutForDelivery | Delivered
   const [isLoading, setIsLoading] = useState(true);
 
   // Modals dialog status
@@ -198,13 +199,57 @@ export default function TrackOrders() {
     return null;
   })();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const fetchCustomerOrders = async (customerId) => {
+    if (simulatedEmptyState) {
+      setOrder(null);
+      return;
+    }
+    try {
+      const response = await fetch(`/api/v1/orders/customer/${customerId}`);
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          // Find the latest non-cancelled order
+          const latestOrder = resData.data.find(o => o.status !== 'Cancelled') || resData.data[0];
+          setOrder(latestOrder);
+          
+          const statusMap = {
+            'Pending': 'Confirmed',
+            'Preparing': 'Prepared',
+            'Out For Delivery': 'OutForDelivery',
+            'Delivered': 'Delivered',
+            'Cancelled': 'Confirmed'
+          };
+          setTimelineStep(statusMap[latestOrder.status] || 'Confirmed');
+        } else {
+          setOrder(null);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch customer orders:", err);
+    } finally {
       setIsLoading(false);
-    }, 600);
+    }
+  };
 
-    return () => clearTimeout(timer);
-  }, []);
+  useEffect(() => {
+    const userStr = localStorage.getItem('customer_user');
+    let customerId = "";
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        customerId = u._id || u.id || "";
+      } catch (e) {
+        console.error("Failed to parse customer_user", e);
+      }
+    }
+
+    if (customerId) {
+      fetchCustomerOrders(customerId);
+    } else {
+      setIsLoading(false);
+    }
+  }, [simulatedEmptyState, timelineStep]);
 
   const defaultMockSub = {
     vendorName: "Priya's Home Kitchen",
@@ -426,18 +471,18 @@ export default function TrackOrders() {
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card space-y-4 hover:border-mint/20 transition-all">
                   <div className="border-b border-slate-100 pb-3">
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Current Kitchen Meal</span>
-                    <h3 className="text-sm font-black text-primary-text mt-1">{currentSub.vendorName}</h3>
+                    <h3 className="text-sm font-black text-primary-text mt-1">{order?.vendorId?.businessName || order?.vendorId?.name || currentSub.vendorName}</h3>
                   </div>
 
                   <div className="space-y-3.5 text-xs font-semibold">
                     <div>
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Plan Package</span>
-                      <span className="text-slate-700 block mt-0.5">{currentSub.planName}</span>
+                      <span className="text-slate-700 block mt-0.5">{order?.subscriptionId?.planName || currentSub.planName}</span>
                     </div>
                     <div>
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Today's Menu Details</span>
                       <span className="text-slate-650 font-medium leading-relaxed block mt-1 p-3 bg-snow rounded-xl border border-slate-100">
-                        🍲 3 Soft Whole Wheat Phulkas, Authentic Sweet Dal, Steamed Rice, Seasonal Bhindi Masala, Curated Organic Spiced Buttermilk (Chhas).
+                        {order?.mealId?.mealName ? `🍱 Active Meal: ${order.mealId.mealName}. ${order.mealId.description || ''}` : '🍲 3 Soft Whole Wheat Phulkas, Authentic Sweet Dal, Steamed Rice, Seasonal Bhindi Masala, Curated Organic Spiced Buttermilk (Chhas).'}
                       </span>
                     </div>
                   </div>

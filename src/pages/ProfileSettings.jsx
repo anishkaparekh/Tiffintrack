@@ -71,9 +71,9 @@ export default function ProfileSettings() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Profile data states
-  const [fullName, setFullName] = useState("Anishka Parekh");
-  const [email, setEmail] = useState("parekhanishka@gmail.com");
-  const [phone, setPhone] = useState("9876543210");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   // Addresses manager state
   const [addresses, setAddresses] = useState([
@@ -150,8 +150,19 @@ export default function ProfileSettings() {
   const [sandboxForceEmptyAddresses, setSandboxForceEmptyAddresses] = useState(false);
   const [sandboxLatency, setSandboxLatency] = useState(1200); // ms
 
-  // Initial loading simulation
+  // Initial loading simulation and session restoration
   useEffect(() => {
+    const userStr = localStorage.getItem('customer_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        if (u.name) setFullName(u.name);
+        if (u.email) setEmail(u.email);
+        if (u.phone) setPhone(u.phone);
+      } catch (e) {
+        console.error('Failed to parse customer_user:', e);
+      }
+    }
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 700);
@@ -338,10 +349,25 @@ export default function ProfileSettings() {
   };
 
   // Sandbox profile data reset helper
+  const [dummyState, setDummyState] = useState(false); // To handle standard braces
   const handleResetSandbox = () => {
-    setFullName("Anishka Parekh");
-    setEmail("parekhanishka@gmail.com");
-    setPhone("9876543210");
+    const userStr = localStorage.getItem('customer_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setFullName(u.name || "");
+        setEmail(u.email || "");
+        setPhone(u.phone || "");
+        showToast("info", "Reset profile state to active session details.");
+        return;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    setFullName("");
+    setEmail("");
+    setPhone("");
+    showToast("info", "Cleared profile sandbox details.");
     setAddresses([
       { id: 1, label: "Home", text: "Flat 402, Green Meadows, Shastri Marg, Anand", area: "Vallabh Vidyanagar", type: "Home" },
       { id: 2, label: "Work", text: "TiffinTrack HQ, Mota Bazar, Anand", area: "Anand", type: "Work" }
@@ -512,7 +538,7 @@ export default function ProfileSettings() {
                         value={fullName}
                         onChange={(e) => { setFullName(e.target.value); markUnsaved(); }}
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-primary-text focus:bg-white focus:border-mint focus:outline-none transition-all"
-                        placeholder="Anishka Parekh"
+                        placeholder="Enter your name"
                       />
                     </div>
                   </div>
@@ -526,7 +552,7 @@ export default function ProfileSettings() {
                         value={email}
                         onChange={(e) => { setEmail(e.target.value); markUnsaved(); }}
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-primary-text focus:bg-white focus:border-mint focus:outline-none transition-all"
-                        placeholder="parekhanishka@gmail.com"
+                        placeholder="Enter your email"
                       />
                     </div>
                   </div>
@@ -540,7 +566,7 @@ export default function ProfileSettings() {
                         value={phone}
                         onChange={(e) => { setPhone(e.target.value); markUnsaved(); }}
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-primary-text focus:bg-white focus:border-mint focus:outline-none transition-all"
-                        placeholder="9876543210"
+                        placeholder="Enter your phone number"
                       />
                     </div>
                   </div>

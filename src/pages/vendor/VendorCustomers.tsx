@@ -21,7 +21,8 @@ import { CustomerItem, SubscriptionStatus } from '../../types/customers';
 import { Sparkles, BarChart, CheckCircle } from 'lucide-react';
 
 export default function VendorCustomers() {
-  const [customers, setCustomers] = useState<CustomerItem[]>(mockCustomersList);
+  const [customers, setCustomers] = useState<CustomerItem[]>([]);
+  const [vendorId, setVendorId] = useState<string>('');
   
   // Filtering and sorting states
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +33,7 @@ export default function VendorCustomers() {
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
 
   // Simulation states
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEmpty, setIsEmpty] = useState(false);
 
   // Drawer and Toast states
@@ -45,33 +46,110 @@ export default function VendorCustomers() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const handleSubscriptionAction = (id: string, actionType: 'pause' | 'resume' | 'reminder' | 'export') => {
+  const fetchVendorSubscriptions = async (vId: string) => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/subscriptions/vendor/${vId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped = resData.data.map((sub: any) => {
+            const customer = sub.customerId || {};
+            const plan = sub.planId || {};
+            const status: SubscriptionStatus = sub.status === 'Cancelled' ? 'Expired' : (sub.status as SubscriptionStatus);
+
+            return {
+              id: sub._id,
+              name: customer.name || 'Unknown Customer',
+              phone: customer.phone || 'N/A',
+              email: customer.email || 'N/A',
+              currentPlan: sub.planName || plan.planName || 'Tiffin Plan',
+              joinDate: new Date(sub.createdAt || sub.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+              status: status,
+              lifetimeValue: plan.price || sub.price || 3000,
+              lastOrderDate: new Date(sub.updatedAt || sub.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+              deliveryAddress: sub.deliveryAddress || 'No address specified',
+              mealsPerWeek: plan.duration === 'weekly' ? '6 meals/week' : '26 meals/week',
+              totalOrders: plan.duration === 'weekly' ? 6 : 26,
+              favoriteMeal: 'Standard Veg Meal',
+              avgMonthlySpend: plan.price || sub.price || 3000,
+              activityFeed: [
+                { id: `act-1-${sub._id}`, text: 'Subscribed to plan', timestamp: 'Initial checkout' }
+              ],
+              isNew: true
+            };
+          });
+          setCustomers(mapped);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch vendor subscriptions:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_vendor_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        const parsedId = u.id || u._id || '';
+        setVendorId(parsedId);
+        if (parsedId) {
+          fetchVendorSubscriptions(parsedId);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (e) {
+        console.error("Failed to parse vendor user:", e);
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleSubscriptionAction = async (id: string, actionType: 'pause' | 'resume' | 'reminder' | 'export') => {
     const customerName = customers.find(c => c.id === id)?.name;
     
-    if (actionType === 'pause') {
-      setCustomers(prev => 
-        prev.map(c => c.id === id ? { 
-          ...c, 
-          status: 'Paused',
-          activityFeed: [
-            { id: `act-${Date.now()}`, text: 'Paused Subscription', timestamp: 'Just now' },
-            ...c.activityFeed
-          ]
-        } : c)
-      );
-      showToast(`Subscription paused for ${customerName}.`, 'success');
-    } else if (actionType === 'resume') {
-      setCustomers(prev => 
-        prev.map(c => c.id === id ? { 
-          ...c, 
-          status: 'Active',
-          activityFeed: [
-            { id: `act-${Date.now()}`, text: 'Resumed Subscription', timestamp: 'Just now' },
-            ...c.activityFeed
-          ]
-        } : c)
-      );
-      showToast(`Subscription active for ${customerName}.`, 'success');
+    if (actionType === 'pause' || actionType === 'resume') {
+      const newStatus = actionType === 'pause' ? 'Paused' : 'Active';
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/v1/subscriptions/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (response.ok) {
+          const resData = await response.json();
+          if (resData.success) {
+            setCustomers(prev => 
+              prev.map(c => c.id === id ? { 
+                ...c, 
+                status: newStatus as SubscriptionStatus,
+                activityFeed: [
+                  { id: `act-${Date.now()}`, text: `${actionType === 'pause' ? 'Paused' : 'Resumed'} Subscription`, timestamp: 'Just now' },
+                  ...c.activityFeed
+                ]
+              } : c)
+            );
+            showToast(`Subscription ${actionType === 'pause' ? 'paused' : 'resumed'} for ${customerName}.`, 'success');
+          }
+        }
+      } catch (err) {
+        console.error("Failed to update subscription status:", err);
+        showToast("Error updating subscription status.", "error");
+      }
     } else if (actionType === 'reminder') {
       showToast(`Renewal payment reminder notification dispatched to ${customerName}.`, 'info');
     } else if (actionType === 'export') {

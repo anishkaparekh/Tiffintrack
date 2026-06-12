@@ -44,12 +44,9 @@ const SkeletonVerificationRow = () => (
 
 
 // Dynamic mock databases
-const initialApplications = [
-  { id: "APP-401", name: "Royal Biryani Kitchen", location: "Vallabh Vidyanagar", cuisine: "Mughlai / North Indian", date: "09 June 2026", status: "Pending Review", owner: "Asif Khan", license: "FSSAI-29381048291", experience: "5 Years", phone: "+91 94281 10293", email: "asif.biryani@gmail.com" },
-  { id: "APP-402", name: "Gourmet Gujju", location: "Amul Dairy Road", cuisine: "Traditional Kathiyawadi", date: "08 June 2026", status: "Under Review", owner: "Dhaval Patel", license: "FSSAI-10293847561", experience: "8 Years", phone: "+91 98980 47291", email: "dhaval.gourmet@gmail.com" },
-  { id: "APP-403", name: "Aroma South Kitchen", location: "Alkapuri", cuisine: "South Indian Meals", date: "06 June 2026", status: "Pending Review", owner: "S. Lakshmi", license: "FSSAI-58392019485", experience: "12 Years", phone: "+91 88776 54321", email: "lakshmi.south@gmail.com" },
-  { id: "APP-404", name: "Mother's Love Tiffins", location: "Mota Bazar", cuisine: "Homestyle Gujarati", date: "05 June 2026", status: "Pending Review", owner: "Hansa Behn", license: "FSSAI-49201948572", experience: "15 Years", phone: "+91 99009 88273", email: "hansa.love@gmail.com" }
-];
+const initialApplications = [];
+
+const initialVendors = [];
 
 const initialComplaints = [
   { id: "CMP-8910", reportedUser: "Mom's Punjabi Rasoi (Vendor)", category: "Food Quality Complaint", date: "09 June 2026", priority: "High", status: "Open", message: "Customer reported that the paneer curry was excessively spicy and oily, contrary to the 'Low Oil' subscription choice.", target: "Mom's Punjabi Rasoi", userType: "Vendor", reporter: "Anishka Parekh" },
@@ -57,14 +54,6 @@ const initialComplaints = [
   { id: "CMP-8912", reportedUser: "Healthy Meals Hub (Vendor)", category: "Late Delivery", date: "08 June 2026", priority: "High", status: "In Progress", message: "Delivery occurred at 2:15 PM instead of the committed 1:00 PM lunch window for three consecutive days.", target: "Healthy Meals Hub", userType: "Vendor", reporter: "Vikram Rathod" },
   { id: "CMP-8913", reportedUser: "Karan Sharma (Customer)", category: "Refund Dispute", date: "07 June 2026", priority: "Low", status: "Open", message: "Customer claims they skipped the tiffin on 06 June but did not receive wallet credits. Vendor states skip was requested after cutoff.", target: "Karan Sharma", userType: "Customer", reporter: "Student Budget Tiffins" },
   { id: "CMP-8914", reportedUser: "Spice Delight (Vendor)", category: "Fake Reviews", date: "05 June 2026", priority: "High", status: "Escalated", message: "Competitor reported that Spice Delight kitchen accounts registered multiple fake customer accounts to inflate ratings.", target: "Spice Delight", userType: "Vendor", reporter: "System Integrity Bot" }
-];
-
-const initialVendors = [
-  { id: "VND-101", name: "Priya's Home Kitchen", rating: 4.8, totalOrders: 1420, complaints: 2, status: "Active", owner: "Priya Patel", city: "Anand" },
-  { id: "VND-102", name: "Healthy Meals Hub", rating: 4.5, totalOrders: 890, complaints: 4, status: "Active", owner: "Meeta Shah", city: "Vallabh Vidyanagar" },
-  { id: "VND-103", name: "Kathiyawadi Swad Kitchen", rating: 4.7, totalOrders: 1100, complaints: 1, status: "Active", owner: "Arvindbhai Ghelani", city: "Anand" },
-  { id: "VND-104", name: "Mom's Punjabi Rasoi", rating: 4.9, totalOrders: 1650, complaints: 5, status: "Warned", owner: "Manpreet Kaur", city: "Ahmedabad" },
-  { id: "VND-105", name: "Quick Chow Meals", rating: 3.2, totalOrders: 180, complaints: 12, status: "Suspended", owner: "Sanjay Patel", city: "Anand" }
 ];
 
 const initialCustomers = [
@@ -97,6 +86,117 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
   const activeTab = defaultTab;
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  const [adminUser, setAdminUser] = useState({
+    name: '',
+    email: ''
+  });
+
+  const fetchVendors = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/v1/vendors/all', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const statusMap = {
+            'pending': 'Pending Review',
+            'under_review': 'Under Review',
+            'approved': 'Approved',
+            'rejected': 'Rejected'
+          };
+          
+          const mappedApps = resData.data.map(v => ({
+            id: v._id,
+            name: v.businessName || v.name || 'Vendor Kitchen',
+            owner: v.name || 'Vendor Owner',
+            location: v.city || v.kitchenAddress || 'Anand',
+            cuisine: v.description || 'Homestyle Meals',
+            experience: v.mealsPerDay ? `${v.mealsPerDay} Meals/Day` : 'Homestyle',
+            date: new Date(v.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
+            status: statusMap[v.verificationStatus] || 'Pending Review',
+            phone: v.phone || 'N/A',
+            email: v.email || 'N/A',
+            license: 'FSSAI-1234567890'
+          }));
+          
+          setApplications(mappedApps);
+          
+          const mappedVendors = resData.data.map(v => ({
+            id: v._id,
+            name: v.businessName || v.name || 'Vendor Kitchen',
+            rating: 4.8,
+            totalOrders: 0,
+            complaints: 0,
+            status: v.verificationStatus === 'approved' ? 'Active' : 'Warned',
+            owner: v.name,
+            city: v.city || 'Anand'
+          }));
+          
+          setVendors(mappedVendors);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch vendors:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const [activeSubCount, setActiveSubCount] = useState(0);
+  const [orderStats, setOrderStats] = useState({
+    totalOrders: 0,
+    pendingOrders: 0,
+    deliveredOrders: 0
+  });
+
+  const fetchActiveSubscriptionCount = async () => {
+    try {
+      const response = await fetch('/api/v1/subscriptions/count/active');
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && typeof resData.count === 'number') {
+          setActiveSubCount(resData.count);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch active subscription count:", err);
+    }
+  };
+
+  const fetchOrderStats = async () => {
+    try {
+      const response = await fetch('/api/v1/orders/count/stats');
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && resData.data) {
+          setOrderStats(resData.data);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch order stats:", err);
+    }
+  };
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('admin_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setAdminUser(u);
+      } catch (e) {
+        console.error("Failed to parse admin_user from localStorage in AdminDashboard:", e);
+      }
+    }
+    fetchVendors();
+    fetchActiveSubscriptionCount();
+    fetchOrderStats();
+  }, []);
+
   // Core databases
   const [applications, setApplications] = useState(initialApplications);
   const [complaints, setComplaints] = useState(initialComplaints);
@@ -125,14 +225,6 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [sandboxForceSkel, setSandboxForceSkel] = useState(false);
   const [sandboxForceEmpty, setSandboxForceEmpty] = useState(false);
-
-  // Initial loading simulation
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Synchronized URL changes from sidebar clicks
   const handleTabChange = (tabId) => {
@@ -164,105 +256,68 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
     setTimeout(() => setToast(null), 3000);
   };
 
+  const handleVerifyVendorAPI = async (appId, nextStatusLabel) => {
+    const statusMap = {
+      'Approved': 'approved',
+      'Rejected': 'rejected',
+      'Under Review': 'under_review',
+      'Pending Review': 'pending',
+      'Pending Documents': 'under_review',
+      'Suspended': 'rejected'
+    };
+    
+    const backendStatus = statusMap[nextStatusLabel] || 'pending';
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/vendors/${appId}/verify`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: backendStatus })
+      });
+      
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        showToast(resData.message || 'Failed to verify vendor.', 'error');
+        return;
+      }
+      
+      const appName = applications.find(a => a.id === appId)?.name || 'Vendor';
+      const newAct = {
+        id: getNewActivityId(),
+        text: `Vendor '${appName}' status updated to '${nextStatusLabel}' in MongoDB.`,
+        time: "Just Now"
+      };
+      setActivities(prev => [newAct, ...prev]);
+      showToast(`Verification status updated to "${nextStatusLabel}".`);
+      setSelectedApp(null);
+      fetchVendors();
+    } catch (err) {
+      console.error(err);
+      showToast('Connection error. Failed to update status.', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Vendor Verification Handlers
   const handleUpdateVerificationStatus = (appId, nextStatus) => {
-    setApplications(prev => prev.map(a => {
-      if (a.id === appId) {
-        return { ...a, status: nextStatus };
-      }
-      return a;
-    }));
-    
-    const appName = applications.find(a => a.id === appId)?.name;
-    const newAct = {
-      id: getNewActivityId(),
-      text: `Vendor '${appName}' status updated to '${nextStatus}'.`,
-      time: "Just Now"
-    };
-    setActivities(prev => [newAct, ...prev]);
-    setSelectedApp(prev => prev && prev.id === appId ? { ...prev, status: nextStatus } : prev);
-    showToast(`Verification status updated to "${nextStatus}".`);
+    handleVerifyVendorAPI(appId, nextStatus);
   };
 
   const handleApproveVendor = (appId) => {
-    const app = applications.find(a => a.id === appId);
-    if (!app) return;
-
-    // Set status to Approved in verification applications
-    setApplications(prev => prev.map(a => {
-      if (a.id === appId) {
-        return { ...a, status: "Approved" };
-      }
-      return a;
-    }));
-    
-    // Add to active vendors list if not exists
-    if (!vendors.some(v => v.owner === app.owner)) {
-      const newVendorId = getNewVendorId();
-      const newVendorObj = {
-        id: newVendorId,
-        name: app.name,
-        rating: 5.0,
-        totalOrders: 0,
-        complaints: 0,
-        status: "Active",
-        owner: app.owner,
-        city: app.location
-      };
-      setVendors(prev => [newVendorObj, ...prev]);
-    }
-
-    // Push to activities feed
-    const newAct = {
-      id: getNewActivityId(),
-      text: `Approved vendor application: '${app.name}' (${app.location}).`,
-      time: "Just Now"
-    };
-    setActivities(prev => [newAct, ...prev]);
-    setSelectedApp(prev => prev && prev.id === appId ? { ...prev, status: "Approved" } : prev);
-    showToast(`Successfully approved and onboarded "${app.name}"!`);
+    handleVerifyVendorAPI(appId, 'Approved');
   };
 
   const handleRejectVendor = (appId) => {
-    const app = applications.find(a => a.id === appId);
-    if (!app) return;
-
-    setApplications(prev => prev.map(a => {
-      if (a.id === appId) {
-        return { ...a, status: "Rejected" };
-      }
-      return a;
-    }));
-
-    const newAct = {
-      id: getNewActivityId(),
-      text: `Rejected vendor application: '${app.name}' due to document audit failure.`,
-      time: "Just Now"
-    };
-    setActivities(prev => [newAct, ...prev]);
-    setSelectedApp(prev => prev && prev.id === appId ? { ...prev, status: "Rejected" } : prev);
-    showToast(`Rejected application for "${app.name}". Notification sent.`);
+    handleVerifyVendorAPI(appId, 'Rejected');
   };
 
   const handleSuspendVendorFromVerification = (appId) => {
-    const app = applications.find(a => a.id === appId);
-    if (!app) return;
-
-    setApplications(prev => prev.map(a => {
-      if (a.id === appId) {
-        return { ...a, status: "Suspended" };
-      }
-      return a;
-    }));
-
-    const newAct = {
-      id: getNewActivityId(),
-      text: `Suspended vendor registration for: '${app.name}'.`,
-      time: "Just Now"
-    };
-    setActivities(prev => [newAct, ...prev]);
-    setSelectedApp(prev => prev && prev.id === appId ? { ...prev, status: "Suspended" } : prev);
-    showToast(`Suspended vendor applicant "${app.name}".`);
+    handleVerifyVendorAPI(appId, 'Suspended');
   };
 
 
@@ -451,9 +506,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
   };
 
   const handleResetSandbox = () => {
-    setApplications(initialApplications);
     setComplaints(initialComplaints);
-    setVendors(initialVendors);
     setCustomers(initialCustomers);
     setNotifications(initialNotifications);
     setActivities(initialActivities);
@@ -462,6 +515,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
     setComplaintFilter("All");
     setVendorFilter("All");
     setCustomerFilter("All");
+    fetchVendors();
     showToast("Restored platform moderation database defaults.");
   };
 
@@ -574,7 +628,11 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
         {/* Footer actions */}
         <div className="p-4 border-t border-slate-800">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('admin_user');
+              navigate('/');
+            }}
             className="w-full flex items-center space-x-3 px-4 py-3 text-xs md:text-sm font-semibold text-red-400 hover:bg-red-950/20 rounded-xl transition-colors duration-200 cursor-pointer"
           >
             <LogOut size={18} />
@@ -634,7 +692,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
             </div>
             
             <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600 text-sm">
-              AD
+              {adminUser.name ? adminUser.name.charAt(0).toUpperCase() : 'A'}
             </div>
           </div>
         </header>
@@ -645,7 +703,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
           {/* Welcome Intro Section */}
           <div className="pb-2">
             <h1 className="text-2xl font-black text-primary-text tracking-tight flex items-center space-x-2">
-              <span>Welcome Admin 👋</span>
+              <span>Welcome {adminUser.name} 👋</span>
             </h1>
             <p className="text-xs md:text-sm text-secondary-text mt-1">
               Monitor platform activity, review reports, and maintain trust across the TiffinTrack marketplace.
@@ -657,14 +715,17 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
             <div className="space-y-6">
               
               {/* Stats overview rows */}
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-4">
                 {[
                   { title: "Pending Approvals", count: applications.length, desc: "Vendors awaiting audit", icon: FileCheck, color: "text-amber-500 bg-amber-50 border-amber-100" },
                   { title: "Open Complaints", count: complaints.filter(c => c.status === "Open").length, desc: "Awaiting resolution", icon: AlertTriangle, color: "text-red-500 bg-red-50 border-red-100" },
                   { title: "Reported Vendors", count: vendors.filter(v => v.status === "Warned").length, desc: "Warned accounts", icon: ChefHat, color: "text-amber-600 bg-amber-50 border-amber-100" },
                   { title: "Reported Customers", count: customers.filter(c => c.status === "Warned").length, desc: "Warned users", icon: Users, color: "text-slate-600 bg-slate-50 border-slate-100" },
                   { title: "Active Vendors", count: vendors.filter(v => v.status === "Active").length, desc: "Onboarded kitchens", icon: ChefHat, color: "text-mint bg-mint-light border-mint/20" },
-                  { title: "Active Customers", count: 5126, desc: "Subscribed users", icon: Users, color: "text-blue-500 bg-blue-50 border-blue-100" }
+                  { title: "Active Subscriptions", count: activeSubCount, desc: "Live MongoDB count", icon: Users, color: "text-blue-500 bg-blue-50 border-blue-100" },
+                  { title: "Total Orders", count: orderStats.totalOrders, desc: "Cumulative orders", icon: Activity, color: "text-[#FFD200] bg-[#FFD200]/10 border-[#FFD200]/20" },
+                  { title: "Pending Orders", count: orderStats.pendingOrders, desc: "Awaiting preparation", icon: RefreshCw, color: "text-orange-500 bg-orange-50 border-orange-100" },
+                  { title: "Delivered Orders", count: orderStats.deliveredOrders, desc: "Successful runs", icon: CheckCircle, color: "text-emerald-500 bg-emerald-50 border-emerald-100" }
                 ].map((stat, idx) => (
                   <div 
                     key={idx} 
@@ -798,8 +859,8 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                 <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card flex items-center justify-between">
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pending Vendor Requests</span>
-                    <span className="text-2xl font-black text-primary-text block mt-1">{applications.filter(a => a.status === "Pending Review" || a.status === "Under Review").length + 14} Requests</span>
-                    <span className="text-[9px] text-amber-500 font-bold block mt-0.5">⚠️ 4 require urgent attention</span>
+                    <span className="text-2xl font-black text-primary-text block mt-1">{applications.filter(a => a.status === "Pending Review" || a.status === "Under Review").length} Requests</span>
+                    <span className="text-[9px] text-amber-500 font-bold block mt-0.5">⚠️ Requires review</span>
                   </div>
                   <div className="p-3 bg-amber-50 border border-amber-100 rounded-2xl text-amber-500">
                     <FileCheck size={20} />
@@ -807,9 +868,9 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                 </div>
                 <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Approved This Month</span>
-                    <span className="text-2xl font-black text-primary-text block mt-1">42 Vendors</span>
-                    <span className="text-[9px] text-mint font-bold block mt-0.5">📈 +12% increase from May</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Approved Vendors</span>
+                    <span className="text-2xl font-black text-primary-text block mt-1">{applications.filter(a => a.status === "Approved").length} Vendors</span>
+                    <span className="text-[9px] text-mint font-bold block mt-0.5">📈 Active on platform</span>
                   </div>
                   <div className="p-3 bg-mint-light border border-mint/20 rounded-2xl text-mint">
                     <CheckCircle size={20} />
@@ -818,8 +879,8 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                 <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card flex items-center justify-between">
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Rejected Applications</span>
-                    <span className="text-2xl font-black text-primary-text block mt-1">7 Vendors</span>
-                    <span className="text-[9px] text-red-500 font-bold block mt-0.5">📉 2 appeals pending review</span>
+                    <span className="text-2xl font-black text-primary-text block mt-1">{applications.filter(a => a.status === "Rejected").length} Vendors</span>
+                    <span className="text-[9px] text-red-500 font-bold block mt-0.5">📉 Failed verification</span>
                   </div>
                   <div className="p-3 bg-red-50 border border-red-100 rounded-2xl text-red-500">
                     <AlertTriangle size={20} />
@@ -1427,7 +1488,8 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                   </div>
                   <input 
                     type="email" 
-                    defaultValue="moderation@tiffintrack.com"
+                    key={adminUser.email}
+                    defaultValue={adminUser.email || ""}
                     className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-primary-text focus:bg-white focus:outline-none"
                   />
                 </div>

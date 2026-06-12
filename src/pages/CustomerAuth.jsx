@@ -154,15 +154,48 @@ export default function CustomerAuth() {
   };
 
   // Submit Sign In Form
-  const handleSignInSubmit = (e) => {
+  const handleSignInSubmit = async (e) => {
     e.preventDefault();
     if (!validateSignIn()) return;
     
     setIsLoading(true);
     setMessage(null);
     
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: signInData.email,
+          password: signInData.password,
+        }),
+      });
+
+      const resData = await response.json();
       setIsLoading(false);
+
+      if (!response.ok || !resData.success) {
+        setMessage({
+          type: 'error',
+          text: resData.message || 'Invalid email or password.'
+        });
+        return;
+      }
+
+      if (resData.data.user.role !== 'customer') {
+        setMessage({
+          type: 'error',
+          text: 'Access denied. Customer account required.'
+        });
+        return;
+      }
+
+      // Store JWT token and user info
+      localStorage.setItem('token', resData.data.token);
+      localStorage.setItem('customer_user', JSON.stringify(resData.data.user));
+
       setMessage({
         type: 'success',
         text: 'Login successful! Redirecting to dashboard...'
@@ -170,19 +203,49 @@ export default function CustomerAuth() {
       setTimeout(() => {
         navigate('/customer-dashboard');
       }, 1000);
-    }, 1500);
+    } catch (err) {
+      setIsLoading(false);
+      setMessage({
+        type: 'error',
+        text: 'Connection error. Please ensure the backend is running.'
+      });
+    }
   };
 
   // Submit Sign Up Form
-  const handleSignUpSubmit = (e) => {
+  const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     if (!validateSignUp()) return;
     
     setIsLoading(true);
     setMessage(null);
     
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/v1/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: signUpData.fullName,
+          email: signUpData.email,
+          password: signUpData.password,
+          phone: signUpData.phone,
+          role: 'customer',
+        }),
+      });
+
+      const resData = await response.json();
       setIsLoading(false);
+
+      if (!response.ok || !resData.success) {
+        setMessage({
+          type: 'error',
+          text: resData.message || 'Registration failed. Please try again.'
+        });
+        return;
+      }
+
       setMessage({
         type: 'success',
         text: 'Account created successfully! You can now Sign In.'
@@ -199,7 +262,13 @@ export default function CustomerAuth() {
           termsAccepted: false
         });
       }, 2000);
-    }, 1500);
+    } catch (err) {
+      setIsLoading(false);
+      setMessage({
+        type: 'error',
+        text: 'Connection error. Please ensure the backend is running.'
+      });
+    }
   };
 
   return (

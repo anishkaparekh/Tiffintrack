@@ -452,10 +452,23 @@ export default function VendorMeals() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Resolve current chef data
-  const chefId = parseInt(id) || 1;
-  const chefStatus = VENDOR_STATUSES[chefId] || "Approved";
-  const currentChef = vendorsDb[chefId] || vendorsDb[1];
+  // Real data states
+  const [vendor, setVendor] = useState(null);
+  const [meals, setMeals] = useState([]);
+  const [chefStatus, setChefStatus] = useState("Approved");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const chefId = id;
+  const currentChef = vendor || {
+    name: "Loading Chef...",
+    rating: 4.8,
+    reviewsCount: 245,
+    reviews: [
+      { name: "Keyur Patel", rating: 5, comment: "Amazing food! Tastes exactly like homestyle cooking. Non-greasy, healthy, and Rahul Kumar delivers it warm every day.", date: "June 08, 2026" },
+      { name: "Riddhi Shah", rating: 4.5, comment: "Very sanitary preparation. Love the soft phulkas. The sweet dal is a bit too sweet for me, but overall excellent quality.", date: "June 06, 2026" },
+      { name: "Aarav Sharma", rating: 5, comment: "I subscribed to the monthly vegetarian package. Wholesome recipes and extremely easy to skip single dates when traveling.", date: "June 04, 2026" }
+    ]
+  };
 
   // Search & Filter State
   const [searchText, setSearchText] = useState("");
@@ -472,9 +485,6 @@ export default function VendorMeals() {
   const [emptyMeals, setEmptyMeals] = useState(false);
   const [emptySearch, setEmptySearch] = useState(false);
   const [emptyCategory, setEmptyCategory] = useState(false);
-
-  // Async Loading simulator
-  const [isLoading, setIsLoading] = useState(true);
 
   // Loading simulation state tracker (replaces useEffect warning)
   const [prevFilters, setPrevFilters] = useState({
@@ -502,15 +512,93 @@ export default function VendorMeals() {
     setIsLoading(true);
   }
 
-  // Loading simulation timer
   useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => {
+    const fetchChefAndMeals = async () => {
+      setIsLoading(true);
+      try {
+        // 1. Fetch vendor profile
+        const vendorRes = await fetch(`/api/v1/vendors/${id}`);
+        if (!vendorRes.ok) {
+          setChefStatus("Suspended");
+          setIsLoading(false);
+          return;
+        }
+        const vendorData = await vendorRes.json();
+        if (vendorData.success && vendorData.data) {
+          const v = vendorData.data;
+          const mappedChef = {
+            id: v._id,
+            name: v.businessName || v.name || 'Vendor Kitchen',
+            owner: v.name || 'Vendor Owner',
+            area: v.city || 'Anand',
+            locality: v.kitchenAddress || 'Anand',
+            rating: 4.8,
+            reviewsCount: 245,
+            experience: v.mealsPerDay ? `${v.mealsPerDay} Meals/Day` : "Homestyle",
+            tagline: v.description || "Fresh homemade meals prepared daily with love.",
+            description: v.description || "Fresh homestyle specialties cooked daily.",
+            reviews: [
+              { name: "Keyur Patel", rating: 5, comment: "Amazing food! Tastes exactly like homestyle cooking. Non-greasy, healthy, and Rahul Kumar delivers it warm every day.", date: "June 08, 2026" },
+              { name: "Riddhi Shah", rating: 4.5, comment: "Very sanitary preparation. Love the soft phulkas. The sweet dal is a bit too sweet for me, but overall excellent quality.", date: "June 06, 2026" },
+              { name: "Aarav Sharma", rating: 5, comment: "I subscribed to the monthly vegetarian package. Wholesome recipes and extremely easy to skip single dates when traveling.", date: "June 04, 2026" }
+            ]
+          };
+          setVendor(mappedChef);
+          setChefStatus(v.verificationStatus === 'approved' ? 'Approved' : 'Pending Review');
+
+          // 2. Fetch meals
+          const mealsRes = await fetch(`/api/v1/meals/vendor/${v._id}`);
+          if (mealsRes.ok) {
+            const mealsData = await mealsRes.json();
+            const mealsArr = mealsData.success && Array.isArray(mealsData.data) ? mealsData.data : (Array.isArray(mealsData) ? mealsData : []);
+            const mappedMeals = mealsArr.map(m => {
+              const lowerName = m.mealName.toLowerCase();
+              let resolvedMealType = "Lunch";
+              if (lowerName.includes("poha") || lowerName.includes("upma") || lowerName.includes("thepla") || lowerName.includes("breakfast") || lowerName.includes("toast") || lowerName.includes("paratha")) {
+                resolvedMealType = "Breakfast";
+              } else if (lowerName.includes("dinner") || lowerName.includes("khichdi") || lowerName.includes("biryani") || lowerName.includes("dinner box")) {
+                resolvedMealType = "Dinner";
+              } else if (lowerName.includes("special") || lowerName.includes("dessert") || lowerName.includes("chaas") || lowerName.includes("shrikhand") || lowerName.includes("halwa")) {
+                resolvedMealType = "Special Meals";
+              }
+
+              const resolvedPreference = m.mealType === 'Both' ? 'Veg' : (m.mealType || 'Veg');
+              const resolvedCuisine = lowerName.includes("punjabi") || lowerName.includes("paneer") ? "Punjabi" : (lowerName.includes("south") || lowerName.includes("idli") || lowerName.includes("dosa") ? "South Indian" : "Gujarati");
+              const resolvedTags = [resolvedPreference];
+              if (m.price < 100) resolvedTags.push("Student Budget");
+              if (m.price > 120) resolvedTags.push("Popular");
+
+              return {
+                id: m._id,
+                name: m.mealName,
+                description: m.description || 'No description available.',
+                price: m.price,
+                mealType: resolvedMealType,
+                preference: resolvedPreference,
+                cuisine: resolvedCuisine,
+                tags: resolvedTags,
+                calories: 450,
+                ingredients: [m.description || 'Fresh ingredients'],
+                nutrition: { calories: 450, protein: "12g", carbs: "55g", fat: "10g" }
+              };
+            });
+            setMeals(mappedMeals);
+          }
+        } else {
+          setChefStatus("Suspended");
+        }
+      } catch (err) {
+        console.error("Failed to fetch chef and meals:", err);
+        setChefStatus("Suspended");
+      } finally {
         setIsLoading(false);
-      }, 600);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
+      }
+    };
+    fetchChefAndMeals();
+  }, [id]);
+
+  // Derived filter logic
+  const mealsSource = emptyMeals ? [] : meals;
 
   if (chefStatus !== "Approved") {
     return (
@@ -543,9 +631,6 @@ export default function VendorMeals() {
       </div>
     );
   }
-
-  // Derived filter logic
-  const mealsSource = emptyMeals ? [] : currentChef.meals;
 
   const filteredMeals = emptySearch ? [] : mealsSource.filter(meal => {
     const matchesSearch = searchText ? (

@@ -9,11 +9,25 @@ import { generateAccessToken } from '../utils/jwt';
  * POST /api/v1/auth/register
  */
 export const register = asyncHandler(async (req: Request, res: Response) => {
-  const { name, email, password, role } = req.body;
+  const { 
+    name, 
+    email, 
+    password, 
+    role,
+    phone,
+    businessName,
+    kitchenAddress,
+    city,
+    mealsPerDay,
+    description
+  } = req.body;
+
+  console.log(`[Auth Audit] API request received: Signup request received for email: ${email}, role: ${role}`);
 
   // Check if user already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
+    console.warn(`[Auth Audit] User signup failure: Email ${email} already exists.`);
     throw new ApiError(400, 'User with this email already exists.');
   }
 
@@ -23,7 +37,16 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
     email,
     password,
     role,
+    phone,
+    businessName,
+    kitchenAddress,
+    city,
+    mealsPerDay: mealsPerDay ? Number(mealsPerDay) : undefined,
+    description,
+    verificationStatus: role === 'vendor' ? 'pending' : undefined,
   });
+
+  console.log(`[Auth Audit] User created: SUCCESS. User created with ID: ${user._id}, email: ${user.email}`);
 
   // Generate JWT token
   const token = generateAccessToken({
@@ -52,6 +75,13 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         isActive: user.isActive,
+        verificationStatus: user.verificationStatus,
+        phone: user.phone,
+        businessName: user.businessName,
+        kitchenAddress: user.kitchenAddress,
+        city: user.city,
+        mealsPerDay: user.mealsPerDay,
+        description: user.description,
         createdAt: user.createdAt,
       },
       token,
@@ -66,22 +96,31 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
+  console.log(`[Auth Audit] API request received: Login request received for email: ${email}`);
+
   // Find user and explicitly select password field
   const user = await User.findOne({ email }).select('+password');
+  
   if (!user) {
+    console.warn(`[Auth Audit] User login failure: Email ${email} not found.`);
     throw new ApiError(401, 'Invalid email or password.');
   }
 
   // Check if user is active
   if (!user.isActive) {
+    console.warn(`[Auth Audit] User login failure: Account for ${email} is inactive.`);
     throw new ApiError(403, 'Your account has been deactivated.');
   }
 
   // Compare password
   const isMatch = await user.comparePassword(password);
+  
   if (!isMatch) {
+    console.warn(`[Auth Audit] User login failure: Invalid password for ${email}.`);
     throw new ApiError(401, 'Invalid email or password.');
   }
+
+  console.log(`[Auth Audit] User login success for email: ${email}, role: ${user.role}`);
 
   // Generate JWT token
   const token = generateAccessToken({
@@ -110,6 +149,12 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         isActive: user.isActive,
+        verificationStatus: user.verificationStatus,
+        phone: user.phone,
+        businessName: user.businessName,
+        kitchenAddress: user.kitchenAddress,
+        city: user.city,
+        description: user.description
       },
       token,
     },
@@ -158,6 +203,12 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         isActive: user.isActive,
+        verificationStatus: user.verificationStatus,
+        phone: user.phone,
+        businessName: user.businessName,
+        kitchenAddress: user.kitchenAddress,
+        city: user.city,
+        description: user.description
       },
     },
   });

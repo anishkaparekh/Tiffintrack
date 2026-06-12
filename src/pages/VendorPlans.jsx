@@ -153,10 +153,21 @@ export default function VendorPlans() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Resolve current chef summary
-  const chefId = parseInt(id) || 1;
-  const chefStatus = VENDOR_STATUSES[chefId] || "Approved";
-  const chef = vendorsDb[chefId] || vendorsDb[1];
+  // Real data states
+  const [vendor, setVendor] = useState(null);
+  const [dbPlans, setDbPlans] = useState([]);
+  const [chefStatus, setChefStatus] = useState("Approved");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const chefId = id;
+  const chef = vendor || {
+    name: "Loading Chef...",
+    rating: 4.8,
+    reviewsCount: 245,
+    cuisineTypes: "Gujarati, Punjabi, Jain",
+    deliveryAreas: "Anand",
+    startingPrice: 120
+  };
 
   // FAQ Toggle State
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
@@ -166,9 +177,6 @@ export default function VendorPlans() {
   const [emptyPlans, setEmptyPlans] = useState(false);
   const [customPlansComingSoon, setCustomPlansComingSoon] = useState(false);
 
-  // Async Loading simulation
-  const [isLoading, setIsLoading] = useState(true);
-
   // Loading simulation state tracker (replaces useEffect warning)
   const [prevChefId, setPrevChefId] = useState(chefId);
   if (chefId !== prevChefId) {
@@ -176,15 +184,73 @@ export default function VendorPlans() {
     setIsLoading(true);
   }
 
-  // Loading simulation timer
   useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => {
+    const fetchChefAndPlans = async () => {
+      setIsLoading(true);
+      try {
+        // 1. Fetch vendor profile
+        const vendorRes = await fetch(`/api/v1/vendors/${id}`);
+        if (!vendorRes.ok) {
+          setChefStatus("Suspended");
+          setIsLoading(false);
+          return;
+        }
+        const vendorData = await vendorRes.json();
+        if (vendorData.success && vendorData.data) {
+          const v = vendorData.data;
+          const mappedChef = {
+            id: v._id,
+            name: v.businessName || v.name || 'Vendor Kitchen',
+            owner: v.name || 'Vendor Owner',
+            area: v.city || 'Anand',
+            locality: v.kitchenAddress || 'Anand',
+            rating: 4.8,
+            reviewsCount: 245,
+            experience: v.mealsPerDay ? `${v.mealsPerDay} Meals/Day` : "Homestyle",
+            tagline: v.description || "Fresh homemade meals prepared daily with love.",
+            description: v.description || "Fresh homestyle specialties cooked daily.",
+            cuisineTypes: "Gujarati, Punjabi, Jain",
+            deliveryAreas: v.city || "Anand",
+            startingPrice: 120
+          };
+          setVendor(mappedChef);
+          setChefStatus(v.verificationStatus === 'approved' ? 'Approved' : 'Pending Review');
+
+          // 2. Fetch plans
+          const plansRes = await fetch(`/api/v1/plans/vendor/${v._id}`);
+          if (plansRes.ok) {
+            const plansData = await plansRes.json();
+            const plansArr = plansData.success && Array.isArray(plansData.data) ? plansData.data : (Array.isArray(plansData) ? plansData : []);
+            const mappedPlans = plansArr.map(p => ({
+              id: p._id,
+              name: p.planName,
+              price: p.price,
+              duration: p.duration === 'weekly' ? 'week' : 'month',
+              ideal: p.mealsPerDay === 1 ? "Students & Office Workers" : (p.mealsPerDay === 2 ? "Professionals & Couples" : "Families & Groups"),
+              features: [
+                p.description || "Fresh homestyle cooking",
+                "Pause/Resume option active",
+                `${p.mealsPerDay} meal(s) per day`,
+                "Standard Delivery Included"
+              ],
+              isPopular: p.duration === 'monthly',
+              isCustom: false,
+              mealsRemaining: p.duration === 'weekly' ? 7 : 30
+            }));
+            setDbPlans(mappedPlans);
+          }
+        } else {
+          setChefStatus("Suspended");
+        }
+      } catch (err) {
+        console.error("Failed to fetch chef and plans:", err);
+        setChefStatus("Suspended");
+      } finally {
         setIsLoading(false);
-      }, 600);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
+      }
+    };
+    fetchChefAndPlans();
+  }, [id]);
 
   if (chefStatus !== "Approved") {
     return (
@@ -231,7 +297,7 @@ export default function VendorPlans() {
       price: plan.price,
       duration: plan.duration || "Month",
       mealsIncluded: plan.name.includes("Lunch Only") ? "Lunch Only" : "Lunch + Dinner",
-      mealsRemaining: plan.name.includes("Family") ? 60 : (plan.name.includes("Lunch Only") ? 26 : 52),
+      mealsRemaining: plan.duration === "week" ? 7 : 30,
     };
     localStorage.setItem('tiffintrack_checkout_plan', JSON.stringify(checkoutInfo));
     navigate('/checkout');
@@ -240,52 +306,10 @@ export default function VendorPlans() {
   const activeLoading = isLoading || forceLoadingState;
 
   // Render Plan Data list
-  const plans = [
+  const plans = emptyPlans ? [] : [
+    ...dbPlans,
     {
-      id: "p1",
-      name: "Lunch Only Plan",
-      price: 1999,
-      duration: "month",
-      ideal: "Students and Office Workers",
-      features: [
-        "Daily Lunch delivery",
-        "Monday to Saturday service",
-        "Fresh Home-Cooked Meals",
-        "Standard Delivery"
-      ],
-      isPopular: false
-    },
-    {
-      id: "p2",
-      name: "Lunch + Dinner Plan",
-      price: 3499,
-      duration: "month",
-      ideal: "Professionals & Couples",
-      features: [
-        "Daily Lunch + Daily Dinner",
-        "Monday to Saturday service",
-        "Flexible Pause/Resume Option",
-        "Priority Express Delivery"
-      ],
-      isPopular: true
-    },
-    {
-      id: "p3",
-      name: "Family Portion Plan",
-      price: 5999,
-      duration: "month",
-      ideal: "Families up to 4 Members",
-      features: [
-        "Family Portion Meals",
-        "Daily Lunch & Dinner",
-        "Serves 3-4 family members",
-        "Special Weekend Dishes",
-        "Priority Customer Support"
-      ],
-      isPopular: false
-    },
-    {
-      id: "p4",
+      id: "custom",
       name: "Personalized Custom Plan",
       price: 999,
       duration: "start",

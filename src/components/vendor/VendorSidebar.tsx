@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOutVendor } from '../../auth/mockAuth';
+import { signOutVendor } from '../../auth/session';
 import { 
   LayoutDashboard, Utensils, CalendarRange, ShoppingBag, 
   Users, TrendingUp, Bell, Settings, LogOut, X 

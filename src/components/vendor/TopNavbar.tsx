@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, X, ArrowUpRight } from 'lucide-react';
 import { mockProfile, mockNotifications } from '../../data/vendorMockData';
-import { signOutVendor } from '../../auth/mockAuth';
+import { signOutVendor } from '../../auth/session';
 
 interface TopNavbarProps {
   onMenuToggle: () => void;
@@ -14,6 +14,30 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+
+  const [vendorUser, setVendorUser] = useState({
+    name: '',
+    role: '',
+    initials: ''
+  });
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_vendor_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        const nameToUse = u.businessName || u.name || 'Vendor';
+        const initials = nameToUse.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+        setVendorUser({
+          name: u.name || 'Vendor',
+          role: u.role === 'vendor' ? 'Home Kitchen Owner' : u.role,
+          initials: initials || 'V'
+        });
+      } catch (e) {
+        console.error("Failed to parse tiffintrack_vendor_user from localStorage:", e);
+      }
+    }
+  }, []);
 
   return (
     <nav className="h-20 bg-white border-b border-[#E5E7EB] px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
@@ -104,19 +128,19 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
             className="flex items-center space-x-2.5 hover:bg-[#F4F9F6] p-1.5 pr-3 rounded-xl transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#00B074] to-[#16A34A] text-white flex items-center justify-center font-bold text-sm shadow-sm shadow-[#00B074]/10">
-              {mockProfile.initials}
+              {vendorUser.initials}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-bold text-[#1F2937] leading-tight">{mockProfile.name}</p>
-              <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{mockProfile.role}</p>
+              <p className="text-xs font-bold text-[#1F2937] leading-tight">{vendorUser.name}</p>
+              <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{vendorUser.role}</p>
             </div>
           </button>
 
           {showProfileMenu && (
             <div className="absolute right-0 mt-3 w-56 bg-white border border-[#E5E7EB] rounded-2xl shadow-xl py-2.5 z-50 animate-fadeIn">
               <div className="px-4 py-2 border-b border-[#E5E7EB]">
-                <p className="text-xs font-bold text-[#1F2937]">{mockProfile.name}</p>
-                <p className="text-[10px] text-slate-400 font-semibold">{mockProfile.role}</p>
+                <p className="text-xs font-bold text-[#1F2937]">{vendorUser.name}</p>
+                <p className="text-[10px] text-slate-400 font-semibold">{vendorUser.role}</p>
               </div>
               <div className="py-1">
                 <button

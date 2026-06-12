@@ -25,6 +25,12 @@ export const registerSchema = z.object({
       })
       .optional()
       .default(ROLES.CUSTOMER),
+    phone: z.string().optional(),
+    businessName: z.string().optional(),
+    kitchenAddress: z.string().optional(),
+    city: z.string().optional(),
+    mealsPerDay: z.union([z.string(), z.number()]).optional(),
+    description: z.string().optional(),
   }),
 });
 

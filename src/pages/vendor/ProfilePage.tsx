@@ -28,18 +28,48 @@ import {
 
 import { Sparkles, CheckCircle } from 'lucide-react';
 import { VendorProfile, KitchenDetails, DeliveryDetails, OperatingHours } from '../../types/profile';
-import { signOutVendor } from '../../auth/mockAuth';
+import { signOutVendor } from '../../auth/session';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
 
   // Unified Profile state owned at page level
-  const [profile, setProfile] = useState<VendorProfile>(mockVendorProfile);
+  const [profile, setProfile] = useState<VendorProfile>({
+    businessName: '',
+    ownerName: '',
+    description: '',
+    experience: 0,
+    phone: '',
+    email: ''
+  });
 
   // Other configurations state for future editing patterns
   const [kitchen, setKitchen] = useState<KitchenDetails>(mockKitchenDetails);
   const [delivery, setDelivery] = useState<DeliveryDetails>(mockDeliveryDetails);
   const [hours, setHours] = useState<OperatingHours>(mockOperatingHours);
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_vendor_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setProfile({
+          ownerName: u.name || 'Vendor Owner',
+          email: u.email || '',
+          phone: u.phone || '+91 99999 99999',
+          businessName: u.businessName || u.name || 'Vendor Kitchen',
+          description: u.description || 'Homestyle cooked meals.',
+          experience: 5
+        });
+        setKitchen(prev => ({
+          ...prev,
+          address: u.kitchenAddress || prev.address
+        }));
+      } catch (e) {
+        console.error("Failed to parse tiffintrack_vendor_user in ProfilePage:", e);
+      }
+    }
+  }, []);
 
   // Modal controls
   const [isModalOpen, setIsModalOpen] = useState(false);

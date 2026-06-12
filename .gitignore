@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+**/node_modules
+**/dist
+Tiffintrack/
 
 # Editor directories and files
 .vscode/*

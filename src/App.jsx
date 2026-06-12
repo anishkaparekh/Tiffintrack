@@ -15,6 +15,7 @@ import VendorRevenue from './pages/vendor/VendorRevenue';
 import ProfilePage from './pages/vendor/ProfilePage';
 import VendorNotifications from './pages/vendor/VendorNotifications';
 import VendorProtectedRoute from './components/vendor/VendorProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Customer Side Components
 import CustomerDashboard from './pages/CustomerDashboard';
@@ -40,14 +41,14 @@ function App() {
         <Route path="/admin-login" element={<AdminLogin />} />
         
         {/* Admin Dashboard routes */}
-        <Route path="/admin-dashboard" element={<AdminDashboard defaultTab="dashboard" />} />
-        <Route path="/admin/vendor-verification" element={<AdminDashboard defaultTab="verification" />} />
-        <Route path="/admin/reports" element={<AdminDashboard defaultTab="reports" />} />
-        <Route path="/admin/vendor-monitoring" element={<AdminDashboard defaultTab="vendor-monitoring" />} />
-        <Route path="/admin/customer-monitoring" element={<AdminDashboard defaultTab="customer-monitoring" />} />
-        <Route path="/admin/analytics" element={<AdminDashboard defaultTab="analytics" />} />
-        <Route path="/admin/settings" element={<AdminDashboard defaultTab="settings" />} />
-        <Route path="/admin/notifications" element={<AdminDashboard defaultTab="notifications" />} />
+        <Route path="/admin-dashboard" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="dashboard" /></ProtectedRoute>} />
+        <Route path="/admin/vendor-verification" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="verification" /></ProtectedRoute>} />
+        <Route path="/admin/reports" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="reports" /></ProtectedRoute>} />
+        <Route path="/admin/vendor-monitoring" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="vendor-monitoring" /></ProtectedRoute>} />
+        <Route path="/admin/customer-monitoring" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="customer-monitoring" /></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="analytics" /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="settings" /></ProtectedRoute>} />
+        <Route path="/admin/notifications" element={<ProtectedRoute allowedRole="admin"><AdminDashboard defaultTab="notifications" /></ProtectedRoute>} />
         
         {/* Vendor Dashboard routes */}
         <Route path="/vendor-dashboard" element={<VendorProtectedRoute><VendorDashboard /></VendorProtectedRoute>} />
@@ -60,18 +61,18 @@ function App() {
         <Route path="/vendor/notifications" element={<VendorProtectedRoute><VendorNotifications /></VendorProtectedRoute>} />
 
         {/* Customer Dashboard routes */}
-        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-        <Route path="/my-subscriptions" element={<MySubscriptions />} />
-        <Route path="/track-orders" element={<TrackOrders />} />
-        <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/profile-settings" element={<ProfileSettings />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/browse-vendors" element={<CustomerDashboard />} />
-        <Route path="/vendor/:id" element={<VendorDetails preSelectedTab="details" />} />
-        <Route path="/vendor/:id/meals" element={<CustomerVendorMeals />} />
-        <Route path="/vendor/:id/plans" element={<CustomerVendorPlans />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+        <Route path="/customer-dashboard" element={<ProtectedRoute allowedRole="customer"><CustomerDashboard /></ProtectedRoute>} />
+        <Route path="/my-subscriptions" element={<ProtectedRoute allowedRole="customer"><MySubscriptions /></ProtectedRoute>} />
+        <Route path="/track-orders" element={<ProtectedRoute allowedRole="customer"><TrackOrders /></ProtectedRoute>} />
+        <Route path="/order-history" element={<ProtectedRoute allowedRole="customer"><OrderHistory /></ProtectedRoute>} />
+        <Route path="/profile-settings" element={<ProtectedRoute allowedRole="customer"><ProfileSettings /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute allowedRole="customer"><Notifications /></ProtectedRoute>} />
+        <Route path="/browse-vendors" element={<ProtectedRoute allowedRole="customer"><CustomerDashboard /></ProtectedRoute>} />
+        <Route path="/vendor/:id" element={<ProtectedRoute allowedRole="customer"><VendorDetails preSelectedTab="details" /></ProtectedRoute>} />
+        <Route path="/vendor/:id/meals" element={<ProtectedRoute allowedRole="customer"><CustomerVendorMeals /></ProtectedRoute>} />
+        <Route path="/vendor/:id/plans" element={<ProtectedRoute allowedRole="customer"><CustomerVendorPlans /></ProtectedRoute>} />
+        <Route path="/checkout" element={<ProtectedRoute allowedRole="customer"><Checkout /></ProtectedRoute>} />
+        <Route path="/subscription-success" element={<ProtectedRoute allowedRole="customer"><SubscriptionSuccess /></ProtectedRoute>} />
 
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />

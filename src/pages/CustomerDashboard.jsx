@@ -26,153 +26,7 @@ import OrderTable from '../components/OrderTable';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Mock Vendors Database
-const initialVendors = [
-  {
-    id: 1,
-    name: "Priya's Home Kitchen",
-    owner: "Priya Patel",
-    area: "Anand",
-    locality: "Mota Bazar",
-    rating: 4.8,
-    distance: 1.2,
-    startingPrice: 120,
-    mealType: "Veg",
-    description: "Traditional Gujarati daily meal prep with low oil and premium organic spices. Healthy and fresh daily.",
-    categories: ["Gujarati Meals", "Family Plans"],
-    status: "Approved",
-    plans: [
-      { id: "p1_1", name: "Weekly Veg Subscription", price: 800, duration: "7 Days", details: "1 Lunch daily: 3 Roti, Dal, Rice, Seasonal Sabji, Buttermilk" },
-      { id: "p1_2", name: "Monthly Veg Plan", price: 3200, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: 3 Roti, Dal, Rice, Seasonal Sabji, Buttermilk" }
-    ]
-  },
-  {
-    id: 2,
-    name: "Healthy Meals Hub",
-    owner: "Meeta Shah",
-    area: "Vallabh Vidyanagar",
-    locality: "Shastri Marg",
-    rating: 4.5,
-    distance: 2.5,
-    startingPrice: 150,
-    mealType: "Veg",
-    description: "Dietitian-curated high-protein tiffins, multi-grain rotis, salad bowls, and low-carb daily dinners.",
-    categories: ["Healthy Diet Meals", "Student Budget Meals"],
-    status: "Approved",
-    plans: [
-      { id: "p2_1", name: "Weekly Fitness Diet Plan", price: 1000, duration: "7 Days", details: "1 Protein Lunch daily: Brown Rice/Quinoa, Grilled Paneer, Sprout Salad, Dal" },
-      { id: "p2_2", name: "Monthly Healthy Diet Sub", price: 3800, duration: "30 Days", details: "1 Protein Lunch & 1 Diet Dinner daily: Healthy salads, fiber rotis, high protein sabjis" }
-    ]
-  },
-  {
-    id: 3,
-    name: "Kathiyawadi Swad Kitchen",
-    owner: "Arvindbhai Ghelani",
-    area: "Anand",
-    locality: "Amul Dairy Road",
-    rating: 4.7,
-    distance: 0.8,
-    startingPrice: 130,
-    mealType: "Veg",
-    description: "Authentic Kathiyawadi cuisine. Famous for daily fresh Ringan No Oro, Lasaniya Bateta, and Bajra Rotla.",
-    categories: ["Gujarati Meals", "Student Budget Meals"],
-    status: "Approved",
-    plans: [
-      { id: "p3_1", name: "Weekly Kathiyawadi Thali", price: 850, duration: "7 Days", details: "1 Lunch daily: 2 Bajra Rotla/3 Roti, Kathiyawadi Sabji, Kadhi, Khichdi, Garlic Chutney" },
-      { id: "p3_2", name: "Monthly Kathiyawadi Regular", price: 3300, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Regular rotis, special subjis, kadhi-khichdi, buttermilk" }
-    ]
-  },
-  {
-    id: 4,
-    name: "Mom's Punjabi Rasoi",
-    owner: "Manpreet Kaur",
-    area: "Ahmedabad",
-    locality: "Vastrapur",
-    rating: 4.9,
-    distance: 3.1,
-    startingPrice: 140,
-    mealType: "Both",
-    description: "Ghar jaisa Punjabi khana. Butter-soft tandoori rotis, aromatic rajma-chawal, paneer subjis, and rich chicken curry.",
-    categories: ["Punjabi Meals", "Family Plans"],
-    status: "Approved",
-    plans: [
-      { id: "p4_1", name: "Weekly Punjabi Veg Plan", price: 900, duration: "7 Days", details: "1 Veg Lunch daily: 3 Butter Phulkas, Special Paneer/Aloo, Dal Fry, Jeera Rice, Curd" },
-      { id: "p4_2", name: "Weekly Punjabi Non-Veg Plan", price: 1200, duration: "7 Days", details: "1 Non-Veg Lunch daily: Chicken Curry / Egg Curry, 3 Rotis, Dal, Rice, Salad" },
-      { id: "p4_3", name: "Monthly Punjabi Veg Feast", price: 3500, duration: "30 Days", details: "1 Veg Lunch & 1 Veg Dinner daily: Premium North Indian variety, raita, sweet dish twice a week" }
-    ]
-  },
-  {
-    id: 5,
-    name: "Jain Satvik Rasoi",
-    owner: "Samyak Shah",
-    area: "Vadodara",
-    locality: "Alkapuri",
-    rating: 4.6,
-    distance: 1.9,
-    startingPrice: 110,
-    mealType: "Veg",
-    description: "100% Satvik preparations made strictly without onion, garlic, potatoes, or root vegetables. Extremely hygienic.",
-    categories: ["Jain Meals", "Healthy Diet Meals"],
-    status: "Approved",
-    plans: [
-      { id: "p5_1", name: "Weekly Satvik Plan", price: 750, duration: "7 Days", details: "1 Satvik Lunch: Ghee Roti, Satvik Dal, Rice, Gourd/Cabbage Sabji, Jain Khichdi" },
-      { id: "p5_2", name: "Monthly Satvik Regular", price: 2900, duration: "30 Days", details: "1 Satvik Lunch & 1 Dinner daily: Strictly audited Jain ingredients, fresh seasonal vegetables" }
-    ]
-  },
-  {
-    id: 6,
-    name: "South India Express",
-    owner: "S. Ramakrishnan",
-    area: "Vallabh Vidyanagar",
-    locality: "Amul Dairy Road",
-    rating: 4.4,
-    distance: 2.2,
-    startingPrice: 100,
-    mealType: "Veg",
-    description: "Traditional Tamil and Keralite home dinners: soft idlis, lemon rice, healthy sambar, and home-cooked rasam.",
-    categories: ["South Indian Meals", "Student Budget Meals"],
-    status: "Approved",
-    plans: [
-      { id: "p6_1", name: "Weekly South Special", price: 700, duration: "7 Days", details: "1 Meal daily: Variety Rice (Lemon/Tamarind/Tomato), Rasam Vada, Sambar Rice, Coconut Chutney" },
-      { id: "p6_2", name: "Monthly Rice & Sambar", price: 2600, duration: "30 Days", details: "1 Daily Lunch: Organic Rice, Authentic sambar, 2 dry vegetable poriyals, appalam" }
-    ]
-  },
-  {
-    id: 7,
-    name: "Student Budget Tiffins",
-    owner: "Karan Sharma",
-    area: "Vallabh Vidyanagar",
-    locality: "Mota Bazar",
-    rating: 4.3,
-    distance: 1.1,
-    startingPrice: 90,
-    mealType: "Veg",
-    description: "Highly affordable, homestyle food tailored for university students. Budget-friendly, clean, and filling.",
-    categories: ["Student Budget Meals"],
-    status: "Pending Review",
-    plans: [
-      { id: "p7_1", name: "Weekly Pocket-Saver", price: 600, duration: "7 Days", details: "1 Lunch daily: 4 Roti, Dal, Veg Sabji, Rice (Simple, wholesome, budget ingredients)" },
-      { id: "p7_2", name: "Monthly Student Special", price: 2200, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Balanced nutrition, low-spiced daily meal packages" }
-    ]
-  },
-  {
-    id: 8,
-    name: "Daxaben's Kathiyawadi Rasoi",
-    owner: "Daxaben Patel",
-    area: "Nadiad",
-    locality: "College Road",
-    rating: 4.7,
-    distance: 1.5,
-    startingPrice: 125,
-    mealType: "Veg",
-    description: "Hand-rolled soft chapatis, spicy garlic potatoes, Sev Tameta, and traditional Gujarati sweet dal subscriptions.",
-    categories: ["Gujarati Meals", "Family Plans"],
-    status: "Suspended",
-    plans: [
-      { id: "p8_1", name: "Weekly Gujarati Home Meal", price: 820, duration: "7 Days", details: "1 Lunch daily: 4 Rotli, Gujarati Dal, Rice, Dry Sabji, papad, salad" },
-      { id: "p8_2", name: "Monthly Gujarati Parivar Sub", price: 3100, duration: "30 Days", details: "1 Lunch & 1 Dinner daily: Authentic Kathiyawadi & Gujarati home-cooked meals" }
-    ]
-  }
-];
+const initialVendors = [];
 
 // Reusable Skeleton Loader Components
 
@@ -246,7 +100,40 @@ export default function CustomerDashboard() {
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [vendors, setVendors] = useState([]);
   const nextActivityId = useRef(4);
+
+  const fetchApprovedVendors = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/v1/vendors');
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped = resData.data.map(v => ({
+            id: v._id,
+            name: v.businessName || v.name || 'Vendor Kitchen',
+            owner: v.name || 'Vendor Owner',
+            area: v.city || 'Anand',
+            locality: v.kitchenAddress || 'Anand',
+            rating: 4.8,
+            distance: 1.2,
+            startingPrice: 120,
+            mealType: "Veg",
+            description: v.description || "Fresh homestyle specialties cooked daily.",
+            categories: ["Gujarati Meals", "Family Plans"],
+            status: v.verificationStatus || 'approved',
+            plans: []
+          }));
+          setVendors(mapped);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch approved vendors:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Search & Filter States
   const [searchText, setSearchText] = useState('');
@@ -260,40 +147,73 @@ export default function CustomerDashboard() {
   const [emptySubscription, setEmptySubscription] = useState(false);
   const [emptyActivity, setEmptyActivity] = useState(false);
 
-  // Mock User Settings
+  // Authenticated User Settings
   const [profile, setProfile] = useState({
-    fullName: 'Anishka Parekh',
-    email: 'parekhanishka@gmail.com',
-    phone: '9876543210',
+    fullName: '',
+    email: '',
+    phone: '',
     address: 'Flat 402, Green Meadows, Shastri Marg',
     city: 'Vallabh Vidyanagar',
     pincode: '388120'
   });
 
+  const fetchCustomerSubscription = async (customerId) => {
+    if (emptySubscription) {
+      setSubscription(null);
+      return;
+    }
+    try {
+      const response = await fetch(`/api/v1/subscriptions/customer/${customerId}`);
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const activeSub = resData.data.find(sub => sub.status === 'Active' || sub.status === 'Paused');
+          if (activeSub) {
+            setSubscription({
+              ...activeSub,
+              nextDelivery: activeSub.status === 'Active' ? 'Tomorrow, 12:45 PM' : 'Suspended (Paused)'
+            });
+            return;
+          }
+        }
+        setSubscription(null);
+      }
+    } catch (e) {
+      console.error("Failed to fetch customer subscription:", e);
+    }
+  };
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('customer_user');
+    let customerId = "";
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setProfile(prev => ({
+          ...prev,
+          fullName: u.name || '',
+          email: u.email || '',
+          phone: u.phone || '',
+          city: u.city || prev.city
+        }));
+        customerId = u._id || u.id || "";
+      } catch (e) {
+        console.error("Failed to parse customer_user from localStorage in CustomerDashboard:", e);
+      }
+    }
+    fetchApprovedVendors();
+    if (customerId) {
+      fetchCustomerSubscription(customerId);
+    } else {
+      setSubscription(null);
+    }
+  }, [emptySubscription]);
+
   // Saved Vendor IDs State
   const [savedVendorIds, setSavedVendorIds] = useState([1, 3, 5]);
 
   // Active Subscription State
-  const [subscription, setSubscription] = useState(() => {
-    const saved = localStorage.getItem('tiffintrack_active_subscription');
-    if (saved === 'none') return null;
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed parsing subscription", e);
-      }
-    }
-    return {
-      vendorId: 1,
-      vendorName: "Priya's Home Kitchen",
-      planName: "Monthly Veg Plan",
-      mealsRemaining: 22,
-      status: 'Active', // 'Active', 'Paused', 'None'
-      nextDelivery: 'Today, 12:45 PM',
-      price: 3200
-    };
-  });
+  const [subscription, setSubscription] = useState(null);
 
   // Recent Activity log state
   const [activities, setActivities] = useState([
@@ -375,7 +295,7 @@ export default function CustomerDashboard() {
   const toggleSaveVendor = (vendorId) => {
     const isSaved = savedVendorIds.includes(vendorId);
     let newSaved;
-    let vendor = initialVendors.find(v => v.id === vendorId);
+    let vendor = vendors.find(v => v.id === vendorId);
 
     if (isSaved) {
       newSaved = savedVendorIds.filter(id => id !== vendorId);
@@ -398,57 +318,121 @@ export default function CustomerDashboard() {
   };
 
   // Complete subscription handler
-  const handleSubscribe = (vendor, plan) => {
-    const newSub = {
+  const handleSubscribe = async (vendor, plan) => {
+    const userStr = localStorage.getItem('customer_user');
+    let customerId = "";
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        customerId = u._id || u.id || "";
+      } catch (e) {
+        console.error("Failed to parse customer_user", e);
+      }
+    }
+    if (!customerId) {
+      customerId = "6a2c2ae16199858551b2db1a"; // Fallback customer ID
+    }
+
+    const payload = {
+      customerId,
       vendorId: vendor.id,
-      vendorName: vendor.name,
-      planName: plan.name,
-      mealsRemaining: plan.duration.includes("30") ? 30 : 7,
-      status: 'Active',
-      nextDelivery: 'Tomorrow, 12:45 PM',
-      price: plan.price
+      planId: plan.id || plan._id,
+      startDate: new Date(),
+      deliveryAddress: profile.address || "No Address Specified",
+      preferences: []
     };
-    setSubscription(newSub);
-    localStorage.setItem('tiffintrack_active_subscription', JSON.stringify(newSub));
-    setEmptySubscription(false);
-    logActivity(`Subscribed to ${vendor.name} - ${plan.name}`);
-    setMessage({
-      type: 'success',
-      text: `Subscription initiated! Welcome to ${vendor.name}. First delivery set for tomorrow.`
-    });
-    setCurrentTab('subscriptions');
-    setSelectedVendor(null);
+
+    try {
+      const response = await fetch('/api/v1/subscriptions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        setSubscription({
+          ...resData.data,
+          nextDelivery: 'Tomorrow, 12:45 PM'
+        });
+        localStorage.setItem('tiffintrack_active_subscription', JSON.stringify(resData.data));
+        setEmptySubscription(false);
+        logActivity(`Subscribed to ${vendor.name} - ${plan.name}`);
+        setMessage({
+          type: 'success',
+          text: `Subscription initiated! Welcome to ${vendor.name}. First delivery set for tomorrow.`
+        });
+        setCurrentTab('subscriptions');
+        setSelectedVendor(null);
+      } else {
+        alert(resData.message || 'Failed to initiate subscription.');
+      }
+    } catch (err) {
+      console.error("Failed to subscribe directly:", err);
+      alert('An error occurred while creating the subscription.');
+    }
   };
 
   // Pause/Resume subscription
-  const handleToggleSubscription = () => {
+  const handleToggleSubscription = async () => {
     if (!subscription) return;
     const isPaused = subscription.status === 'Paused';
     const newStatus = isPaused ? 'Active' : 'Paused';
-    const updatedSub = {
-      ...subscription,
-      status: newStatus,
-      nextDelivery: newStatus === 'Active' ? 'Today, 12:45 PM' : 'Suspended (Paused)'
-    };
-    setSubscription(updatedSub);
-    localStorage.setItem('tiffintrack_active_subscription', JSON.stringify(updatedSub));
-    logActivity(`${isPaused ? 'Resumed' : 'Paused'} subscription at ${subscription.vendorName}`);
-    setMessage({
-      type: 'success',
-      text: `Subscription ${isPaused ? 'resumed' : 'paused'} successfully.`
-    });
+    
+    try {
+      const response = await fetch(`/api/v1/subscriptions/${subscription._id || subscription.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && resData.data) {
+          setSubscription({
+            ...resData.data,
+            nextDelivery: newStatus === 'Active' ? 'Tomorrow, 12:45 PM' : 'Suspended (Paused)'
+          });
+          logActivity(`${isPaused ? 'Resumed' : 'Paused'} subscription at ${subscription.vendorName}`);
+          setMessage({
+            type: 'success',
+            text: `Subscription ${isPaused ? 'resumed' : 'paused'} successfully.`
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Failed to toggle subscription status:", e);
+    }
   };
 
   // Cancel subscription
-  const handleCancelSubscription = () => {
+  const handleCancelSubscription = async () => {
     if (!subscription) return;
-    logActivity(`Cancelled subscription at ${subscription.vendorName}`);
-    setSubscription(null);
-    localStorage.setItem('tiffintrack_active_subscription', 'none');
-    setMessage({
-      type: 'success',
-      text: "Subscription cancelled successfully. You will not be billed further."
-    });
+    const subId = subscription._id || subscription.id;
+    try {
+      const response = await fetch(`/api/v1/subscriptions/${subId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'Cancelled' })
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && resData.data) {
+          setSubscription(null);
+          logActivity(`Cancelled subscription at ${subscription.vendorName}`);
+          setMessage({
+            type: 'success',
+            text: "Subscription cancelled successfully. You will not be billed further."
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Failed to cancel subscription:", e);
+    }
   };
 
   // Profile forms
@@ -471,9 +455,9 @@ export default function CustomerDashboard() {
   const activeLoading = isLoading || forceLoadingState;
 
   // Marketplace filter calculations
-  const filteredVendors = emptyVendors ? [] : initialVendors.filter(v => {
+  const filteredVendors = emptyVendors ? [] : vendors.filter(v => {
     // Only approved vendors are visible to customers
-    if (v.status !== "Approved") return false;
+    if (v.status !== "Approved" && v.status !== "approved") return false;
 
     const matchesSearch = searchText ? (
       v.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -584,7 +568,7 @@ export default function CustomerDashboard() {
               className="flex items-center space-x-2 pl-2 border-l border-slate-200 cursor-pointer group"
             >
               <div className="w-8 h-8 rounded-full bg-mint-light text-mint flex items-center justify-center font-bold text-sm">
-                A
+                {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : 'C'}
               </div>
               <span className="hidden sm:inline-block text-xs font-bold text-primary-text group-hover:text-mint transition-colors">
                 {profile.fullName.split(' ')[0]}
@@ -1341,7 +1325,7 @@ export default function CustomerDashboard() {
 
                     <div className="p-4 bg-snow border border-slate-200/40 rounded-2xl">
                       <span className="text-[10px] font-bold text-secondary-text uppercase tracking-wider block mb-1">Billing Value</span>
-                      <span className="text-base font-bold text-primary-text">₹{subscription.price} / cycle</span>
+                      <span className="text-base font-bold text-primary-text">₹{subscription.price || subscription.planId?.price || 3200} / cycle</span>
                     </div>
                   </div>
 

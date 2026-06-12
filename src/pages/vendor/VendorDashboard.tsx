@@ -43,18 +43,25 @@ export default function VendorDashboard() {
 
   const [activeTab, setActiveTab] = useState<SidebarTab>(getInitialTab());
 
-  // Sync tab with URL changes
-  React.useEffect(() => {
-    setActiveTab(getInitialTab());
-  }, [location.pathname]);
+  const [vendorUser, setVendorUser] = useState({
+    id: '',
+    name: '',
+    email: '',
+    role: '',
+    initials: '',
+    businessName: '',
+    city: '',
+    kitchenAddress: ''
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   
   // Modals operational state
   const [showAddMealModal, setShowAddMealModal] = useState(false);
   const [showCreatePlanModal, setShowCreatePlanModal] = useState(false);
-  const [mealList, setMealList] = useState<Meal[]>(mockMeals);
-  const [planList, setPlanList] = useState<SubscriptionPlan[]>(mockPlans);
+  const [mealList, setMealList] = useState<Meal[]>([]);
+  const [planList, setPlanList] = useState<SubscriptionPlan[]>([]);
 
   // New meal form state
   const [newMealName, setNewMealName] = useState('');
@@ -65,37 +72,165 @@ export default function VendorDashboard() {
   const [newPlanName, setNewPlanName] = useState('');
   const [newPlanPrice, setNewPlanPrice] = useState(3000);
 
-  const handleAddMealSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMealName) return;
-    const newMeal: Meal = {
-      id: `M${mealList.length + 1}`,
-      name: newMealName,
-      category: newMealCategory,
-      ordersThisWeek: 0,
-      price: newMealPrice,
-      status: 'Available'
-    };
-    setMealList([...mealList, newMeal]);
-    setNewMealName('');
-    setShowAddMealModal(false);
-    alert(`Success: "${newMeal.name}" has been listed on TiffinTrack.`);
+  const fetchMealsAndPlans = async (vId: string) => {
+    if (!vId) return;
+    setIsLoading(true);
+    try {
+      const headers: HeadersInit = {};
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      // Fetch meals
+      const mealsRes = await fetch(`/api/v1/meals/vendor/${vId}`, { headers });
+      if (mealsRes.ok) {
+        const resData = await mealsRes.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mappedMeals = resData.data.map((m: any) => ({
+            id: m._id,
+            name: m.mealName,
+            category: m.mealType,
+            ordersThisWeek: 0,
+            price: m.price,
+            status: m.availability ? 'Available' : 'Unavailable'
+          }));
+          setMealList(mappedMeals);
+        }
+      }
+
+      // Fetch plans
+      const plansRes = await fetch(`/api/v1/plans/vendor/${vId}`, { headers });
+      if (plansRes.ok) {
+        const resData = await plansRes.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mappedPlans = resData.data.map((p: any) => ({
+            id: p._id,
+            name: p.planName,
+            price: `₹${p.price}/${p.duration === 'weekly' ? 'week' : 'month'}`,
+            subscribersCount: 0,
+            status: p.isActive ? 'Active' : 'Inactive'
+          }));
+          setPlanList(mappedPlans);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching vendor data:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCreatePlanSubmit = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_vendor_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        const nameToUse = u.businessName || u.name || 'Vendor';
+        const initials = nameToUse.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+        const parsedId = u.id || u._id || '';
+        setVendorUser({
+          id: parsedId,
+          name: u.name || 'Vendor',
+          email: u.email || '',
+          role: u.role === 'vendor' ? 'Home Kitchen Owner' : u.role,
+          initials: initials || 'V',
+          businessName: u.businessName || u.name || 'Vendor Kitchen',
+          city: u.city || 'Anand',
+          kitchenAddress: u.kitchenAddress || 'Address'
+        });
+        
+        if (parsedId) {
+          fetchMealsAndPlans(parsedId);
+        }
+      } catch (e) {
+        console.error("Failed to parse tiffintrack_vendor_user from localStorage:", e);
+      }
+    }
+  }, []);
+
+  // Sync tab with URL changes
+  React.useEffect(() => {
+    setActiveTab(getInitialTab());
+  }, [location.pathname]);
+
+  const handleAddMealSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMealName) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/v1/meals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          mealName: newMealName,
+          description: `Special dish in the ${newMealCategory} category.`,
+          price: newMealPrice,
+          mealType: newMealCategory === 'Jain Special' ? 'Jain' : 'Veg',
+          availability: true
+        })
+      });
+
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        alert(`Error: ${resData.message || 'Failed to create meal.'}`);
+        return;
+      }
+
+      setNewMealName('');
+      setShowAddMealModal(false);
+      alert(`Success: "${newMealName}" has been listed on TiffinTrack.`);
+      if (vendorUser.id) {
+        fetchMealsAndPlans(vendorUser.id);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server. Please try again.");
+    }
+  };
+
+  const handleCreatePlanSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPlanName) return;
-    const newPlan: SubscriptionPlan = {
-      id: `P${planList.length + 1}`,
-      name: newPlanName,
-      price: `₹${newPlanPrice}/month`,
-      subscribersCount: 0,
-      status: 'Active'
-    };
-    setPlanList([...planList, newPlan]);
-    setNewPlanName('');
-    setShowCreatePlanModal(false);
-    alert(`Success: "${newPlan.name}" has been configured.`);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/v1/plans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          planName: newPlanName,
+          duration: 'monthly',
+          mealsPerDay: 1,
+          price: newPlanPrice,
+          description: `Monthly sub plan for ${newPlanName}.`,
+          isActive: true
+        })
+      });
+
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        alert(`Error: ${resData.message || 'Failed to create plan.'}`);
+        return;
+      }
+
+      setNewPlanName('');
+      setShowCreatePlanModal(false);
+      alert(`Success: "${newPlanName}" has been configured.`);
+      if (vendorUser.id) {
+        fetchMealsAndPlans(vendorUser.id);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server. Please try again.");
+    }
   };
 
   const renderDashboardOverview = () => {
@@ -361,18 +496,18 @@ export default function VendorDashboard() {
       <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-6 md:p-8 space-y-6 max-w-2xl">
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 rounded-2xl bg-[#00B074] text-white flex items-center justify-center font-extrabold text-xl shadow-md">
-            {mockProfile.initials}
+            {vendorUser.initials}
           </div>
           <div>
-            <h3 className="text-lg font-black text-[#1F2937]">{mockProfile.name}</h3>
-            <p className="text-xs text-[#00B074] font-bold">{mockProfile.role}</p>
+            <h3 className="text-lg font-black text-[#1F2937]">{vendorUser.name}</h3>
+            <p className="text-xs text-[#00B074] font-bold">{vendorUser.role}</p>
           </div>
         </div>
 
         <div className="border-t border-[#E5E7EB] pt-6 space-y-4 text-xs font-semibold text-[#1F2937]">
           <div className="grid grid-cols-2 gap-2 pb-3 border-b border-slate-100">
             <span className="text-slate-400">Business Kitchen Name:</span>
-            <span className="font-bold">Priya's Home Kitchen</span>
+            <span className="font-bold">{vendorUser.businessName}</span>
           </div>
           <div className="grid grid-cols-2 gap-2 pb-3 border-b border-slate-100">
             <span className="text-slate-400">FSSAI Licence Number:</span>
@@ -380,7 +515,7 @@ export default function VendorDashboard() {
           </div>
           <div className="grid grid-cols-2 gap-2 pb-3 border-b border-slate-100">
             <span className="text-slate-400">Kitchen Address:</span>
-            <span className="font-bold">Flat 102, Gardenia Residency, HSR Layout, Bengaluru</span>
+            <span className="font-bold">{vendorUser.kitchenAddress}, {vendorUser.city}</span>
           </div>
           <div className="grid grid-cols-2 gap-2 pb-3 border-b border-slate-100">
             <span className="text-slate-400">Operational Status:</span>
@@ -459,7 +594,7 @@ export default function VendorDashboard() {
       <div className="space-y-6">
         {activeTab === 'dashboard' && (
           <div className="space-y-1">
-            <h2 className="text-2xl font-black text-[#1F2937]">Welcome Back, Priya 👋</h2>
+            <h2 className="text-2xl font-black text-[#1F2937]">Welcome Back, {vendorUser.name} 👋</h2>
             <p className="text-xs text-slate-400 font-semibold">Manage your meals, subscriptions, and customer orders from one place.</p>
           </div>
         )}

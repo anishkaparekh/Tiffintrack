@@ -20,7 +20,8 @@ import { PlanItem, PlanStatus } from '../../types/plans';
 import { Sparkles, Plus, Layers, ShieldAlert, BarChart, CheckCircle } from 'lucide-react';
 
 export default function VendorPlans() {
-  const [plans, setPlans] = useState<PlanItem[]>(mockPlansList);
+  const [plans, setPlans] = useState<PlanItem[]>([]);
+  const [vendorId, setVendorId] = useState('');
   
   // Filtering and sorting states
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,56 +46,226 @@ export default function VendorPlans() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const handleSavePlan = (planData: Omit<PlanItem, 'id' | 'subscriberCount' | 'revenueGenerated'>) => {
-    if (editingPlan) {
-      setPlans(prev => 
-        prev.map(p => p.id === editingPlan.id ? { ...p, ...planData } : p)
-      );
-      showToast(`Success: "${planData.name}" has been updated.`, 'success');
-      setEditingPlan(null);
-    } else {
-      const newPlan: PlanItem = {
-        id: `P${Date.now()}`,
-        name: planData.name,
-        description: planData.description,
-        includedMeals: planData.includedMeals,
-        mealsPerWeek: planData.mealsPerWeek,
-        monthlyPrice: planData.monthlyPrice,
-        subscriberCount: 0,
-        revenueGenerated: 0,
-        duration: planData.duration,
-        status: planData.status
-      };
-      setPlans([newPlan, ...plans]);
-      showToast(`Success: "${newPlan.name}" has been created.`, 'success');
+  const fetchPlans = async (vId: string) => {
+    if (!vId) return;
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/v1/plans/vendor/${vId}`);
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mappedPlans: PlanItem[] = resData.data.map((p: any) => ({
+            id: p._id,
+            name: p.planName,
+            description: p.description,
+            includedMeals: [],
+            mealsPerWeek: `${p.mealsPerDay * 6} Meals/Week`,
+            monthlyPrice: `₹${p.price}`,
+            subscriberCount: 0,
+            revenueGenerated: 0,
+            duration: p.duration.charAt(0).toUpperCase() + p.duration.slice(1), // 'Weekly' or 'Monthly'
+            status: p.isActive ? 'Active' : 'Paused'
+          }));
+          setPlans(mappedPlans);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleStatusChange = (id: string, newStatus: PlanStatus) => {
-    setPlans(prev => 
-      prev.map(p => p.id === id ? { ...p, status: newStatus } : p)
-    );
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_vendor_user');
+    let vId = '';
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        vId = u.id || u._id || '';
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (!vId) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          vId = payload.id || '';
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    setVendorId(vId);
+    if (vId) {
+      fetchPlans(vId);
+    }
+  }, []);
+
+  const handleSavePlan = async (planData: Omit<PlanItem, 'id' | 'subscriberCount' | 'revenueGenerated'>) => {
+    try {
+      const token = localStorage.getItem('token');
+      let mealsPerDay = 1;
+      const parsedMeals = parseInt(planData.mealsPerWeek);
+      if (!isNaN(parsedMeals)) {
+        if (parsedMeals >= 12) {
+          mealsPerDay = 2;
+        }
+        if (parsedMeals >= 18) {
+          mealsPerDay = 3;
+        }
+      }
+      
+      const priceNumeric = parseInt(planData.monthlyPrice.replace(/[^\d]/g, '')) || 0;
+      
+      const payload = {
+        planName: planData.name,
+        description: planData.description,
+        duration: planData.duration.toLowerCase() === 'weekly' ? 'weekly' : 'monthly',
+        mealsPerDay,
+        price: priceNumeric,
+        isActive: planData.status === 'Active'
+      };
+
+      if (editingPlan) {
+        // Edit mode
+        const response = await fetch(`/api/v1/plans/${editingPlan.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        const resData = await response.json();
+        if (!response.ok || !resData.success) {
+          showToast(`Error: ${resData.message || 'Failed to update plan.'}`, 'error');
+          return;
+        }
+        showToast(`Success: "${planData.name}" has been updated.`, 'success');
+        setEditingPlan(null);
+      } else {
+        // Add mode
+        const response = await fetch('/api/v1/plans', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        const resData = await response.json();
+        if (!response.ok || !resData.success) {
+          showToast(`Error: ${resData.message || 'Failed to create plan.'}`, 'error');
+          return;
+        }
+        showToast(`Success: "${planData.name}" has been created.`, 'success');
+      }
+      if (vendorId) {
+        fetchPlans(vendorId);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error connecting to server.", 'error');
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: PlanStatus) => {
     const planName = plans.find(p => p.id === id)?.name;
-    showToast(`"${planName}" status changed to ${newStatus}.`, 'success');
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/plans/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          isActive: newStatus === 'Active'
+        })
+      });
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        showToast(`Error: ${resData.message || 'Failed to update status.'}`, 'error');
+        return;
+      }
+      showToast(`"${planName}" status changed to ${newStatus}.`, 'success');
+      if (vendorId) {
+        fetchPlans(vendorId);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error connecting to server.", 'error');
+    }
   };
 
-  const handleDuplicate = (plan: PlanItem) => {
-    const duplicated: PlanItem = {
-      ...plan,
-      id: `P${Date.now()}`,
-      name: `${plan.name} (Copy)`,
-      subscriberCount: 0,
-      revenueGenerated: 0
-    };
-    setPlans([duplicated, ...plans]);
-    showToast(`Duplicated "${plan.name}" as "${duplicated.name}".`, 'success');
+  const handleDuplicate = async (plan: PlanItem) => {
+    try {
+      const token = localStorage.getItem('token');
+      let mealsPerDay = 1;
+      const parsedMeals = parseInt(plan.mealsPerWeek);
+      if (!isNaN(parsedMeals)) {
+        if (parsedMeals >= 12) mealsPerDay = 2;
+        if (parsedMeals >= 18) mealsPerDay = 3;
+      }
+      const priceNumeric = parseInt(plan.monthlyPrice.replace(/[^\d]/g, '')) || 0;
+
+      const response = await fetch('/api/v1/plans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          planName: `${plan.name} (Copy)`,
+          description: plan.description,
+          duration: plan.duration.toLowerCase() === 'weekly' ? 'weekly' : 'monthly',
+          mealsPerDay,
+          price: priceNumeric,
+          isActive: plan.status === 'Active'
+        })
+      });
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
+        showToast(`Error: ${resData.message || 'Failed to duplicate plan.'}`, 'error');
+        return;
+      }
+      showToast(`Duplicated "${plan.name}" as "${plan.name} (Copy)".`, 'success');
+      if (vendorId) {
+        fetchPlans(vendorId);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error connecting to server.", 'error');
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     const planName = plans.find(p => p.id === id)?.name;
     if (confirm(`Are you sure you want to delete "${planName}"?`)) {
-      setPlans(prev => prev.filter(p => p.id !== id));
-      showToast(`"${planName}" has been removed.`, 'info');
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/v1/plans/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const resData = await response.json();
+        if (!response.ok || !resData.success) {
+          showToast(`Error: ${resData.message || 'Failed to delete plan.'}`, 'error');
+          return;
+        }
+        showToast(`"${planName}" has been removed.`, 'info');
+        if (vendorId) {
+          fetchPlans(vendorId);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Error connecting to server.", 'error');
+      }
     }
   };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -88,14 +88,65 @@ export default function Checkout() {
   });
 
   const chefId = selectedPlan ? selectedPlan.chefId : 1;
-  const currentChef = chefProfiles[chefId] || chefProfiles[1];
+  const [currentChef, setCurrentChef] = useState({
+    name: "Loading Chef...",
+    rating: 4.8,
+    location: "Anand, Gujarat",
+    cuisine: "Gujarati Home-Cooked Meals",
+    deliveryAreas: "Anand, Vidyanagar, Karamsad"
+  });
+
+  useEffect(() => {
+    const fetchChefProfile = async () => {
+      if (typeof chefId === 'string' && chefId.length === 24) {
+        try {
+          const response = await fetch(`/api/v1/vendors/${chefId}`);
+          if (response.ok) {
+            const resData = await response.json();
+            if (resData.success && resData.data) {
+              const v = resData.data;
+              setCurrentChef({
+                name: v.businessName || v.name || "Vendor Kitchen",
+                rating: 4.8,
+                location: `${v.city || 'Anand'}, Gujarat`,
+                cuisine: "Homestyle Cooked Meals",
+                deliveryAreas: v.city || "Anand"
+              });
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch chef profile in Checkout:", e);
+        }
+      } else {
+        const mockChef = chefProfiles[chefId] || chefProfiles[1];
+        setCurrentChef(mockChef);
+      }
+    };
+    fetchChefProfile();
+  }, [chefId]);
 
   // Address List state
   const [addresses, setAddresses] = useState([
-    { id: 1, type: "Home Address", name: "Anishka Parekh", mobile: "98765-43210", details: "Flat 402, Green Meadows, Shastri Marg, Vallabh Vidyanagar - 388120. Landmark: Near Shastri Statue" },
-    { id: 2, type: "Work Address", name: "Anishka Parekh", mobile: "98765-43210", details: "Room 102, GCET Engineering College, Mota Bazar, Anand - 388120. Landmark: Main Lab Block" }
+    { id: 1, type: "Home Address", name: "", mobile: "", details: "Flat 402, Green Meadows, Shastri Marg, Vallabh Vidyanagar - 388120. Landmark: Near Shastri Statue" },
+    { id: 2, type: "Work Address", name: "", mobile: "", details: "Room 102, GCET Engineering College, Mota Bazar, Anand - 388120. Landmark: Main Lab Block" }
   ]);
   const [selectedAddressId, setSelectedAddressId] = useState(1);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('customer_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setAddresses(prev => prev.map(addr => ({
+          ...addr,
+          name: u.name || addr.name,
+          mobile: u.phone || addr.mobile
+        })));
+      } catch (e) {
+        console.error("Failed to parse customer_user from localStorage in Checkout:", e);
+      }
+    }
+  }, []);
 
   // Modal Form states for New Address
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -207,35 +258,61 @@ export default function Checkout() {
   };
 
   // Checkout submission
-  const handleProceedPayment = () => {
+  const handleProceedPayment = async () => {
     if (!selectedPlan || emptyPlan) return;
     if (!agreeTerms || !understandPolicies) return;
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    const userStr = localStorage.getItem('customer_user');
+    let customerId = "";
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        customerId = u._id || u.id || "";
+      } catch (e) {
+        console.error("Failed to parse customer_user", e);
+      }
+    }
+
+    if (!customerId) {
+      // Fallback customer ID if not logged in (e.g. for guest checkout demo)
+      customerId = "6a2c2ae16199858551b2db1a"; 
+    }
+
+    const payload = {
+      customerId,
+      vendorId: selectedPlan.chefId,
+      planId: selectedPlan.planId || selectedPlan.id,
+      startDate: new Date(),
+      deliveryAddress: emptyAddress || addresses.length === 0 ? "No Address Specified" : (addresses.find(a => a.id === selectedAddressId)?.details || addresses[0].details),
+      preferences: mealPrefs
+    };
+
+    try {
+      const response = await fetch('/api/v1/subscriptions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const resData = await response.json();
       setIsSubmitting(false);
 
-      // Save active subscription details to localStorage
-      const activeSubObj = {
-        vendorId: selectedPlan.chefId,
-        vendorName: selectedPlan.chefName,
-        planName: selectedPlan.planName,
-        mealsRemaining: selectedPlan.mealsRemaining,
-        status: 'Active',
-        nextDelivery: selectedPlan.planName.includes("Lunch Only") ? `Tomorrow, ${lunchTime}` : `Tomorrow, ${lunchTime} & ${dinnerTime}`,
-        price: selectedPlan.price - (appliedCoupon ? appliedCoupon.discount : 0),
-        commencedDate: startDateType === 'tomorrow' ? 'Tomorrow' : (startDateType === 'next-monday' ? 'Next Monday' : customStartDate || 'Tomorrow'),
-        address: emptyAddress || addresses.length === 0 ? "No Address Specified" : (addresses.find(a => a.id === selectedAddressId)?.details || addresses[0].details),
-        preferences: mealPrefs
-      };
-
-      localStorage.setItem('tiffintrack_active_subscription', JSON.stringify(activeSubObj));
-      localStorage.removeItem('tiffintrack_checkout_plan');
-
-      // Navigate to success page
-      navigate('/subscription-success');
-    }, 1500);
+      if (response.ok && resData.success) {
+        localStorage.setItem('tiffintrack_active_subscription', JSON.stringify(resData.data));
+        localStorage.removeItem('tiffintrack_checkout_plan');
+        navigate('/subscription-success');
+      } else {
+        alert(resData.message || 'Failed to process subscription checkout.');
+      }
+    } catch (err) {
+      console.error("Checkout submission failed:", err);
+      setIsSubmitting(false);
+      alert('An error occurred during checkout processing.');
+    }
   };
 
   // Price calculations

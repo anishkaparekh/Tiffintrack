@@ -18,116 +18,7 @@ import {
 } from 'lucide-react';
 
 // Verification status mapping (Only Approved vendors are customer-visible)
-const VENDOR_STATUSES = {
-  1: "Approved",
-  2: "Approved",
-  3: "Approved",
-  4: "Approved",
-  5: "Approved",
-  6: "Approved",
-  7: "Pending Review",
-  8: "Suspended"
-};
-
-
-// Mock Vendors Database (aligned with CustomerDashboard database)
-const vendorsDb = [
-  {
-    id: 1,
-    name: "Priya's Home Kitchen",
-    owner: "Priya Patel",
-    area: "Anand",
-    locality: "Mota Bazar",
-    rating: 4.8,
-    reviewsCount: 245,
-    distance: 1.2,
-    startingPrice: 120,
-    mealType: "Veg",
-    experience: "5 Years",
-    tagline: "Fresh homemade Gujarati meals prepared daily with love.",
-    description: "We specialize in authentic Gujarati home-cooked meals prepared fresh every morning using locally sourced organic ingredients.",
-    story: "Priya's Home Kitchen started in 2021 with a simple mission: to provide wholesome, preservative-free Gujarati thalis to college students and working professionals living away from home. Every recipe has been passed down through generations in the Patel household.",
-    specialties: "Sweet Gujarati Dal, Lasaniya Bateta, Soft Phulka Rotlis, Ringan Oro.",
-    commitment: "100% vegetarian preparation. Low-oil cooking. No synthetic food colors, MSG, or artificial preservatives used. Sanitized stainless steel containers.",
-    deliveryAreas: "Anand, Vidyanagar, Karamsad",
-    deliveryTimings: "Lunch: 12:00 PM - 2:00 PM | Dinner: 7:30 PM - 9:30 PM",
-    deliveryTime: "30-40 mins",
-    cutoffTime: "3 hours prior to delivery hours",
-    meals: [
-      { name: "Gujarati Thali", description: "Traditional complete lunch thali with 4 Rotli, Gujarati Dal, Rice, 2 Seasonal Sabji, Papad, Salad, and Sweet of the day.", price: 150, type: "Veg" },
-      { name: "Jain Lunch Box", description: "Pure Jain preparation without root vegetables (no onion, garlic, potatoes). Includes 3 Ghee Roti, Dal, Rice, and Gourd/Cabbage Sabji.", price: 130, type: "Veg" },
-      { name: "Paneer Butter Masala Combo", description: "Creamy cottage cheese cubes in homestyle tomato-cashew gravy, served with 3 soft Chapatis and Jeera Rice.", price: 160, type: "Veg" },
-      { name: "Family Meal Pack", description: "Serves 3-4. Includes 12 soft Rotis, double portions of Gujarati Dal, Basmati Rice, 2 Sabjis, Sweet, and papad.", price: 450, type: "Veg" }
-    ],
-    plans: [
-      { name: "Weekly Veg Subscription", price: 800, duration: "7 Days", details: "Includes 7 Lunch meals. Complete standard thali delivered daily." },
-      { name: "Monthly Veg Plan", price: 3200, duration: "30 Days", details: "Includes 30 Lunch & 30 Dinner meals. Flexible skip/pause days available." },
-      { name: "Family Monthly Package", price: 9800, duration: "30 Days", details: "Serves 3-4 daily. Double lunch and dinner portions with weekend sweet specials." }
-    ]
-  },
-  {
-    id: 2,
-    name: "Healthy Meals Hub",
-    owner: "Meeta Shah",
-    area: "Vallabh Vidyanagar",
-    locality: "Shastri Marg",
-    rating: 4.5,
-    reviewsCount: 180,
-    distance: 2.5,
-    startingPrice: 150,
-    mealType: "Veg",
-    experience: "3 Years",
-    tagline: "Dietitian-curated high protein vegetarian meals.",
-    description: "Wholesome, low-calorie weight management tiffins, multi-grain chapatis, salad bowls, and high fiber lunches.",
-    story: "After working as a clinical dietitian for 8 years, Meeta Shah founded Healthy Meals Hub to bridge the gap between nutrition and taste. We design portion-controlled meals tailored for modern deskbound workers.",
-    specialties: "Quinoa Pulav, Multi-grain Ghee Roti, Oats Idli, High-protein Paneer Salads.",
-    commitment: "Strict portion control. Use of cold-pressed oils. Calorie breakdowns included with every delivery box.",
-    deliveryAreas: "Vidyanagar, Bakrol, Anand",
-    deliveryTimings: "Lunch: 12:30 PM - 2:30 PM | Dinner: 7:00 PM - 9:00 PM",
-    deliveryTime: "35-45 mins",
-    cutoffTime: "4 hours prior to delivery hours",
-    meals: [
-      { name: "High Protein Salad Box", description: "Fresh paneer cubes, boiled sprouts, cucumbers, cherry tomatoes, and mint dressing.", price: 150, type: "Veg" },
-      { name: "Weight Loss Veg Tiffin", description: "2 Multigrain rotis, fiber-rich leafy green sabji, brown rice, and thick sprouts curds.", price: 170, type: "Veg" },
-      { name: "Oats & Lentils Combo", description: "Healthy high-protein oats khichdi with mixed vegetables and low-fat organic raita.", price: 140, type: "Veg" }
-    ],
-    plans: [
-      { name: "Weekly Fitness Diet Plan", price: 1000, duration: "7 Days", details: "7 Protein Lunch daily: Brown Rice/Quinoa, Grilled Paneer, Sprout Salad, Dal" },
-      { name: "Monthly Healthy Diet Sub", price: 3800, duration: "30 Days", details: "30 Protein Lunch & 30 Diet Dinner daily: Healthy salads, fiber rotis, high protein sabjis" }
-    ]
-  },
-  {
-    id: 3,
-    name: "Kathiyawadi Swad Kitchen",
-    owner: "Arvindbhai Ghelani",
-    area: "Anand",
-    locality: "Amul Dairy Road",
-    rating: 4.7,
-    reviewsCount: 210,
-    distance: 0.8,
-    startingPrice: 130,
-    mealType: "Veg",
-    experience: "8 Years",
-    tagline: "Authentic, traditional Kathiyawadi swad.",
-    description: "Delicious regional thalis featuring Bajra Rotla, Sev Tameta, Ringan Oro, and fresh garlic chutney.",
-    story: "Arvindbhai Ghelani started this kitchen to preserve the spicy, rustic flavors of Kathiyawad. Every spice blend is hand-ground by the family, and we bake our millet flatbreads on traditional clay griddles.",
-    specialties: "Bajra Rotla with Ghee, Ringan Oro, Lasaniya Bateta, Garlic Chutney, Khichdi Kadhi.",
-    commitment: "Traditional clay pot baking. No food additives. Pure cow ghee used for flatbread toppings.",
-    deliveryAreas: "Anand, Karamsad, Mogar",
-    deliveryTimings: "Lunch: 11:30 AM - 1:30 PM | Dinner: 8:00 PM - 10:00 PM",
-    deliveryTime: "25-35 mins",
-    cutoffTime: "2 hours prior to delivery hours",
-    meals: [
-      { name: "Traditional Kathiyawadi Thali", description: "2 Bajra Rotla, Ringan Oro, Gathiya Shaak, Lasan Chutney, Khichdi Kadhi, and Masala Chaas.", price: 160, type: "Veg" },
-      { name: "Sev Tameta Combo", description: "Spicy and sweet tomato Shaak topped with crispy sev, served with 4 soft chapatis.", price: 130, type: "Veg" },
-      { name: "Ghee Bajra Rotla Box", description: "Single large Bajra Rotla smothered in pure ghee, served with jaggery and garlic paste.", price: 90, type: "Veg" }
-    ],
-    plans: [
-      { name: "Weekly Kathiyawadi Thali", price: 850, duration: "7 Days", details: "7 rustic Kathiyawadi lunches with buttermilk." },
-      { name: "Monthly Kathiyawadi Regular", price: 3300, duration: "30 Days", details: "30 lunches & 30 dinners: Complete regional rotation." }
-    ]
-  }
-];
+// Real backend vendor details integration
 
 // Reusable Skeletons for the Details page
 const HeroSkeleton = () => (
@@ -225,31 +116,122 @@ export default function VendorDetails({ preSelectedTab }) {
   // Saved / Favorites toggle state
   const [isSaved, setIsSaved] = useState(false);
 
-  // Adjust state when props change (React 18/19 pattern, replaces useEffect warning)
-  const [prevPreSelectedTab, setPrevPreSelectedTab] = useState(preSelectedTab);
-  if (preSelectedTab !== prevPreSelectedTab) {
-    setPrevPreSelectedTab(preSelectedTab);
-    setActiveTab(preSelectedTab || 'details');
-  }
+  // Real data states
+  const [vendor, setVendor] = useState(null);
+  const [meals, setMeals] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [otherVendors, setOtherVendors] = useState([]);
+  const [vendorStatus, setVendorStatus] = useState("Approved");
 
-  // Loading simulation state tracker (replaces useEffect warning)
-  const [prevId, setPrevId] = useState(id);
-  const [prevActiveTabState, setPrevActiveTabState] = useState(activeTab);
-  if (id !== prevId || activeTab !== prevActiveTabState) {
-    setPrevId(id);
-    setPrevActiveTabState(activeTab);
+  const fetchVendorDetails = async () => {
     setIsLoading(true);
-  }
-
-  // Loading simulation timer
-  useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => {
+    try {
+      // 1. Fetch vendor profile
+      const vendorRes = await fetch(`/api/v1/vendors/${id}`);
+      if (!vendorRes.ok) {
+        setVendorStatus("Suspended");
         setIsLoading(false);
-      }, 700);
-      return () => clearTimeout(timer);
+        return;
+      }
+      const vendorData = await vendorRes.json();
+      if (vendorData.success && vendorData.data) {
+        const v = vendorData.data;
+        const mappedVendor = {
+          id: v._id,
+          name: v.businessName || v.name || 'Vendor Kitchen',
+          owner: v.name || 'Vendor Owner',
+          area: v.city || 'Anand',
+          locality: v.kitchenAddress || 'Anand',
+          rating: 4.8,
+          reviewsCount: 245,
+          distance: 1.2,
+          startingPrice: 120,
+          mealType: "Veg",
+          experience: v.mealsPerDay ? `${v.mealsPerDay} Meals/Day` : "Homestyle",
+          tagline: v.description || "Fresh homemade meals prepared daily with love.",
+          description: v.description || "Fresh homestyle specialties cooked daily.",
+          story: `${v.businessName || v.name || 'Our Kitchen'} has been preparing fresh, wholesome, preservative-free home-cooked meals for local clients. Every recipe is crafted with care and high quality ingredients.`,
+          specialties: "Soft Phulka Rotis, homestyle subjis, organic daal.",
+          commitment: "100% hygienic preparation. Low-oil cooking. No synthetic food colors, MSG, or artificial preservatives used.",
+          deliveryAreas: v.city || "Anand",
+          deliveryTimings: "Lunch: 12:00 PM - 2:00 PM | Dinner: 7:30 PM - 9:30 PM",
+          deliveryTime: "30-40 mins",
+          cutoffTime: "3 hours prior to delivery hours",
+          status: v.verificationStatus || 'approved'
+        };
+        setVendor(mappedVendor);
+        setVendorStatus(v.verificationStatus === 'approved' ? 'Approved' : 'Pending Review');
+        
+        // 2. Fetch vendor meals
+        const mealsRes = await fetch(`/api/v1/meals/vendor/${v._id}`);
+        if (mealsRes.ok) {
+          const mealsData = await mealsRes.json();
+          const mealsArr = mealsData.success && Array.isArray(mealsData.data) ? mealsData.data : (Array.isArray(mealsData) ? mealsData : []);
+          const mappedMeals = mealsArr.map(m => ({
+            name: m.mealName,
+            description: m.description || 'No description available.',
+            price: m.price,
+            type: m.mealType || 'Veg'
+          }));
+          setMeals(mappedMeals);
+        }
+        
+        // 3. Fetch vendor plans
+        const plansRes = await fetch(`/api/v1/plans/vendor/${v._id}`);
+        if (plansRes.ok) {
+          const plansData = await plansRes.json();
+          const plansArr = plansData.success && Array.isArray(plansData.data) ? plansData.data : (Array.isArray(plansData) ? plansData : []);
+          const mappedPlans = plansArr.map(p => ({
+            name: p.planName,
+            price: p.price,
+            duration: p.duration === 'weekly' ? '7 Days' : '30 Days',
+            details: p.description || `${p.mealsPerDay} meals per day`
+          }));
+          setPlans(mappedPlans);
+        }
+
+        // 4. Fetch other approved vendors for recommendation
+        try {
+          const otherRes = await fetch('/api/v1/vendors');
+          if (otherRes.ok) {
+            const otherData = await otherRes.json();
+            if (otherData.success && Array.isArray(otherData.data)) {
+              const mappedOther = otherData.data
+                .filter(otherV => otherV._id !== v._id)
+                .map(otherV => ({
+                  id: otherV._id,
+                  name: otherV.businessName || otherV.name || 'Vendor Kitchen',
+                  rating: 4.8,
+                  area: otherV.city || 'Anand',
+                  startingPrice: 120
+                }));
+              setOtherVendors(mappedOther);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch other kitchens:", err);
+        }
+      } else {
+        setVendorStatus("Suspended");
+      }
+    } catch (e) {
+      console.error(e);
+      setVendorStatus("Suspended");
+    } finally {
+      setIsLoading(false);
     }
-  }, [isLoading]);
+  };
+
+  useEffect(() => {
+    fetchVendorDetails();
+  }, [id]);
+
+  // Adjust active tab when preSelectedTab prop changes
+  useEffect(() => {
+    if (preSelectedTab) {
+      setActiveTab(preSelectedTab);
+    }
+  }, [preSelectedTab]);
 
   // Auto-clear message
   useEffect(() => {
@@ -261,11 +243,7 @@ export default function VendorDetails({ preSelectedTab }) {
     }
   }, [message]);
 
-  // Locate current vendor data
-  const vendorStatus = VENDOR_STATUSES[parseInt(id)] || "Approved";
-  const vendor = vendorsDb.find(v => v.id === parseInt(id)) || vendorsDb[0];
-
-  if (vendorStatus !== "Approved") {
+  if (!isLoading && vendorStatus !== "Approved") {
     return (
       <div className="min-h-screen bg-snow flex flex-col justify-between font-sans">
         <header className="bg-white border-b border-slate-200/60 sticky top-0 z-35 font-semibold">
@@ -664,14 +642,14 @@ export default function VendorDetails({ preSelectedTab }) {
                     <MealCardSkeleton />
                   </div>
                 ) : (
-                  emptyMeals ? (
+                  (emptyMeals || meals.length === 0) ? (
                     <div className="bg-white border border-slate-200/50 rounded-3xl p-10 shadow-card text-center flex flex-col items-center justify-center min-h-[200px]">
                       <Inbox size={32} className="text-slate-350 mb-2" />
                       <p className="text-xs text-secondary-text">No meals currently published.</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {vendor.meals.map((meal) => (
+                      {meals.map((meal) => (
                         <div 
                           key={meal.name}
                           className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card hover:border-mint/10 transition-all flex justify-between gap-4"
@@ -748,14 +726,14 @@ export default function VendorDetails({ preSelectedTab }) {
                     <PlanCardSkeleton />
                   </div>
                 ) : (
-                  emptyPlans ? (
+                  (emptyPlans || plans.length === 0) ? (
                     <div className="bg-white border border-slate-200/50 rounded-3xl p-12 shadow-card text-center flex flex-col items-center justify-center min-h-[220px]">
                       <Inbox size={32} className="text-slate-350 mb-2" />
                       <p className="text-xs text-secondary-text">No active subscription packages found.</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 gap-4">
-                      {vendor.plans.map((plan) => (
+                      {plans.map((plan) => (
                         <div 
                           key={plan.name}
                           className="bg-white border-2 border-slate-100 hover:border-mint/20 rounded-3xl p-6 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
@@ -841,7 +819,7 @@ export default function VendorDetails({ preSelectedTab }) {
               <h3 className="text-sm font-extrabold text-primary-text">Other Kitchens Nearby</h3>
               
               <div className="grid sm:grid-cols-3 gap-4">
-                {vendorsDb.filter(v => v.id !== vendor.id).map((rel) => (
+                {otherVendors.slice(0, 3).map((rel) => (
                   <div key={rel.id} className="bg-white border border-slate-200/50 p-4 rounded-2xl shadow-card text-center flex flex-col justify-between h-[150px]">
                     <div>
                       <h4 className="text-xs font-bold text-primary-text truncate">{rel.name}</h4>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -38,11 +38,25 @@ export default function CheckoutPlaceholder() {
   });
 
   // Form states
-  const [fullName, setFullName] = useState("Anishka Parekh");
-  const [phoneNumber, setPhoneNumber] = useState("98765-43210");
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("Flat 402, Green Meadows, Shastri Marg");
   const [city, setCity] = useState("Vallabh Vidyanagar");
   const [pincode, setPincode] = useState("388120");
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('customer_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setFullName(u.name || "");
+        setPhoneNumber(u.phone || "");
+        if (u.city) setCity(u.city);
+      } catch (e) {
+        console.error("Failed to parse customer_user from localStorage in CheckoutPlaceholder:", e);
+      }
+    }
+  }, []);
   const [deliverySlot, setDeliverySlot] = useState(() => {
     if (selectedPlan.planName.includes("Lunch Only")) return "lunch";
     if (selectedPlan.planName.includes("Dinner Only")) return "dinner";

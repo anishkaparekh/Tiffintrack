@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { ROLES, UserRole } from '../constants/roles';
 
 export interface IUser extends Document {
@@ -8,6 +8,13 @@ export interface IUser extends Document {
   password?: string;
   role: UserRole;
   isActive: boolean;
+  verificationStatus?: 'pending' | 'under_review' | 'approved' | 'rejected';
+  phone?: string;
+  businessName?: string;
+  kitchenAddress?: string;
+  city?: string;
+  mealsPerDay?: number;
+  description?: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -36,6 +43,52 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: Object.values(ROLES),
       default: ROLES.CUSTOMER,
+    },
+    verificationStatus: {
+      type: String,
+      enum: ['pending', 'under_review', 'approved', 'rejected'],
+      required: function(this: any) {
+        return this.role === ROLES.VENDOR;
+      },
+      default: function(this: any) {
+        if (this.role === ROLES.VENDOR) {
+          return 'pending';
+        }
+        return undefined;
+      }
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    businessName: {
+      type: String,
+      trim: true,
+      required: function(this: any) {
+        return this.role === ROLES.VENDOR;
+      },
+    },
+    kitchenAddress: {
+      type: String,
+      trim: true,
+      required: function(this: any) {
+        return this.role === ROLES.VENDOR;
+      },
+    },
+    city: {
+      type: String,
+      trim: true,
+      required: function(this: any) {
+        return this.role === ROLES.VENDOR;
+      },
+    },
+    mealsPerDay: {
+      type: Number,
+      default: 0,
+    },
+    description: {
+      type: String,
+      trim: true,
     },
     isActive: {
       type: Boolean,

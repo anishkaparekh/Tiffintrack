@@ -21,7 +21,8 @@ import { OrderItem, OrderStatus } from '../../types/orders';
 import { Sparkles, BarChart, CheckCircle } from 'lucide-react';
 
 export default function VendorOrders() {
-  const [orders, setOrders] = useState<OrderItem[]>(mockOrdersList);
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [vendorId, setVendorId] = useState<string>('');
   
   // Filtering and sorting states
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +30,7 @@ export default function VendorOrders() {
   const [selectedDeliveryTime, setSelectedDeliveryTime] = useState('All Deliveries');
 
   // Simulation states
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEmpty, setIsEmpty] = useState(false);
 
   // Drawer and Toast states
@@ -42,11 +43,90 @@ export default function VendorOrders() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const handleStatusUpdate = (id: string, newStatus: OrderStatus) => {
-    setOrders(prev => 
-      prev.map(o => o.id === id ? { ...o, status: newStatus } : o)
-    );
-    showToast(`Order ${id} status updated to "${newStatus}".`, 'success');
+  const fetchVendorOrders = async (vId: string) => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/orders/vendor/${vId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped = resData.data.map((order: any) => {
+            const customer = order.customerId || {};
+            const meal = order.mealId || {};
+            const uiStatus: OrderStatus = order.status === 'Out For Delivery' ? 'Out for Delivery' : order.status;
+
+            return {
+              id: order._id,
+              customerName: customer.name || 'Unknown Customer',
+              phone: customer.phone || 'N/A',
+              address: order.deliveryAddress || customer.address || 'No Address Specified',
+              mealName: meal.mealName || 'Tiffin Meal',
+              plan: order.subscriptionId?.planName || 'Tiffin Subscription',
+              status: uiStatus,
+              deliveryTime: '12:30 PM',
+              orderDate: new Date(order.orderDate || order.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+              quantity: 1,
+              priority: 'On Track' as PriorityLevel
+            };
+          });
+          setOrders(mapped);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch vendor orders:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_vendor_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        const parsedId = u.id || u._id || '';
+        setVendorId(parsedId);
+        if (parsedId) {
+          fetchVendorOrders(parsedId);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (e) {
+        console.error("Failed to parse vendor user:", e);
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleStatusUpdate = async (id: string, newStatus: OrderStatus) => {
+    const dbStatus = newStatus === 'Out for Delivery' ? 'Out For Delivery' : newStatus;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/orders/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: dbStatus })
+      });
+      if (response.ok) {
+        setOrders(prev => 
+          prev.map(o => o.id === id ? { ...o, status: newStatus } : o)
+        );
+        showToast(`Order status updated to "${newStatus}".`, 'success');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error updating status.", "error");
+    }
   };
 
   const handleExport = () => {

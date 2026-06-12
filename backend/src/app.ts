@@ -53,12 +53,31 @@ app.use('/api', limiter);
 
 // Base Health Check endpoint
 app.get('/api/health', (_req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'TiffinTrack API is running',
-  });
-});
+  try {
+    const isConnected = mongoose.connection.readyState === 1;
+    const dbStatus = isConnected ? 'connected' : 'disconnected';
+    
+    if (!isConnected) {
+      return res.status(500).json({
+        success: false,
+        message: 'TiffinTrack API is running but database is disconnected',
+        database: dbStatus,
+      });
+    }
 
+    return res.status(200).json({
+      success: true,
+      message: 'TiffinTrack API is running',
+      database: dbStatus,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: 'Health check failed',
+      error: error.message || error,
+    });
+  }
+});
 // Database Status endpoint
 app.get('/api/db-status', (_req, res) => {
   const isConnected = mongoose.connection.readyState === 1;
@@ -71,12 +90,14 @@ app.get('/api/db-status', (_req, res) => {
 // Register versioned api router
 app.use('/api/v1', routes);
 
+// Register direct auth api route
+import authRoutes from './routes/auth.routes';
+app.use('/api/auth', authRoutes);
+
 // Wildcard undefined route catcher
 app.all('*', (req, _res, next) => {
   next(new ApiError(404, `Route ${req.originalUrl} not found on this server`));
 });
-
-// Centralized error middleware integration
 app.use(errorHandler);
 
 export default app;
