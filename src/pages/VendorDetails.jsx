@@ -17,6 +17,13 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+// Import Reviews Components
+import RatingSummaryCard from '../components/reviews/RatingSummaryCard';
+import ReviewCard from '../components/reviews/ReviewCard';
+import ReviewModal from '../components/reviews/ReviewModal';
+import EmptyReviewsState from '../components/reviews/EmptyReviewsState';
+import ReviewLoadingSkeleton from '../components/reviews/ReviewLoadingSkeleton';
+
 // Verification status mapping (Only Approved vendors are customer-visible)
 // Real backend vendor details integration
 
@@ -123,6 +130,20 @@ export default function VendorDetails({ preSelectedTab }) {
   const [otherVendors, setOtherVendors] = useState([]);
   const [vendorStatus, setVendorStatus] = useState("Approved");
 
+  // Phase 7: Reviews & Ratings states
+  const [reviews, setReviews] = useState([]);
+  const [stats, setStats] = useState({
+    averageRating: 0,
+    totalReviews: 0,
+    ratingBreakdown: { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 }
+  });
+  const [isReviewsLoading, setIsReviewsLoading] = useState(true);
+  const [eligibleItems, setEligibleItems] = useState([]);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [customerId, setCustomerId] = useState('');
+
   const fetchVendorDetails = async () => {
     setIsLoading(true);
     try {
@@ -223,8 +244,206 @@ export default function VendorDetails({ preSelectedTab }) {
   };
 
   useEffect(() => {
+    const userStr = localStorage.getItem('customer_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setCustomerId(u._id || u.id || '');
+      } catch (e) {
+        console.error('Failed to parse customer_user:', e);
+      }
+    }
+  }, []);
+
+  const fetchReviewsAndStats = async (vendorId, currentCustId) => {
+    setIsReviewsLoading(true);
+    try {
+      // Fetch stats
+      const statsRes = await fetch(`/api/v1/reviews/vendor/${vendorId}/stats`);
+      if (statsRes.ok) {
+        const res = await statsRes.json();
+        if (res.success && res.data) {
+          setStats(res.data);
+        }
+      }
+
+      // Fetch reviews
+      const reviewsRes = await fetch(`/api/v1/reviews/vendor/${vendorId}`);
+      let fetchedReviews = [];
+      if (reviewsRes.ok) {
+        const res = await reviewsRes.json();
+        if (res.success && Array.isArray(res.data)) {
+          fetchedReviews = res.data;
+          setReviews(res.data);
+        }
+      }
+
+      // If customer is logged in, check eligibility
+      if (currentCustId) {
+        let allItems = [];
+
+        // 1. Fetch Subscriptions
+        try {
+          const subsRes = await fetch(`/api/v1/subscriptions/customer/${currentCustId}`);
+          if (subsRes.ok) {
+            const subsData = await subsRes.json();
+            if (subsData.success && Array.isArray(subsData.data)) {
+              const vendorSubs = subsData.data.filter(sub => {
+                const subVendorId = sub.vendorId?._id || sub.vendorId;
+                return subVendorId === vendorId;
+              });
+              vendorSubs.forEach(sub => {
+                allItems.push({
+                  id: sub._id,
+                  label: `Subscription - ${sub.planName} (${new Date(sub.createdAt).toLocaleDateString()})`,
+                  type: 'subscription'
+                });
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching subscriptions for eligibility check:", err);
+        }
+
+        // 2. Fetch Orders
+        try {
+          const ordersRes = await fetch(`/api/v1/orders/customer/${currentCustId}`);
+          if (ordersRes.ok) {
+            const ordersData = await ordersRes.json();
+            if (ordersData.success && Array.isArray(ordersData.data)) {
+              const vendorOrders = ordersData.data.filter(ord => {
+                const ordVendorId = ord.vendorId?._id || ord.vendorId;
+                return ordVendorId === vendorId;
+              });
+              vendorOrders.forEach(ord => {
+                allItems.push({
+                  id: ord._id,
+                  label: `Order - ${ord.mealName || 'Meal'} (${new Date(ord.createdAt).toLocaleDateString()})`,
+                  type: 'order'
+                });
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching orders for eligibility check:", err);
+        }
+
+        // 3. Filter out already reviewed ones
+        const filtered = allItems.filter(item => {
+          const hasReview = fetchedReviews.some(rev => {
+            const revCustId = rev.customerId?._id || rev.customerId;
+            return revCustId === currentCustId && (rev.subscriptionId === item.id || rev.orderId === item.id);
+          });
+          return !hasReview;
+        });
+
+        setEligibleItems(filtered);
+      }
+    } catch (e) {
+      console.error("Error in fetchReviewsAndStats:", e);
+    } finally {
+      setIsReviewsLoading(false);
+    }
+  };
+
+  const refreshReviewsAndStats = async () => {
+    await fetchReviewsAndStats(id, customerId);
+  };
+
+  useEffect(() => {
     fetchVendorDetails();
   }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchReviewsAndStats(id, customerId);
+    }
+  }, [id, customerId]);
+
+  const handleReviewSubmit = async (submitData) => {
+    setIsSubmittingReview(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (editingReview) {
+        const response = await fetch(`/api/v1/reviews/${editingReview._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            rating: submitData.rating,
+            reviewText: submitData.reviewText
+          })
+        });
+        const resData = await response.json();
+        if (response.ok && resData.success) {
+          setMessage({ type: 'success', text: 'Review updated successfully!' });
+          setIsReviewModalOpen(false);
+          setEditingReview(null);
+          await refreshReviewsAndStats();
+        } else {
+          setMessage({ type: 'error', text: resData.message || 'Failed to update review.' });
+        }
+      } else {
+        const response = await fetch(`/api/v1/reviews`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            vendorId: id,
+            rating: submitData.rating,
+            reviewText: submitData.reviewText,
+            subscriptionId: submitData.subscriptionId,
+            orderId: submitData.orderId
+          })
+        });
+        const resData = await response.json();
+        if (response.ok && resData.success) {
+          setMessage({ type: 'success', text: 'Review submitted successfully!' });
+          setIsReviewModalOpen(false);
+          await refreshReviewsAndStats();
+        } else {
+          setMessage({ type: 'error', text: resData.message || 'Failed to submit review.' });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      setMessage({ type: 'error', text: 'Error submitting review.' });
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
+  const handleReviewDelete = async (reviewId) => {
+    if (!window.confirm('Are you sure you want to delete this review?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/reviews/${reviewId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        setMessage({ type: 'success', text: 'Review deleted successfully!' });
+        await refreshReviewsAndStats();
+      } else {
+        setMessage({ type: 'error', text: resData.message || 'Failed to delete review.' });
+      }
+    } catch (e) {
+      console.error(e);
+      setMessage({ type: 'error', text: 'Error deleting review.' });
+    }
+  };
+
+  const handleEditClick = (review) => {
+    setEditingReview(review);
+    setIsReviewModalOpen(true);
+  };
 
   // Adjust active tab when preSelectedTab prop changes
   useEffect(() => {
@@ -449,7 +668,7 @@ export default function VendorDetails({ preSelectedTab }) {
               <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-secondary-text pt-1">
                 <span className="flex items-center text-amber-500 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
                   <Star size={12} fill="#F59E0B" className="mr-1" />
-                  {vendor.rating} ({vendor.reviewsCount} Reviews)
+                  {stats.totalReviews > 0 ? stats.averageRating.toFixed(1) : vendor.rating} ({stats.totalReviews} {stats.totalReviews === 1 ? 'Review' : 'Reviews'})
                 </span>
                 <span className="flex items-center">
                   <MapPin size={14} className="text-mint mr-1" />
@@ -772,45 +991,46 @@ export default function VendorDetails({ preSelectedTab }) {
 
             {/* CUSTOMER REVIEWS SUB-SECTION (Directly displayed below the main active tab) */}
             <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card space-y-4">
-              <div className="border-b border-slate-100 pb-3">
-                <h3 className="text-base font-extrabold text-primary-text">What Our Customers Say</h3>
-                <p className="text-[11px] text-secondary-text">Latest verified testimonials left by subscribers.</p>
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center flex-wrap gap-2">
+                <div>
+                  <h3 className="text-base font-extrabold text-primary-text">What Our Customers Say</h3>
+                  <p className="text-[11px] text-secondary-text">Latest verified testimonials left by subscribers.</p>
+                </div>
+                {eligibleItems.length > 0 && (
+                  <button
+                    onClick={() => { setEditingReview(null); setIsReviewModalOpen(true); }}
+                    className="px-4 py-2 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
+                  >
+                    Write Review
+                  </button>
+                )}
               </div>
 
-              {activeLoading ? (
-                <div className="space-y-3">
-                  <ReviewCardSkeleton />
-                  <ReviewCardSkeleton />
+              {isReviewsLoading ? (
+                <div className="space-y-4">
+                  <div className="h-44 bg-white rounded-3xl animate-pulse"></div>
+                  <ReviewLoadingSkeleton />
                 </div>
+              ) : reviews.length === 0 ? (
+                <EmptyReviewsState 
+                  message="No reviews recorded yet"
+                  subMessage="Ratings and feedback details will be shown here once customers start reviewing this chef's meals."
+                />
               ) : (
-                emptyReviews ? (
-                  <div className="text-center py-6">
-                    <Inbox size={24} className="mx-auto text-slate-300 mb-2" />
-                    <p className="text-xs text-secondary-text">No reviews recorded yet.</p>
-                  </div>
-                ) : (
+                <div className="space-y-6">
+                  <RatingSummaryCard stats={stats} />
                   <div className="space-y-3.5">
-                    {reviewsList.map((rev) => (
-                      <div key={rev.name} className="p-4 bg-snow border border-slate-150 rounded-2xl space-y-1.5 text-xs text-secondary-text leading-relaxed">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-700">{rev.name}</span>
-                          <span className="text-[10px] text-slate-400 font-normal">{rev.date}</span>
-                        </div>
-                        <div className="flex items-center text-amber-500">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star 
-                              key={i} 
-                              size={10} 
-                              fill={i < Math.floor(rev.rating) ? "#F59E0B" : "none"} 
-                              className={i < Math.floor(rev.rating) ? "text-amber-500" : "text-slate-300"} 
-                            />
-                          ))}
-                        </div>
-                        <p>"{rev.comment}"</p>
-                      </div>
+                    {reviews.map((rev) => (
+                      <ReviewCard
+                        key={rev._id}
+                        review={rev}
+                        isCustomerView={false}
+                        onEdit={(rev.customerId?._id || rev.customerId) === customerId ? () => handleEditClick(rev) : null}
+                        onDelete={(rev.customerId?._id || rev.customerId) === customerId ? () => handleReviewDelete(rev._id) : null}
+                      />
                     ))}
                   </div>
-                )
+                </div>
               )}
             </div>
 
@@ -858,6 +1078,16 @@ export default function VendorDetails({ preSelectedTab }) {
           </div>
         </div>
       </footer>
+
+      {/* Review Modal Dialog popup */}
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => { setIsReviewModalOpen(false); setEditingReview(null); }}
+        onSubmit={handleReviewSubmit}
+        initialData={editingReview}
+        eligibleItems={eligibleItems}
+        isSubmitting={isSubmittingReview}
+      />
     </div>
   );
 }

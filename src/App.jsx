@@ -29,6 +29,8 @@ import TrackOrders from './pages/TrackOrders';
 import OrderHistory from './pages/OrderHistory';
 import ProfileSettings from './pages/ProfileSettings';
 import Notifications from './pages/Notifications';
+import MyReviews from './pages/MyReviews';
+import VendorReviews from './pages/vendor/VendorReviews';
 
 function App() {
   return (
@@ -59,6 +61,7 @@ function App() {
         <Route path="/vendor/revenue" element={<VendorProtectedRoute><VendorRevenue /></VendorProtectedRoute>} />
         <Route path="/vendor/profile" element={<VendorProtectedRoute><ProfilePage /></VendorProtectedRoute>} />
         <Route path="/vendor/notifications" element={<VendorProtectedRoute><VendorNotifications /></VendorProtectedRoute>} />
+        <Route path="/vendor/reviews" element={<VendorProtectedRoute><VendorReviews /></VendorProtectedRoute>} />
 
         {/* Customer Dashboard routes */}
         <Route path="/customer-dashboard" element={<ProtectedRoute allowedRole="customer"><CustomerDashboard /></ProtectedRoute>} />
@@ -67,6 +70,7 @@ function App() {
         <Route path="/order-history" element={<ProtectedRoute allowedRole="customer"><OrderHistory /></ProtectedRoute>} />
         <Route path="/profile-settings" element={<ProtectedRoute allowedRole="customer"><ProfileSettings /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute allowedRole="customer"><Notifications /></ProtectedRoute>} />
+        <Route path="/my-reviews" element={<ProtectedRoute allowedRole="customer"><MyReviews /></ProtectedRoute>} />
         <Route path="/browse-vendors" element={<ProtectedRoute allowedRole="customer"><CustomerDashboard /></ProtectedRoute>} />
         <Route path="/vendor/:id" element={<ProtectedRoute allowedRole="customer"><VendorDetails preSelectedTab="details" /></ProtectedRoute>} />
         <Route path="/vendor/:id/meals" element={<ProtectedRoute allowedRole="customer"><CustomerVendorMeals /></ProtectedRoute>} />

@@ -9,7 +9,8 @@ import {
   Settings, 
   LogOut, 
   X,
-  Utensils
+  Utensils,
+  Star
 } from 'lucide-react';
 
 export default function Sidebar({ currentTab, onTabChange, isOpen, onClose }) {
@@ -23,6 +24,7 @@ export default function Sidebar({ currentTab, onTabChange, isOpen, onClose }) {
     { id: 'history', label: 'Order History', icon: History },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'settings', label: 'Profile Settings', icon: Settings },
+    { id: 'reviews', label: 'My Reviews', icon: Star },
   ];
 
   const handleLogout = () => {

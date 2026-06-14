@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { signOutVendor } from '../../auth/session';
 import { 
   LayoutDashboard, Utensils, CalendarRange, ShoppingBag, 
-  Users, TrendingUp, Bell, Settings, LogOut, X 
+  Users, TrendingUp, Bell, Settings, LogOut, X, Star 
 } from 'lucide-react';
 
-export type SidebarTab = 'dashboard' | 'meals' | 'plans' | 'orders' | 'customers' | 'revenue' | 'notifications' | 'profile';
+export type SidebarTab = 'dashboard' | 'meals' | 'plans' | 'orders' | 'customers' | 'revenue' | 'notifications' | 'profile' | 'reviews';
 
 interface MenuItem {
   tab: SidebarTab | 'logout';
@@ -22,7 +22,8 @@ const menuItems: MenuItem[] = [
   { tab: 'customers', label: 'Customers', icon: Users },
   { tab: 'revenue', label: 'Revenue', icon: TrendingUp },
   { tab: 'notifications', label: 'Notifications', icon: Bell },
-  { tab: 'profile', label: 'Profile Settings', icon: Settings }
+  { tab: 'profile', label: 'Profile Settings', icon: Settings },
+  { tab: 'reviews', label: 'Reviews', icon: Star }
 ];
 
 interface VendorSidebarProps {
