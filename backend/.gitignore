@@ -3,6 +3,8 @@ node_modules/
 
 # Production Build
 dist/
+build/
+coverage/
 
 # Local Environment Variables
 .env

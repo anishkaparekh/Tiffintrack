@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
+import { NotificationService } from '../services/notification.service';
 
 /**
  * Get all approved vendors.
@@ -48,7 +49,7 @@ export const verifyVendor = asyncHandler(async (req: Request, res: Response) => 
   const { status } = req.body; // 'approved' | 'rejected' | 'under_review' | 'pending'
 
   if (!status) {
-    throw new ApiError(400, 'Verification status is required.');
+     throw new ApiError(400, 'Verification status is required.');
   }
 
   const validStatuses = ['pending', 'under_review', 'approved', 'rejected'];
@@ -65,6 +66,43 @@ export const verifyVendor = asyncHandler(async (req: Request, res: Response) => 
   if (!vendor) {
     throw new ApiError(404, 'Vendor not found or user is not a vendor.');
   }
+
+  // Trigger Notification to Vendor
+  let title = '';
+  let message = '';
+  let type: 'success' | 'warning' | 'info' = 'info';
+
+  if (status === 'approved') {
+    title = '🌟 Kitchen Registration Approved!';
+    message = `Congratulations! Your kitchen "${vendor.businessName || vendor.name}" has been approved. You can now list plans and accept orders!`;
+    type = 'success';
+  } else if (status === 'rejected') {
+    title = '⚠️ Kitchen Verification Rejected';
+    message = `Your kitchen verification request was rejected. Please review your details or contact support.`;
+    type = 'warning';
+  } else if (status === 'under_review') {
+    title = 'ℹ️ Kitchen Under Review';
+    message = `Your kitchen registration is currently under review by our administration team.`;
+    type = 'info';
+  }
+
+  if (title) {
+    await NotificationService.createNotification({
+      userId: vendor._id.toString(),
+      userRole: 'vendor',
+      title,
+      message,
+      category: 'VENDOR',
+      type,
+    });
+  }
+
+  // Trigger Notification to Admins
+  await NotificationService.createSystemNotificationForAdmins(
+    '🛡️ Vendor Verification Updated',
+    `Vendor "${vendor.name}" (${vendor.businessName || 'No business name'}) verification status updated to '${status}'.`,
+    { vendorId: vendor._id, status }
+  );
 
   res.status(200).json({
     success: true,

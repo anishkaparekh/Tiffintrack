@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { User } from '../models/User';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
 import { generateAccessToken } from '../utils/jwt';
+import { NotificationService } from '../services/notification.service';
 
 /**
  * Register a new user.
@@ -47,6 +49,15 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
   });
 
   console.log(`[Auth Audit] User created: SUCCESS. User created with ID: ${user._id}, email: ${user.email}`);
+
+  // Trigger Notification to Admins if a Vendor registers
+  if (role === 'vendor') {
+    await NotificationService.createSystemNotificationForAdmins(
+      '🆕 New Vendor Registered',
+      `Chef "${name}" has registered the kitchen "${businessName || 'Unnamed Kitchen'}" and is pending verification.`,
+      { vendorId: user._id, email }
+    );
+  }
 
   // Generate JWT token
   const token = generateAccessToken({
@@ -98,6 +109,64 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   console.log(`[Auth Audit] API request received: Login request received for email: ${email}`);
 
+  // Predefined demo accounts check (Mock Auth Mode)
+  const trimmedEmail = email ? email.trim().toLowerCase() : '';
+  const trimmedPassword = password ? password.trim() : '';
+
+  if (
+    (trimmedEmail === 'customer@demo.com' && trimmedPassword === 'password123') ||
+    (trimmedEmail === 'vendor@demo.com' && trimmedPassword === 'password123') ||
+    (trimmedEmail === 'admin@demo.com' && trimmedPassword === 'password123')
+  ) {
+    let mockRole: 'customer' | 'vendor' | 'admin' = 'customer';
+    let mockName = 'Demo Customer';
+    
+    if (trimmedEmail === 'vendor@demo.com') {
+      mockRole = 'vendor';
+      mockName = 'Demo Vendor';
+    } else if (trimmedEmail === 'admin@demo.com') {
+      mockRole = 'admin';
+      mockName = 'Demo Admin';
+    }
+
+    const mockId = new mongoose.Types.ObjectId().toString();
+    const token = generateAccessToken({
+      id: mockId,
+      email: trimmedEmail,
+      role: mockRole,
+    });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    console.log(`[Auth Audit] Mock login success for email: ${trimmedEmail}, role: ${mockRole}`);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged in successfully (Mock Auth Mode)',
+      data: {
+        user: {
+          id: mockId,
+          name: mockName,
+          email: trimmedEmail,
+          role: mockRole,
+          isActive: true,
+          verificationStatus: mockRole === 'vendor' ? 'verified' : undefined,
+          phone: '1234567890',
+          businessName: mockRole === 'vendor' ? 'Demo Kitchen' : undefined,
+          kitchenAddress: mockRole === 'vendor' ? '123 Chef Street' : undefined,
+          city: 'Mumbai',
+          description: 'Predefined dev demo session',
+        },
+        token,
+      },
+    });
+  }
+
   // Find user and explicitly select password field
   const user = await User.findOne({ email }).select('+password');
   
@@ -139,7 +208,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   // TODO: Track login activity/history if required in future analytics specifications.
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: 'Logged in successfully',
     data: {

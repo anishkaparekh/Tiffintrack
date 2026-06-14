@@ -5,6 +5,7 @@ import { Meal } from '../models/Meal';
 import { Subscription } from '../models/Subscription';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
+import { NotificationService } from '../services/notification.service';
 
 /**
  * Create a new order.
@@ -54,6 +55,29 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     mealType,
     status: status || 'Pending',
     notes: notes || '',
+  });
+
+  // Fetch details for personalized messages
+  const vendorName = vendor.businessName || vendor.name || 'Chef';
+
+  // 1. Customer Notification (Warm food reminder)
+  await NotificationService.createNotification({
+    userId: customerId,
+    userRole: 'customer',
+    title: '☀️ Good Morning! Wholesome Goodness Preparing',
+    message: `Your delicious tiffin from ${vendorName} is being lovingly prepared for today!`,
+    category: 'ORDER',
+    type: 'info',
+  });
+
+  // 2. Vendor Notification (Motivational reminder)
+  await NotificationService.createNotification({
+    userId: vendorId,
+    userRole: 'vendor',
+    title: '🍲 New Order Received!',
+    message: `You've got a new order waiting. Time to spread some homemade happiness!`,
+    category: 'ORDER',
+    type: 'success',
   });
 
   res.status(201).json({
@@ -142,7 +166,93 @@ export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
     if (!validStatuses.includes(status)) {
       throw new ApiError(400, `Invalid status. Must be one of: ${validStatuses.join(', ')}`);
     }
+
+    const oldStatus = order.status;
     order.status = status;
+
+    if (oldStatus !== status) {
+      const vendorUser = await User.findById(order.vendorId);
+      const vendorName = vendorUser?.businessName || vendorUser?.name || 'Chef';
+      const orderShortId = order._id.toString().slice(-6).toUpperCase();
+
+      if (status === 'Preparing') {
+        // Customer Notification
+        await NotificationService.createNotification({
+          userId: order.customerId.toString(),
+          userRole: 'customer',
+          title: '❤️ Meal is Being Prepared',
+          message: `Your meal from ${vendorName} is being prepared with care!`,
+          category: 'MEAL',
+          type: 'info',
+        });
+        // Vendor Notification
+        await NotificationService.createNotification({
+          userId: order.vendorId.toString(),
+          userRole: 'vendor',
+          title: '🍳 Preparation Started',
+          message: `You marked Order #${orderShortId} as preparing.`,
+          category: 'MEAL',
+          type: 'info',
+        });
+      } else if (status === 'Out For Delivery') {
+        // Customer Notification
+        await NotificationService.createNotification({
+          userId: order.customerId.toString(),
+          userRole: 'customer',
+          title: '🍱 Lunch Ready & En Route!',
+          message: `Hurray! Your freshly made meal from ${vendorName} is ready and on its way to you!`,
+          category: 'DELIVERY',
+          type: 'success',
+        });
+        // Vendor Notification
+        await NotificationService.createNotification({
+          userId: order.vendorId.toString(),
+          userRole: 'vendor',
+          title: '🏍️ Order Dispatched',
+          message: `Order #${orderShortId} is marked out for delivery.`,
+          category: 'DELIVERY',
+          type: 'success',
+        });
+      } else if (status === 'Delivered') {
+        // Customer Notification
+        await NotificationService.createNotification({
+          userId: order.customerId.toString(),
+          userRole: 'customer',
+          title: '🏠 Fresh Meal Delivered!',
+          message: `Your homemade meal has arrived. Wishing you a delicious and comforting meal!`,
+          category: 'DELIVERY',
+          type: 'success',
+        });
+        // Vendor Notification
+        await NotificationService.createNotification({
+          userId: order.vendorId.toString(),
+          userRole: 'vendor',
+          title: '🌟 Delivery Completed Successfully!',
+          message: `Order #${orderShortId} has been successfully delivered. Keep up the amazing work!`,
+          category: 'DELIVERY',
+          type: 'success',
+        });
+      } else if (status === 'Cancelled') {
+        // Customer Notification
+        await NotificationService.createNotification({
+          userId: order.customerId.toString(),
+          userRole: 'customer',
+          title: '⚠️ Order Cancelled',
+          message: `We regret to inform you that your order from ${vendorName} has been cancelled.`,
+          category: 'ORDER',
+          type: 'error',
+        });
+        // Vendor Notification
+        await NotificationService.createNotification({
+          userId: order.vendorId.toString(),
+          userRole: 'vendor',
+          title: '⚠️ Order Cancelled',
+          message: `Order #${orderShortId} has been cancelled.`,
+          category: 'ORDER',
+          type: 'error',
+        });
+      }
+    }
   }
 
   if (deliveryDate) {

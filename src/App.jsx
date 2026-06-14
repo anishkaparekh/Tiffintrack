@@ -31,10 +31,12 @@ import ProfileSettings from './pages/ProfileSettings';
 import Notifications from './pages/Notifications';
 import MyReviews from './pages/MyReviews';
 import VendorReviews from './pages/vendor/VendorReviews';
+import { NotificationProvider } from './auth/NotificationContext';
 
 function App() {
   return (
-    <Router>
+    <NotificationProvider>
+      <Router>
       <Routes>
         <Route path="/" element={<RoleSelection />} />
         <Route path="/customer-auth" element={<CustomerAuth />} />
@@ -81,7 +83,8 @@ function App() {
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
+      </Router>
+    </NotificationProvider>
   );
 }
 

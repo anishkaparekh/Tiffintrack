@@ -6,6 +6,7 @@ import planRoutes from './plan.routes';
 import subscriptionRoutes from './subscription.routes';
 import orderRoutes from './order.routes';
 import reviewRoutes from './review.routes';
+import notificationRoutes from './notification.routes';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/plans', planRoutes);
 router.use('/subscriptions', subscriptionRoutes);
 router.use('/orders', orderRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/notifications', notificationRoutes);
 
 export default router;
