@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import app from './app';
-import { connectDB, closeDB } from './config/db';
+import { connectDB, closeDB } from './config/database';
+import { initializeSocket } from './utils/socket';
 
 const PORT = process.env.PORT || 5000;
 
@@ -20,6 +21,9 @@ const startServer = async () => {
     const server = app.listen(PORT, () => {
       console.log(`[Server] running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
+
+    // 3. Start Socket.IO
+    initializeSocket(server);
 
     // Handle unhandled promise rejections
     process.on('unhandledRejection', (err: any) => {

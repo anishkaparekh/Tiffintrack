@@ -6,6 +6,7 @@ import { Meal } from '../models/Meal';
 import { Order } from '../models/Order';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
+import { NotificationService } from '../services/notification.service';
 
 /**
  * Create a new subscription.
@@ -41,6 +42,9 @@ export const createSubscription = asyncHandler(async (req: Request, res: Respons
   // Find first available meal for the vendor to link the first order to
   const firstMeal = await Meal.findOne({ vendorId, availability: true });
 
+  // Fetch customer details for vendor notification
+  const customerUser = await User.findById(customerId);
+
   const subscription = await Subscription.create({
     customerId,
     vendorId,
@@ -68,6 +72,26 @@ export const createSubscription = asyncHandler(async (req: Request, res: Respons
       notes: 'Automatically generated first order'
     });
   }
+
+  // 1. Customer Notification (Homely Renewal/Purchase message)
+  await NotificationService.createNotification({
+    userId: customerId,
+    userRole: 'customer',
+    title: '🌼 Wholesome Meals Await You!',
+    message: `Thanks for staying with us. Another period of wholesome meals from ${vendor.businessName || vendor.name} is scheduled for you!`,
+    category: 'SUBSCRIPTION',
+    type: 'success',
+  });
+
+  // 2. Vendor Notification (Motivational message)
+  await NotificationService.createNotification({
+    userId: vendorId,
+    userRole: 'vendor',
+    title: '❤️ Another Family Chose You Today!',
+    message: `A new customer (${customerUser?.name || 'Home Food Lover'}) purchased your plan "${plan.planName}". Thank you for serving with care!`,
+    category: 'SUBSCRIPTION',
+    type: 'success',
+  });
 
   res.status(201).json({
     success: true,
@@ -154,7 +178,71 @@ export const updateSubscription = asyncHandler(async (req: Request, res: Respons
     if (!validStatuses.includes(status)) {
       throw new ApiError(400, `Invalid status. Must be one of: ${validStatuses.join(', ')}`);
     }
+
+    const oldStatus = subscription.status;
     subscription.status = status;
+
+    // Trigger alerts on status transitions
+    if (oldStatus !== status) {
+      if (status === 'Paused') {
+        // Customer Alert
+        await NotificationService.createNotification({
+          userId: subscription.customerId.toString(),
+          userRole: 'customer',
+          title: '⏸️ Subscription Paused',
+          message: `Your meal plan from ${subscription.vendorName} has been paused. Tiffin drop-offs are suspended until you resume.`,
+          category: 'SUBSCRIPTION',
+          type: 'info',
+        });
+        // Vendor Alert
+        await NotificationService.createNotification({
+          userId: subscription.vendorId.toString(),
+          userRole: 'vendor',
+          title: '⏸️ Subscription Paused by Customer',
+          message: `A customer has paused their subscription for your plan "${subscription.planName}".`,
+          category: 'SUBSCRIPTION',
+          type: 'info',
+        });
+      } else if (status === 'Active') {
+        // Customer Alert
+        await NotificationService.createNotification({
+          userId: subscription.customerId.toString(),
+          userRole: 'customer',
+          title: '▶️ Subscription Resumed',
+          message: `Welcome back! Your subscription to ${subscription.vendorName} is active again. Wholesome home-cooked goodness is on its way.`,
+          category: 'SUBSCRIPTION',
+          type: 'success',
+        });
+        // Vendor Alert
+        await NotificationService.createNotification({
+          userId: subscription.vendorId.toString(),
+          userRole: 'vendor',
+          title: '▶️ Subscription Resumed by Customer',
+          message: `A customer has resumed their subscription for your plan "${subscription.planName}".`,
+          category: 'SUBSCRIPTION',
+          type: 'success',
+        });
+      } else if (status === 'Cancelled') {
+        // Customer Alert
+        await NotificationService.createNotification({
+          userId: subscription.customerId.toString(),
+          userRole: 'customer',
+          title: '🛑 Subscription Cancelled',
+          message: `Your subscription to ${subscription.vendorName} has been cancelled. We're sorry to see you go!`,
+          category: 'SUBSCRIPTION',
+          type: 'warning',
+        });
+        // Vendor Alert
+        await NotificationService.createNotification({
+          userId: subscription.vendorId.toString(),
+          userRole: 'vendor',
+          title: '🛑 Subscription Cancelled by Customer',
+          message: `A customer has cancelled their subscription for your plan "${subscription.planName}".`,
+          category: 'SUBSCRIPTION',
+          type: 'warning',
+        });
+      }
+    }
   }
 
   if (mealsRemaining !== undefined) {

@@ -21,6 +21,7 @@ import {
 
 // Import Sidebar component
 import Sidebar from '../components/Sidebar';
+import { useNotifications } from '../auth/NotificationContext';
 
 // Loading Skeleton component for Notifications list
 const SkeletonNotificationRow = () => (
@@ -108,6 +109,19 @@ export default function Notifications() {
   // Mobile sidebar layout drawer status
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // Retrieve context
+  const {
+    notifications: dbNotifications,
+    unreadCount,
+    isLoading: contextIsLoading,
+    toast: contextToast,
+    setToast: setContextToast,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification
+  } = useNotifications();
+
   // Core notifications state
   const [notifs, setNotifs] = useState(initialNotifications);
 
@@ -121,8 +135,17 @@ export default function Notifications() {
   const [sandboxForceSkeleton, setSandboxForceSkeleton] = useState(false);
   const [sandboxForceEmptyList, setSandboxForceEmptyList] = useState(false);
 
-  // Toast stack notifications
-  const [toast, setToast] = useState(null);
+  // Combined toast from local and context
+  const [localToast, setLocalToast] = useState(null);
+  const toast = localToast || contextToast;
+  const setToast = (t) => {
+    if (t === null) {
+      setLocalToast(null);
+      setContextToast(null);
+    } else {
+      setLocalToast(t);
+    }
+  };
 
   // Initial loading simulation
   useEffect(() => {
@@ -131,6 +154,20 @@ export default function Notifications() {
     }, 600);
     return () => clearTimeout(timer);
   }, []);
+
+  // Sync with context notifications
+  useEffect(() => {
+    if (contextIsLoading) return;
+    if (dbNotifications && dbNotifications.length > 0) {
+      setNotifs(dbNotifications);
+    } else {
+      if (sandboxForceEmptyList) {
+        setNotifs([]);
+      } else {
+        setNotifs(initialNotifications);
+      }
+    }
+  }, [dbNotifications, contextIsLoading, sandboxForceEmptyList]);
 
   // Sync route navigations from sidebar tabs click
   const handleTabChange = (tabId) => {
@@ -160,41 +197,68 @@ export default function Notifications() {
   };
 
   // Mark single notification as read/unread toggle
-  const handleToggleReadStatus = (id) => {
-    setNotifs(prev => prev.map(n => {
-      if (n.id === id) {
-        const nextState = !n.isRead;
-        showToast("success", nextState ? "Notification marked as read." : "Notification marked as unread.");
-        return { ...n, isRead: nextState };
+  const handleToggleReadStatus = async (id) => {
+    const isDbNotif = dbNotifications && dbNotifications.some(n => n._id === id || n.id === id);
+    if (isDbNotif) {
+      const notif = dbNotifications.find(n => n._id === id || n.id === id);
+      if (notif && !notif.isRead) {
+        await markAsRead(id);
+        showToast("success", "Notification marked as read.");
+      } else {
+        showToast("info", "Notification is already marked as read.");
       }
-      return n;
-    }));
+    } else {
+      setNotifs(prev => prev.map(n => {
+        if (n.id === id) {
+          const nextState = !n.isRead;
+          showToast("success", nextState ? "Notification marked as read." : "Notification marked as unread.");
+          return { ...n, isRead: nextState };
+        }
+        return n;
+      }));
+    }
   };
 
   // Delete single notification card
-  const handleDeleteNotification = (id) => {
-    setNotifs(prev => prev.filter(n => n.id !== id));
+  const handleDeleteNotification = async (id) => {
+    const isDbNotif = dbNotifications && dbNotifications.some(n => n._id === id || n.id === id);
+    if (isDbNotif) {
+      await deleteNotification(id);
+    } else {
+      setNotifs(prev => prev.filter(n => n.id !== id));
+    }
     showToast("success", "Notification removed.");
   };
 
   // Bulk actions: Mark All as Read
-  const handleMarkAllAsRead = () => {
-    const unreadCount = notifs.filter(n => !n.isRead).length;
+  const handleMarkAllAsRead = async () => {
+    const activeNotifs = dbNotifications && dbNotifications.length > 0 ? dbNotifications : notifs;
+    const unreadCount = activeNotifs.filter(n => !n.isRead).length;
     if (unreadCount === 0) {
       showToast("info", "All notifications are already read.");
       return;
     }
-    setNotifs(prev => prev.map(n => ({ ...n, isRead: true })));
-    showToast("success", `Marked ${unreadCount} notifications as read.`);
+    if (dbNotifications && dbNotifications.length > 0) {
+      await markAllAsRead();
+    } else {
+      setNotifs(prev => prev.map(n => ({ ...n, isRead: true })));
+    }
+    showToast("success", `Marked notifications as read.`);
   };
 
   // Bulk actions: Clear All
-  const handleClearAll = () => {
-    if (notifs.length === 0) {
+  const handleClearAll = async () => {
+    const activeNotifs = dbNotifications && dbNotifications.length > 0 ? dbNotifications : notifs;
+    if (activeNotifs.length === 0) {
       showToast("info", "No notifications to clear.");
       return;
     }
-    setNotifs([]);
+    if (dbNotifications && dbNotifications.length > 0) {
+      const deletePromises = dbNotifications.map(n => deleteNotification(n._id || n.id));
+      await Promise.all(deletePromises);
+    } else {
+      setNotifs([]);
+    }
     showToast("success", "Cleared all notifications.");
   };
 
@@ -256,7 +320,21 @@ export default function Notifications() {
                           (statusFilter === "Read" && n.isRead);
 
     // 3. Category filter
-    const matchesCategory = categoryFilter === "All" || n.category === categoryFilter;
+    let matchesCategory = false;
+    if (categoryFilter === "All") {
+      matchesCategory = true;
+    } else {
+      const catUpper = (n.category || "").toUpperCase();
+      if (categoryFilter === "Orders") {
+        matchesCategory = catUpper === "ORDERS" || catUpper === "ORDER" || catUpper === "DELIVERY";
+      } else if (categoryFilter === "Subscriptions") {
+        matchesCategory = catUpper === "SUBSCRIPTIONS" || catUpper === "SUBSCRIPTION" || catUpper === "MEAL";
+      } else if (categoryFilter === "Offers") {
+        matchesCategory = catUpper === "OFFERS" || catUpper === "PROMOTIONAL";
+      } else if (categoryFilter === "System") {
+        matchesCategory = catUpper === "SYSTEM" || catUpper === "ADMIN" || catUpper === "PAYMENT";
+      }
+    }
 
     return matchesSearch && matchesStatus && matchesCategory;
   });
@@ -268,9 +346,17 @@ export default function Notifications() {
     const earlier = [];
 
     list.forEach(item => {
-      if (item.date.includes("09 June 2026") || item.timestamp === "Just Now") {
+      const dateVal = item.createdAt ? new Date(item.createdAt) : new Date();
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - dateVal.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      const isToday = dateVal.toDateString() === now.toDateString() || (item.timestamp === "Just Now" || item.date === "09 June 2026");
+      const isThisWeek = diffDays <= 7 && !isToday;
+
+      if (isToday) {
         today.push(item);
-      } else if (item.date.includes("08 June") || item.date.includes("07 June") || item.timestamp.includes("Yesterday")) {
+      } else if (isThisWeek) {
         thisWeek.push(item);
       } else {
         earlier.push(item);
@@ -281,33 +367,45 @@ export default function Notifications() {
   };
 
   const grouped = groupNotifications(filteredNotifs);
-  const showSkeleton = isLoading || sandboxForceSkeleton;
+  const showSkeleton = isLoading || contextIsLoading || sandboxForceSkeleton;
   const showEmptyState = sandboxForceEmptyList || filteredNotifs.length === 0;
 
   // Retrieve category icons dynamically
   const getCategoryIcon = (category) => {
-    switch (category) {
-      case "Orders":
+    const norm = (category || '').toUpperCase();
+    switch (norm) {
+      case "ORDER":
+      case "ORDERS":
+      case "DELIVERY":
         return <Package size={16} className="text-emerald-600" />;
-      case "Subscriptions":
+      case "SUBSCRIPTION":
+      case "SUBSCRIPTIONS":
+      case "MEAL":
         return <UserCheck size={16} className="text-blue-600" />;
-      case "Offers":
+      case "PROMOTIONAL":
+      case "OFFERS":
         return <Sparkles size={16} className="text-amber-500" />;
-      case "System":
+      case "SYSTEM":
       default:
         return <AlertCircle size={16} className="text-red-500" />;
     }
   };
 
   const getCategoryBgClass = (category) => {
-    switch (category) {
-      case "Orders":
+    const norm = (category || '').toUpperCase();
+    switch (norm) {
+      case "ORDER":
+      case "ORDERS":
+      case "DELIVERY":
         return "bg-emerald-50 border-emerald-100/60";
-      case "Subscriptions":
+      case "SUBSCRIPTION":
+      case "SUBSCRIPTIONS":
+      case "MEAL":
         return "bg-blue-50 border-blue-100/60";
-      case "Offers":
+      case "PROMOTIONAL":
+      case "OFFERS":
         return "bg-amber-50 border-amber-100/60";
-      case "System":
+      case "SYSTEM":
       default:
         return "bg-red-50 border-red-100/60";
     }
@@ -517,7 +615,7 @@ export default function Notifications() {
                   <div className="space-y-3">
                     {grouped.today.map((notif) => (
                       <NotificationCard 
-                        key={notif.id} 
+                        key={notif._id || notif.id} 
                         notif={notif} 
                         getCategoryIcon={getCategoryIcon}
                         getCategoryBgClass={getCategoryBgClass}
@@ -540,7 +638,7 @@ export default function Notifications() {
                   <div className="space-y-3">
                     {grouped.thisWeek.map((notif) => (
                       <NotificationCard 
-                        key={notif.id} 
+                        key={notif._id || notif.id} 
                         notif={notif} 
                         getCategoryIcon={getCategoryIcon}
                         getCategoryBgClass={getCategoryBgClass}
@@ -563,7 +661,7 @@ export default function Notifications() {
                   <div className="space-y-3">
                     {grouped.earlier.map((notif) => (
                       <NotificationCard 
-                        key={notif.id} 
+                        key={notif._id || notif.id} 
                         notif={notif} 
                         getCategoryIcon={getCategoryIcon}
                         getCategoryBgClass={getCategoryBgClass}
@@ -642,6 +740,21 @@ export default function Notifications() {
 
 // Subcomponent: Reusable Notification Card
 const NotificationCard = ({ notif, getCategoryIcon, getCategoryBgClass, onToggleRead, onDelete }) => {
+  const formatTime = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
+  const timestamp = notif.timestamp || formatTime(notif.createdAt);
+  const date = notif.date || formatDate(notif.createdAt);
+
   return (
     <div className={`p-4 border.5 rounded-2xl transition-all shadow-card flex items-start space-x-3.5 relative hover:border-slate-300 bg-white border-slate-200/70 hover:shadow-card-hover group ${
       !notif.isRead ? "border-l-4 border-l-mint" : ""
@@ -669,21 +782,21 @@ const NotificationCard = ({ notif, getCategoryIcon, getCategoryBgClass, onToggle
           {notif.message}
         </p>
         <div className="text-[9px] text-slate-400 font-medium pt-0.5">
-          {notif.timestamp} • {notif.date}
+          {timestamp} • {date}
         </div>
       </div>
 
       {/* Card Action Controls */}
       <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
         <button
-          onClick={() => onToggleRead(notif.id)}
+          onClick={() => onToggleRead(notif._id || notif.id)}
           className="p-1.5 text-slate-400 hover:text-mint hover:bg-mint-light rounded-lg transition-colors cursor-pointer"
           title={notif.isRead ? "Mark as Unread" : "Mark as Read"}
         >
           {notif.isRead ? <EyeOff size={13} /> : <Eye size={13} />}
         </button>
         <button
-          onClick={() => onDelete(notif.id)}
+          onClick={() => onDelete(notif._id || notif.id)}
           className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
           title="Delete Notification"
         >

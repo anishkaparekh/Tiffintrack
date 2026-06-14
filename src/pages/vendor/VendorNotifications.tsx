@@ -7,6 +7,7 @@ import ImportantAlertCard from '../../components/vendor/notifications/ImportantA
 import NotificationPreferencesCard from '../../components/vendor/notifications/NotificationPreferencesCard';
 import EmptyState from '../../components/vendor/notifications/EmptyState';
 import SkeletonLoader from '../../components/vendor/notifications/SkeletonLoader';
+import { useNotifications } from '../../auth/NotificationContext';
 
 import { 
   mockNotificationsList, 
@@ -15,10 +16,73 @@ import {
   mockPinnedAlerts
 } from '../../data/notificationsMockData';
 
-import { NotificationItem, NotificationPreferences } from '../../types/notifications';
+import { NotificationItem, NotificationPreferences, NotificationCategory, NotificationPriority } from '../../types/notifications';
 import { Sparkles, CheckCircle, Bell, BellOff, X, Eye, Check, Archive, Trash2, ShieldAlert } from 'lucide-react';
 
+const mapDbNotificationToUi = (dbNotif: any): NotificationItem => {
+  const categoryMap: Record<string, NotificationCategory> = {
+    ORDER: 'order',
+    SUBSCRIPTION: 'subscription',
+    PAYMENT: 'system',
+    MEAL: 'subscription',
+    DELIVERY: 'delivery',
+    CUSTOMER: 'customer',
+    VENDOR: 'customer',
+    ADMIN: 'system',
+    SYSTEM: 'system',
+    PROMOTIONAL: 'system'
+  };
+
+  const priorityMap: Record<string, NotificationPriority> = {
+    success: 'Medium',
+    info: 'Info',
+    warning: 'High',
+    error: 'High'
+  };
+
+  const getFuzzyTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHr = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHr / 24);
+
+    if (diffSec < 60) return 'Just now';
+    if (diffMin < 60) return `${diffMin} min${diffMin > 1 ? 's' : ''} ago`;
+    if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? 's' : ''} ago`;
+    if (diffDays === 1) return 'Yesterday';
+    return date.toLocaleDateString([], { day: '2-digit', month: 'short' });
+  };
+
+  return {
+    id: dbNotif._id || dbNotif.id,
+    category: categoryMap[dbNotif.category] || 'system',
+    title: dbNotif.title,
+    message: dbNotif.message,
+    timestamp: getFuzzyTime(dbNotif.createdAt),
+    priority: priorityMap[dbNotif.type] || 'Info',
+    read: dbNotif.isRead || false,
+    pinned: dbNotif.type === 'warning' || dbNotif.type === 'error' || dbNotif.metadata?.pinned,
+    createdAt: dbNotif.createdAt
+  };
+};
+
 export default function VendorNotifications() {
+  // Retrieve context
+  const {
+    notifications: dbNotifications,
+    unreadCount,
+    isLoading: contextIsLoading,
+    toast: contextToast,
+    setToast: setContextToast,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification
+  } = useNotifications() as any;
+
   // Main notification records state
   const [notifications, setNotifications] = useState<NotificationItem[]>(mockNotificationsList);
   const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences);
@@ -34,19 +98,47 @@ export default function VendorNotifications() {
 
   // View details drawer state
   const [activeNotification, setActiveNotification] = useState<NotificationItem | null>(null);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+
+  // Combined toast from local and context
+  const [localToast, setLocalToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+  const toast = localToast || (contextToast ? { 
+    message: contextToast.message, 
+    type: contextToast.type === 'success' ? 'success' as const : (contextToast.type === 'error' ? 'error' as const : 'info' as const) 
+  } : null);
 
   // Trigger Toast helper
   const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
+    setLocalToast({ message, type });
+    setTimeout(() => {
+      setLocalToast(null);
+      if (setContextToast) setContextToast(null);
+    }, 3500);
   };
 
+  // Synchronize notifications state
+  React.useEffect(() => {
+    if (contextIsLoading) return;
+    if (dbNotifications && dbNotifications.length > 0) {
+      setNotifications(dbNotifications.map(mapDbNotificationToUi));
+    } else {
+      if (isEmpty) {
+        setNotifications([]);
+      } else {
+        setNotifications(mockNotificationsList);
+      }
+    }
+  }, [dbNotifications, contextIsLoading, isEmpty]);
+
   // individual notification actions
-  const handleMarkRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, read: true } : item))
-    );
+  const handleMarkRead = async (id: string) => {
+    const isDbNotif = dbNotifications && dbNotifications.some((n: any) => n._id === id || n.id === id);
+    if (isDbNotif) {
+      await markAsRead(id);
+    } else {
+      setNotifications((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, read: true } : item))
+      );
+    }
     showToast('Notification marked as read.', 'success');
   };
 
@@ -57,18 +149,28 @@ export default function VendorNotifications() {
     showToast('Notification marked as unread.', 'info');
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
+    const isDbNotif = dbNotifications && dbNotifications.some((n: any) => n._id === id || n.id === id);
     const itemToDelete = notifications.find(n => n.id === id);
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
+    if (isDbNotif) {
+      await deleteNotification(id);
+    } else {
+      setNotifications((prev) => prev.filter((item) => item.id !== id));
+    }
     showToast(`"${itemToDelete?.title || 'Notification'}" deleted successfully.`, 'error');
     if (activeNotification?.id === id) {
       setActiveNotification(null);
     }
   };
 
-  const handleArchive = (id: string) => {
+  const handleArchive = async (id: string) => {
+    const isDbNotif = dbNotifications && dbNotifications.some((n: any) => n._id === id || n.id === id);
     const itemToArchive = notifications.find(n => n.id === id);
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
+    if (isDbNotif) {
+      await deleteNotification(id);
+    } else {
+      setNotifications((prev) => prev.filter((item) => item.id !== id));
+    }
     showToast(`"${itemToArchive?.title || 'Notification'}" archived to files.`, 'success');
     if (activeNotification?.id === id) {
       setActiveNotification(null);
@@ -79,20 +181,27 @@ export default function VendorNotifications() {
     setActiveNotification(notification);
     // Mark as read automatically when viewing details if it was unread
     if (!notification.read) {
-      setNotifications((prev) =>
-        prev.map((item) => (item.id === notification.id ? { ...item, read: true } : item))
-      );
+      handleMarkRead(notification.id);
     }
   };
 
   // Bulk actions
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+  const handleMarkAllRead = async () => {
+    if (dbNotifications && dbNotifications.length > 0) {
+      await markAllAsRead();
+    } else {
+      setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    }
     showToast('All notifications marked as read.', 'success');
   };
 
-  const handleClearAll = () => {
-    setNotifications([]);
+  const handleClearAll = async () => {
+    if (dbNotifications && dbNotifications.length > 0) {
+      const deletePromises = dbNotifications.map((n: any) => deleteNotification(n._id || n.id));
+      await Promise.all(deletePromises);
+    } else {
+      setNotifications([]);
+    }
     showToast('All notifications cleared.', 'error');
   };
 
@@ -252,14 +361,14 @@ export default function VendorNotifications() {
         </div>
 
         {/* 3. Metrics Statistics */}
-        {isLoading ? (
+        {showLoading ? (
           <SkeletonLoader type="stats" />
         ) : (
           <NotificationStatsCard stats={dynamicStats} />
         )}
 
         {/* 4. Filter Bar */}
-        {!isLoading && (
+        {!showLoading && (
           <NotificationsFilterBar
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -278,7 +387,7 @@ export default function VendorNotifications() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Left Column: Timeline Feed */}
           <div className="lg:col-span-2">
-            {isLoading ? (
+            {showLoading ? (
               <SkeletonLoader type="feed" />
             ) : filteredNotifications.length === 0 ? (
               isEmpty || notifications.length === 0 ? (
@@ -301,7 +410,7 @@ export default function VendorNotifications() {
           {/* Right Column: Alerts & Preferences Sidebar widgets */}
           <div className="space-y-6">
             {/* Pinned Alerts */}
-            {isLoading ? (
+            {showLoading ? (
               <SkeletonLoader type="alerts" />
             ) : (
               pinnedAlerts.length > 0 && (
@@ -316,7 +425,7 @@ export default function VendorNotifications() {
             )}
 
             {/* Notification settings details */}
-            {isLoading ? (
+            {showLoading ? (
               <SkeletonLoader type="preferences" />
             ) : (
               <NotificationPreferencesCard preferences={preferences} />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNotifications } from '../auth/NotificationContext';
 import { 
   Menu as MenuIcon, 
   Shield, 
@@ -197,6 +198,52 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
     fetchOrderStats();
   }, []);
 
+  // Retrieve notifications context
+  const {
+    notifications: dbNotifications,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    isLoading: contextIsLoading
+  } = useNotifications();
+
+  const mapDbNotificationToAdmin = (dbNotif) => {
+    const severityMap = {
+      error: 'High',
+      warning: 'High',
+      success: 'Medium',
+      info: 'Low'
+    };
+
+    const getFuzzyTime = (dateStr) => {
+      if (!dateStr) return 'Just now';
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHr = Math.floor(diffMin / 60);
+      const diffDays = Math.floor(diffHr / 24);
+
+      if (diffSec < 60) return 'Just now';
+      if (diffMin < 60) return `${diffMin} min${diffMin > 1 ? 's' : ''} ago`;
+      if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? 's' : ''} ago`;
+      if (diffDays === 1) return 'Yesterday';
+      return date.toLocaleDateString([], { day: '2-digit', month: 'short' });
+    };
+
+    return {
+      id: dbNotif._id || dbNotif.id,
+      title: dbNotif.title,
+      message: dbNotif.message,
+      timestamp: getFuzzyTime(dbNotif.createdAt),
+      severity: severityMap[dbNotif.type] || 'Low',
+      isRead: dbNotif.isRead || false,
+      createdAt: dbNotif.createdAt
+    };
+  };
+
   // Core databases
   const [applications, setApplications] = useState(initialApplications);
   const [complaints, setComplaints] = useState(initialComplaints);
@@ -204,6 +251,20 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
   const [customers, setCustomers] = useState(initialCustomers);
   const [notifications, setNotifications] = useState(initialNotifications);
   const [activities, setActivities] = useState(initialActivities);
+
+  // Synchronize notifications state
+  useEffect(() => {
+    if (contextIsLoading) return;
+    if (dbNotifications && dbNotifications.length > 0) {
+      setNotifications(dbNotifications.map(mapDbNotificationToAdmin));
+    } else {
+      if (sandboxForceEmpty) {
+        setNotifications([]);
+      } else {
+        setNotifications(initialNotifications);
+      }
+    }
+  }, [dbNotifications, contextIsLoading, sandboxForceEmpty]);
 
   // Search & Filter criteria states
   const [searchText, setSearchText] = useState("");
@@ -439,26 +500,52 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
   };
 
   // Notifications Handlers
-  const handleToggleNotificationRead = (id) => {
-    setNotifications(prev => prev.map(n => {
-      if (n.id === id) {
-        return { ...n, isRead: !n.isRead };
+  const handleToggleNotificationRead = async (id) => {
+    const isDbNotif = dbNotifications && dbNotifications.some(n => n._id === id || n.id === id);
+    if (isDbNotif) {
+      const notif = dbNotifications.find(n => n._id === id || n.id === id);
+      if (notif && !notif.isRead) {
+        await markAsRead(id);
+        showToast("Notification marked as read.");
+      } else {
+        showToast("Notification already read.");
       }
-      return n;
-    }));
+    } else {
+      setNotifications(prev => prev.map(n => {
+        if (n.id === id) {
+          return { ...n, isRead: !n.isRead };
+        }
+        return n;
+      }));
+    }
   };
 
-  const handleDeleteNotification = (id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  const handleDeleteNotification = async (id) => {
+    const isDbNotif = dbNotifications && dbNotifications.some(n => n._id === id || n.id === id);
+    if (isDbNotif) {
+      await deleteNotification(id);
+    } else {
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    }
+    showToast("Notification deleted successfully.");
   };
 
-  const handleMarkAllNotificationsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  const handleMarkAllNotificationsRead = async () => {
+    if (dbNotifications && dbNotifications.length > 0) {
+      await markAllAsRead();
+    } else {
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    }
     showToast("All notifications marked as read.");
   };
 
-  const handleClearAllNotifications = () => {
-    setNotifications([]);
+  const handleClearAllNotifications = async () => {
+    if (dbNotifications && dbNotifications.length > 0) {
+      const deletePromises = dbNotifications.map(n => deleteNotification(n._id || n.id));
+      await Promise.all(deletePromises);
+    } else {
+      setNotifications([]);
+    }
     showToast("Cleared system notifications queue.");
   };
 

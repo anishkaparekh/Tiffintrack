@@ -5,6 +5,7 @@ import mealRoutes from './meal.routes';
 import planRoutes from './plan.routes';
 import subscriptionRoutes from './subscription.routes';
 import orderRoutes from './order.routes';
+import notificationRoutes from './notification.routes';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/meals', mealRoutes);
 router.use('/plans', planRoutes);
 router.use('/subscriptions', subscriptionRoutes);
 router.use('/orders', orderRoutes);
+router.use('/notifications', notificationRoutes);
 
 export default router;
