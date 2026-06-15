@@ -14,6 +14,7 @@ import {
 
 // Import Sidebar component
 import Sidebar from '../components/Sidebar';
+import DeliveryTimeline from '../components/delivery/workflow/DeliveryTimeline';
 
 // REUSABLE SKELETON LOADERS FOR TRACKING
 const SkeletonTrackingCard = () => (
@@ -251,6 +252,40 @@ export default function TrackOrders() {
     }
   }, [simulatedEmptyState, timelineStep]);
 
+  useEffect(() => {
+    const checkStatus = () => {
+      const stored = localStorage.getItem('vendor_deliveries');
+      if (stored) {
+        try {
+          const deliveries = JSON.parse(stored);
+          const activeOrder = deliveries.find(d => d.customerName === "Hardik Pandya" || d.id === "OD-5011" || d.customerName === "Ananya Rao");
+          if (activeOrder) {
+            const statusMap = {
+              'Pending Assignment': 'Confirmed',
+              'Assigned': 'Confirmed',
+              'Preparing': 'Prepared',
+              'Out for Delivery': 'OutForDelivery',
+              'Delivered': 'Delivered',
+              'Failed': 'Confirmed'
+            };
+            setTimelineStep(statusMap[activeOrder.status] || 'Confirmed');
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    checkStatus();
+    window.addEventListener('storage', checkStatus);
+    const interval = setInterval(checkStatus, 2000);
+
+    return () => {
+      window.removeEventListener('storage', checkStatus);
+      clearInterval(interval);
+    };
+  }, []);
+
   const defaultMockSub = {
     vendorName: "Priya's Home Kitchen",
     planName: "Lunch + Dinner Plan",
@@ -269,6 +304,8 @@ export default function TrackOrders() {
       navigate('/my-subscriptions');
     } else if (tabId === 'track_orders') {
       // already here
+    } else if (tabId === 'addresses') {
+      navigate('/customer/addresses');
     } else if (tabId === 'history') {
       navigate('/order-history');
     } else if (tabId === 'settings') {
@@ -426,7 +463,16 @@ export default function TrackOrders() {
                 </div>
 
                 {/* 2. Stepper Timeline */}
-                <OrderTimeline currentStep={timelineStep} />
+                <DeliveryTimeline 
+                  status={
+                    timelineStep === 'Confirmed' ? 'Pending Assignment' :
+                    timelineStep === 'Prepared' ? 'Preparing' :
+                    timelineStep === 'Packed' ? 'Preparing' :
+                    timelineStep === 'OutForDelivery' ? 'Out for Delivery' :
+                    timelineStep === 'Delivered' ? 'Delivered' : 'Pending Assignment'
+                  } 
+                  timeSlot={currentSub.nextDelivery}
+                />
 
                 {/* 3. Delivery Rider Info Card */}
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-5 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-mint/20 transition-all">

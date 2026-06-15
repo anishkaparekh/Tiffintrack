@@ -15,6 +15,8 @@ import VendorRevenue from './pages/vendor/VendorRevenue';
 import ProfilePage from './pages/vendor/ProfilePage';
 import VendorNotifications from './pages/vendor/VendorNotifications';
 import VendorProtectedRoute from './components/vendor/VendorProtectedRoute';
+import VendorDeliveryTeam from './pages/vendor/VendorDeliveryTeam';
+import VendorDeliveryAssignments from './pages/vendor/VendorDeliveryAssignments';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Customer Side Components
@@ -31,7 +33,12 @@ import ProfileSettings from './pages/ProfileSettings';
 import Notifications from './pages/Notifications';
 import MyReviews from './pages/MyReviews';
 import VendorReviews from './pages/vendor/VendorReviews';
+import CustomerAddresses from './pages/CustomerAddresses';
 import { NotificationProvider } from './auth/NotificationContext';
+
+// Delivery Side Components
+import DeliveryLogin from './pages/DeliveryLogin';
+import DeliveryDashboard from './pages/DeliveryDashboard';
 
 function App() {
   return (
@@ -64,6 +71,8 @@ function App() {
         <Route path="/vendor/profile" element={<VendorProtectedRoute><ProfilePage /></VendorProtectedRoute>} />
         <Route path="/vendor/notifications" element={<VendorProtectedRoute><VendorNotifications /></VendorProtectedRoute>} />
         <Route path="/vendor/reviews" element={<VendorProtectedRoute><VendorReviews /></VendorProtectedRoute>} />
+        <Route path="/vendor/delivery-team" element={<VendorProtectedRoute><VendorDeliveryTeam /></VendorProtectedRoute>} />
+        <Route path="/vendor/delivery-assignments" element={<VendorProtectedRoute><VendorDeliveryAssignments /></VendorProtectedRoute>} />
 
         {/* Customer Dashboard routes */}
         <Route path="/customer-dashboard" element={<ProtectedRoute allowedRole="customer"><CustomerDashboard /></ProtectedRoute>} />
@@ -73,12 +82,20 @@ function App() {
         <Route path="/profile-settings" element={<ProtectedRoute allowedRole="customer"><ProfileSettings /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute allowedRole="customer"><Notifications /></ProtectedRoute>} />
         <Route path="/my-reviews" element={<ProtectedRoute allowedRole="customer"><MyReviews /></ProtectedRoute>} />
+        <Route path="/customer/addresses" element={<ProtectedRoute allowedRole="customer"><CustomerAddresses /></ProtectedRoute>} />
         <Route path="/browse-vendors" element={<ProtectedRoute allowedRole="customer"><CustomerDashboard /></ProtectedRoute>} />
         <Route path="/vendor/:id" element={<ProtectedRoute allowedRole="customer"><VendorDetails preSelectedTab="details" /></ProtectedRoute>} />
         <Route path="/vendor/:id/meals" element={<ProtectedRoute allowedRole="customer"><CustomerVendorMeals /></ProtectedRoute>} />
         <Route path="/vendor/:id/plans" element={<ProtectedRoute allowedRole="customer"><CustomerVendorPlans /></ProtectedRoute>} />
         <Route path="/checkout" element={<ProtectedRoute allowedRole="customer"><Checkout /></ProtectedRoute>} />
         <Route path="/subscription-success" element={<ProtectedRoute allowedRole="customer"><SubscriptionSuccess /></ProtectedRoute>} />
+
+        {/* Delivery Dashboard routes */}
+        <Route path="/delivery-login" element={<DeliveryLogin />} />
+        <Route path="/delivery-dashboard" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="dashboard" /></ProtectedRoute>} />
+        <Route path="/delivery/history" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="history" /></ProtectedRoute>} />
+        <Route path="/delivery/notifications" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="notifications" /></ProtectedRoute>} />
+        <Route path="/delivery/profile" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="profile" /></ProtectedRoute>} />
 
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />

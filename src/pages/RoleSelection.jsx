@@ -9,7 +9,8 @@ import {
   PauseCircle, 
   ArrowRight,
   ShieldCheck,
-  Gift
+  Gift,
+  Bike
 } from 'lucide-react';
 
 export default function RoleSelection() {
@@ -58,8 +59,8 @@ export default function RoleSelection() {
         </header>
 
         {/* Onboarding Role Cards - Visible above the fold */}
-        <section className="max-w-6xl mx-auto px-4 pb-10">
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <section className="max-w-7xl mx-auto px-4 pb-10">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             
             {/* Card 1: Customer */}
             <div className="bg-white border border-slate-200/60 rounded-3xl p-6 transition-all duration-200 flex flex-col justify-between shadow-card hover:shadow-card-hover hover:border-mint min-h-[280px]">
@@ -113,7 +114,33 @@ export default function RoleSelection() {
               </button>
             </div>
 
-            {/* Card 3: Admin */}
+            {/* Card 3: Delivery Partner */}
+            <div className="bg-white border border-slate-200/60 rounded-3xl p-6 transition-all duration-200 flex flex-col justify-between shadow-card hover:shadow-card-hover hover:border-mint min-h-[280px]">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-bold tracking-wider text-mint uppercase px-2.5 py-1 bg-mint-light rounded-md">
+                    Deliver Meals
+                  </span>
+                  <div className="p-2.5 bg-mint-light rounded-xl text-mint">
+                    <Bike size={20} />
+                  </div>
+                </div>
+                <h3 className="text-lg font-bold text-primary-text mb-2">Delivery Partner</h3>
+                <p className="text-secondary-text text-xs md:text-sm leading-relaxed mb-6">
+                  Access your delivery queue, view customer addresses, navigate using maps, and update order statuses in real-time.
+                </p>
+              </div>
+
+              <button 
+                onClick={() => navigate('/delivery-login')}
+                className="w-full py-3 px-4 rounded-xl bg-mint hover:bg-mint-hover text-white font-bold text-xs transition-colors duration-200 flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
+              >
+                <span>Enter Partner Portal</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+
+            {/* Card 4: Admin */}
             <div className="bg-white border border-slate-200/60 rounded-3xl p-6 transition-all duration-200 flex flex-col justify-between shadow-card hover:shadow-card-hover hover:border-slate-400 min-h-[280px]">
               <div>
                 <div className="flex items-center justify-between mb-4">

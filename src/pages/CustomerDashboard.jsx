@@ -280,6 +280,10 @@ export default function CustomerDashboard() {
       navigate('/track-orders');
       return;
     }
+    if (tab === 'addresses') {
+      navigate('/customer/addresses');
+      return;
+    }
     if (tab === 'vendors') {
       navigate('/browse-vendors');
       return;

@@ -1,37 +1,30 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  CalendarRange, 
-  UserCheck, 
   MapPin, 
   History, 
   Bell, 
   Settings, 
   LogOut, 
   X,
-  Utensils,
-  Star
+  Utensils
 } from 'lucide-react';
 
-export default function Sidebar({ currentTab, onTabChange, isOpen, onClose }) {
+export default function DeliverySidebar({ currentTab, onTabChange, isOpen, onClose }) {
   const navigate = useNavigate();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'vendors', label: 'Browse Vendors', icon: CalendarRange },
-    { id: 'subscriptions', label: 'My Subscriptions', icon: UserCheck },
-    { id: 'track_orders', label: 'Track Orders', icon: MapPin },
-    { id: 'addresses', label: 'My Addresses', icon: MapPin },
-    { id: 'history', label: 'Order History', icon: History },
+    { id: 'deliveries', label: "Today's Deliveries", icon: MapPin },
+    { id: 'history', label: 'Delivery History', icon: History },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'settings', label: 'Profile Settings', icon: Settings },
-    { id: 'reviews', label: 'My Reviews', icon: Star },
+    { id: 'profile', label: 'Profile Settings', icon: Settings },
   ];
 
   const handleLogout = () => {
-    // Clear token and customer session details on logout
     localStorage.removeItem('token');
-    localStorage.removeItem('customer_user');
+    localStorage.removeItem('user');
     navigate('/');
   };
 
@@ -60,6 +53,7 @@ export default function Sidebar({ currentTab, onTabChange, isOpen, onClose }) {
               </div>
               <span className="text-base font-bold text-primary-text tracking-tight">
                 Tiffin<span className="text-mint">Track</span>
+                <span className="text-[9px] font-black bg-mint-light text-mint px-1.5 py-0.5 rounded ml-1.5">PARTNER</span>
               </span>
             </div>
             {/* Close Button on Mobile */}
@@ -107,7 +101,6 @@ export default function Sidebar({ currentTab, onTabChange, isOpen, onClose }) {
             <span>Logout</span>
           </button>
         </div>
-
       </aside>
     </>
   );

@@ -196,6 +196,8 @@ export default function MySubscriptions() {
       // already here
     } else if (tabId === 'track_orders') {
       navigate('/track-orders');
+    } else if (tabId === 'addresses') {
+      navigate('/customer/addresses');
     } else if (tabId === 'history') {
       navigate('/order-history');
     } else if (tabId === 'settings') {
