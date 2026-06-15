@@ -87,6 +87,11 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
   const activeTab = defaultTab;
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // Loading, Saving & Sandbox states
+  const [isLoading, setIsLoading] = useState(true);
+  const [sandboxForceSkel, setSandboxForceSkel] = useState(false);
+  const [sandboxForceEmpty, setSandboxForceEmpty] = useState(false);
+
   const [adminUser, setAdminUser] = useState({
     name: '',
     email: ''
@@ -281,11 +286,6 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
 
   // Action status messages (Toasts)
   const [toast, setToast] = useState(null);
-
-  // Loading, Saving & Sandbox states
-  const [isLoading, setIsLoading] = useState(true);
-  const [sandboxForceSkel, setSandboxForceSkel] = useState(false);
-  const [sandboxForceEmpty, setSandboxForceEmpty] = useState(false);
 
   // Synchronized URL changes from sidebar clicks
   const handleTabChange = (tabId) => {

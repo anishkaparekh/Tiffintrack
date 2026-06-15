@@ -292,6 +292,7 @@ export default function VendorPlans() {
   const handleSelectPlan = (plan) => {
     const checkoutInfo = {
       chefId: chefId,
+      planId: plan.id,
       chefName: chef.name,
       planName: plan.name,
       price: plan.price,

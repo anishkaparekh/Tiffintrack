@@ -4,6 +4,7 @@ import { User } from '../models/User';
 import { Plan } from '../models/Plan';
 import { Meal } from '../models/Meal';
 import { Order } from '../models/Order';
+import { Payment } from '../models/Payment';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
 import { NotificationService } from '../services/notification.service';
@@ -13,7 +14,7 @@ import { NotificationService } from '../services/notification.service';
  * POST /api/v1/subscriptions
  */
 export const createSubscription = asyncHandler(async (req: Request, res: Response) => {
-  const { customerId, vendorId, planId, startDate, deliveryAddress, preferences } = req.body;
+  const { customerId, vendorId, planId, startDate, deliveryAddress, preferences, razorpayPaymentId } = req.body;
 
   // Validate fields
   if (!customerId || !vendorId || !planId || !startDate || !deliveryAddress) {
@@ -58,6 +59,14 @@ export const createSubscription = asyncHandler(async (req: Request, res: Respons
     deliveryAddress,
     preferences: preferences || [],
   });
+
+  // Link payment record to this subscription
+  if (razorpayPaymentId) {
+    await Payment.findOneAndUpdate(
+      { razorpayPaymentId },
+      { subscriptionId: subscription._id }
+    );
+  }
 
   if (firstMeal) {
     await Order.create({

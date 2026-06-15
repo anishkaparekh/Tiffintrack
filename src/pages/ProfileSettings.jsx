@@ -28,6 +28,12 @@ import {
 // Import Sidebar component
 import Sidebar from '../components/Sidebar';
 
+// Import Address components
+import AddressCard from '../components/addresses/AddressCard';
+import AddressFormModal from '../components/addresses/AddressFormModal';
+import EmptyAddressesState from '../components/addresses/EmptyAddressesState';
+import AddressLoadingSkeleton from '../components/addresses/AddressLoadingSkeleton';
+
 // Loading Skeleton component for Settings fields
 const SkeletonSettings = () => (
   <div className="space-y-6 animate-pulse">
@@ -76,10 +82,10 @@ export default function ProfileSettings() {
   const [phone, setPhone] = useState("");
 
   // Addresses manager state
-  const [addresses, setAddresses] = useState([
-    { id: 1, label: "Home", text: "Flat 402, Green Meadows, Shastri Marg, Anand", area: "Vallabh Vidyanagar", type: "Home" },
-    { id: 2, label: "Work", text: "TiffinTrack HQ, Mota Bazar, Anand", area: "Anand", type: "Work" }
-  ]);
+  const [addresses, setAddresses] = useState([]);
+  const [addressesLoading, setAddressesLoading] = useState(true);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [isAddressSubmitting, setIsAddressSubmitting] = useState(false);
 
   // Food preferences checkboxes
   const [foodPrefs, setFoodPrefs] = useState({
@@ -163,6 +169,7 @@ export default function ProfileSettings() {
         console.error('Failed to parse customer_user:', e);
       }
     }
+    fetchAddresses();
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 700);
@@ -226,33 +233,126 @@ export default function ProfileSettings() {
   };
 
   // Address Handlers
-  const handleAddAddressSubmit = (e) => {
-    e.preventDefault();
-    if (!newAddrText.trim()) {
-      showToast("error", "Please enter the address details");
+  const fetchAddresses = async () => {
+    const userStr = localStorage.getItem('customer_user');
+    const token = localStorage.getItem('token');
+    if (!userStr || !token) {
+      setAddressesLoading(false);
       return;
     }
-    const newId = addresses.length > 0 ? Math.max(...addresses.map(a => a.id)) + 1 : 1;
-    const newAddressObj = {
-      id: newId,
-      label: newAddrType,
-      text: newAddrText,
-      area: newAddrArea,
-      type: newAddrType
-    };
-    
-    setAddresses([...addresses, newAddressObj]);
-    setIsAddAddressOpen(false);
-    setNewAddrText("");
-    showToast("success", `New ${newAddrType} address added!`);
-    markUnsaved();
+    try {
+      const u = JSON.parse(userStr);
+      const customerId = u._id || u.id;
+      if (!customerId) {
+        setAddressesLoading(false);
+        return;
+      }
+      setAddressesLoading(true);
+      const response = await fetch(`/api/v1/addresses/customer/${customerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          setAddresses(resData.data);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch addresses:', err);
+    } finally {
+      setAddressesLoading(false);
+    }
   };
 
-  const handleDeleteAddress = (id) => {
-    const deletedLabel = addresses.find(a => a.id === id)?.label || "Address";
-    setAddresses(addresses.filter(a => a.id !== id));
-    showToast("success", `${deletedLabel} address removed successfully.`);
-    markUnsaved();
+  const handleAddressSubmit = async (addressData) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    setIsAddressSubmitting(true);
+    try {
+      const url = editingAddress
+        ? `/api/v1/addresses/${editingAddress._id}`
+        : '/api/v1/addresses';
+      const method = editingAddress ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(addressData)
+      });
+
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        showToast("success", editingAddress ? "Address updated successfully!" : "Address added successfully!");
+        setIsAddAddressOpen(false);
+        setEditingAddress(null);
+        fetchAddresses();
+      } else {
+        showToast("error", resData.message || "Failed to save address.");
+      }
+    } catch (err) {
+      console.error("Error saving address:", err);
+      showToast("error", "Failed to connect to the server.");
+    } finally {
+      setIsAddressSubmitting(false);
+    }
+  };
+
+  const handleDeleteAddress = async (id) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const response = await fetch(`/api/v1/addresses/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        showToast("success", "Address deleted successfully.");
+        fetchAddresses();
+      } else {
+        showToast("error", resData.message || "Failed to delete address.");
+      }
+    } catch (err) {
+      console.error("Error deleting address:", err);
+      showToast("error", "Failed to delete address.");
+    }
+  };
+
+  const handleSetDefaultAddress = async (id) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const response = await fetch(`/api/v1/addresses/${id}/default`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        showToast("success", "Default address updated.");
+        fetchAddresses();
+      } else {
+        showToast("error", resData.message || "Failed to set default address.");
+      }
+    } catch (err) {
+      console.error("Error setting default address:", err);
+      showToast("error", "Failed to set default address.");
+    }
+  };
+
+  const handleEditAddressClick = (addr) => {
+    setEditingAddress(addr);
+    setIsAddAddressOpen(true);
   };
 
   // Security Update Handlers
@@ -368,10 +468,7 @@ export default function ProfileSettings() {
     setEmail("");
     setPhone("");
     showToast("info", "Cleared profile sandbox details.");
-    setAddresses([
-      { id: 1, label: "Home", text: "Flat 402, Green Meadows, Shastri Marg, Anand", area: "Vallabh Vidyanagar", type: "Home" },
-      { id: 2, label: "Work", text: "TiffinTrack HQ, Mota Bazar, Anand", area: "Anand", type: "Work" }
-    ]);
+    fetchAddresses();
     setFoodPrefs({
       veg: true,
       nonVeg: false,
@@ -587,7 +684,7 @@ export default function ProfileSettings() {
                   </div>
                   
                   <button 
-                    onClick={() => setIsAddAddressOpen(true)}
+                    onClick={() => { setEditingAddress(null); setIsAddAddressOpen(true); }}
                     className="flex items-center space-x-1 px-3 py-1.5 bg-mint/10 hover:bg-mint/20 text-mint text-xs font-bold rounded-xl transition-all cursor-pointer"
                   >
                     <Plus size={14} />
@@ -595,56 +692,20 @@ export default function ProfileSettings() {
                   </button>
                 </div>
 
-                {showEmptyAddresses ? (
-                  <div className="py-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
-                    <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-                      <MapPin size={22} />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-primary-text">No Delivery Addresses Added</h3>
-                      <p className="text-[10px] text-secondary-text max-w-xs mx-auto">
-                        Please add at least one address to receive tiffin package drops.
-                      </p>
-                    </div>
-                    <button 
-                      onClick={() => setIsAddAddressOpen(true)}
-                      className="px-4 py-2 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
-                    >
-                      Add Address Now
-                    </button>
-                  </div>
+                {addressesLoading ? (
+                  <AddressLoadingSkeleton count={2} />
+                ) : showEmptyAddresses ? (
+                  <EmptyAddressesState onAddClick={() => { setEditingAddress(null); setIsAddAddressOpen(true); }} />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {addresses.map((addr) => (
-                      <div 
-                        key={addr.id}
-                        className="p-4 border border-slate-200/80 rounded-2xl hover:border-mint transition-all flex justify-between items-start group hover:bg-slate-50/50"
-                      >
-                        <div className="space-y-1.5">
-                          <div className="flex items-center space-x-2">
-                            <span className={`px-2 py-0.5 text-[9px] font-black rounded-md tracking-wide uppercase ${
-                              addr.type === "Home" 
-                                ? "bg-mint/10 text-mint" 
-                                : addr.type === "Work" 
-                                  ? "bg-blue-50 text-blue-600" 
-                                  : "bg-slate-100 text-slate-600"
-                            }`}>
-                              {addr.label}
-                            </span>
-                            <span className="text-[10px] text-slate-400 font-medium">({addr.area})</span>
-                          </div>
-                          <p className="text-xs text-primary-text font-semibold leading-relaxed">
-                            {addr.text}
-                          </p>
-                        </div>
-                        <button 
-                          onClick={() => handleDeleteAddress(addr.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                          title="Delete Address"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
+                      <AddressCard
+                        key={addr._id}
+                        address={addr}
+                        onEdit={handleEditAddressClick}
+                        onDelete={handleDeleteAddress}
+                        onSetDefault={handleSetDefaultAddress}
+                      />
                     ))}
                   </div>
                 )}
@@ -1142,95 +1203,16 @@ export default function ProfileSettings() {
             </div>
           </div>
         </div>
-
       </main>
 
       {/* MODAL 1: ADD ADDRESS */}
-      {isAddAddressOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-100 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
-            <button 
-              onClick={() => setIsAddAddressOpen(false)}
-              className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-            
-            <h3 className="text-sm font-bold text-primary-text mb-1.5 flex items-center space-x-2">
-              <MapPin size={16} className="text-mint" />
-              <span>Add New Delivery Route</span>
-            </h3>
-            <p className="text-[10px] text-secondary-text mb-4 leading-normal">
-              Enter your tiffin packet destination details. Make sure your residential area matches local vendor routes.
-            </p>
-
-            <form onSubmit={handleAddAddressSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Address Label/Type</label>
-                <div className="flex space-x-2">
-                  {["Home", "Work", "Other"].map((type) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setNewAddrType(type)}
-                      className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                        newAddrType === type 
-                          ? "border-mint bg-mint-light text-mint shadow-sm" 
-                          : "border-slate-200 text-slate-600 hover:border-slate-300 bg-white"
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Local Area / Landmark</label>
-                <select 
-                  value={newAddrArea}
-                  onChange={(e) => setNewAddrArea(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none"
-                >
-                  <option>Vallabh Vidyanagar</option>
-                  <option>Mota Bazar</option>
-                  <option>Amul Dairy Road</option>
-                  <option>Anand</option>
-                  <option>Vastrapur</option>
-                  <option>Alkapuri</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Address Details</label>
-                <textarea
-                  value={newAddrText}
-                  onChange={(e) => setNewAddrText(e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-mint focus:ring-1 focus:ring-mint"
-                  placeholder="Flat No, Wing, Apartment Name, Street Name..."
-                />
-              </div>
-
-              <div className="flex space-x-2 pt-2">
-                <button 
-                  type="button"
-                  onClick={() => setIsAddAddressOpen(false)}
-                  className="flex-1 py-2.5 border border-slate-200 text-slate-600 text-xs font-bold rounded-xl hover:bg-slate-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="flex-1 py-2.5 bg-mint hover:bg-mint-hover text-white text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
-                >
-                  Save Address
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <AddressFormModal
+        isOpen={isAddAddressOpen}
+        onClose={() => { setIsAddAddressOpen(false); setEditingAddress(null); }}
+        onSubmit={handleAddressSubmit}
+        initialData={editingAddress}
+        isSubmitting={isAddressSubmitting}
+      />
 
       {/* MODAL 2: DELETE ACCOUNT DOUBLE-CONFIRMATION */}
       {isDeleteAccountOpen && (

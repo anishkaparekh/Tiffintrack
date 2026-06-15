@@ -183,6 +183,33 @@ export default function CustomerDashboard() {
     }
   };
 
+  // Payment History State
+  const [payments, setPayments] = useState([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(false);
+
+  const fetchPaymentHistory = async (cId) => {
+    const token = localStorage.getItem('token');
+    if (!token || !cId) return;
+    try {
+      setPaymentsLoading(true);
+      const response = await fetch(`/api/v1/payments/customer/${cId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          setPayments(resData.data);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch payment history:", e);
+    } finally {
+      setPaymentsLoading(false);
+    }
+  };
+
   useEffect(() => {
     const userStr = localStorage.getItem('customer_user');
     let customerId = "";
@@ -204,6 +231,7 @@ export default function CustomerDashboard() {
     fetchApprovedVendors();
     if (customerId) {
       fetchCustomerSubscription(customerId);
+      fetchPaymentHistory(customerId);
     } else {
       setSubscription(null);
     }
@@ -973,6 +1001,72 @@ export default function CustomerDashboard() {
                   </div>
                 </div>
 
+              </div>
+
+              {/* Payment History Section */}
+              <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card">
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-sm font-bold text-primary-text">Payment Transaction History</h3>
+                    <p className="text-[11px] text-secondary-text">Your billing details, receipts, and order transaction status logs.</p>
+                  </div>
+                </div>
+
+                {paymentsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="animate-spin text-mint mr-2" size={18} />
+                    <span className="text-xs text-secondary-text">Loading transaction history...</span>
+                  </div>
+                ) : payments.length === 0 ? (
+                  <div className="text-center py-10 text-slate-400">
+                    <Inbox className="mx-auto mb-2 text-slate-300" size={32} />
+                    <p className="text-xs font-semibold">No transactions found</p>
+                    <p className="text-[10px] text-slate-400 mt-1">When you complete a plan purchase, transaction history will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs font-semibold">
+                      <thead>
+                        <tr className="text-[10px] font-black text-slate-450 uppercase border-b border-slate-100 pb-2">
+                          <th className="py-2 pr-4">Transaction ID</th>
+                          <th className="py-2 pr-4">Order ID</th>
+                          <th className="py-2 pr-4">Date</th>
+                          <th className="py-2 pr-4">Amount</th>
+                          <th className="py-2 pr-4">Gateway</th>
+                          <th className="py-2 pr-4">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-slate-700">
+                        {payments.map((pm) => (
+                          <tr key={pm._id} className="hover:bg-slate-50/50">
+                            <td className="py-3 pr-4 font-mono text-[10px] text-slate-600">{pm.transactionId}</td>
+                            <td className="py-3 pr-4 font-mono text-[10px] text-slate-600">{pm.razorpayOrderId}</td>
+                            <td className="py-3 pr-4 text-[11px] text-slate-500">
+                              {new Date(pm.createdAt).toLocaleDateString('en-IN', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </td>
+                            <td className="py-3 pr-4 text-mint font-extrabold">₹{pm.amount}</td>
+                            <td className="py-3 pr-4 text-[11px]">{pm.paymentGateway}</td>
+                            <td className="py-3 pr-4">
+                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                                pm.paymentStatus === 'Success'
+                                  ? 'bg-mint-light text-mint border border-mint/10'
+                                  : 'bg-red-50 text-red-500 border border-red-100'
+                              }`}>
+                                {pm.paymentStatus}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
 
             </div>

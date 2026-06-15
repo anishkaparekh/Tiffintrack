@@ -203,6 +203,7 @@ export default function VendorDetails({ preSelectedTab }) {
           const plansData = await plansRes.json();
           const plansArr = plansData.success && Array.isArray(plansData.data) ? plansData.data : (Array.isArray(plansData) ? plansData : []);
           const mappedPlans = plansArr.map(p => ({
+            id: p._id,
             name: p.planName,
             price: p.price,
             duration: p.duration === 'weekly' ? '7 Days' : '30 Days',
@@ -514,6 +515,7 @@ export default function VendorDetails({ preSelectedTab }) {
   const handleSubscribePlan = (plan) => {
     const checkoutInfo = {
       chefId: vendor.id,
+      planId: plan.id,
       chefName: vendor.name,
       planName: plan.name,
       price: plan.price,
@@ -759,31 +761,42 @@ export default function VendorDetails({ preSelectedTab }) {
             )}
 
             {/* Delivery Information */}
-            <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card space-y-5">
-              <div className="border-b border-slate-100 pb-3 flex items-center space-x-2">
-                <Truck size={16} className="text-mint" />
-                <h3 className="text-base font-extrabold text-primary-text">Delivery Operations</h3>
+            {activeLoading ? (
+              <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card animate-pulse space-y-4">
+                <div className="h-5 bg-slate-200 rounded w-1/3"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-slate-200 rounded w-full"></div>
+                  <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+                  <div className="h-4 bg-slate-200 rounded w-4/5"></div>
+                </div>
               </div>
+            ) : (
+              <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card space-y-5">
+                <div className="border-b border-slate-100 pb-3 flex items-center space-x-2">
+                  <Truck size={16} className="text-mint" />
+                  <h3 className="text-base font-extrabold text-primary-text">Delivery Operations</h3>
+                </div>
 
-              <div className="space-y-3.5 text-xs">
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-secondary-text font-semibold">Service Localities:</span>
-                  <span className="font-bold text-primary-text text-right">{vendor.deliveryAreas}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-secondary-text font-semibold">Timings:</span>
-                  <span className="font-bold text-primary-text text-right">{vendor.deliveryTimings}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-secondary-text font-semibold">Average delivery time:</span>
-                  <span className="font-bold text-primary-text">{vendor.deliveryTime}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-secondary-text font-semibold">Daily cutoff hour:</span>
-                  <span className="font-bold text-red-500">{vendor.cutoffTime}</span>
+                <div className="space-y-3.5 text-xs">
+                  <div className="flex justify-between py-1 border-b border-slate-50">
+                    <span className="text-secondary-text font-semibold">Service Localities:</span>
+                    <span className="font-bold text-primary-text text-right">{vendor?.deliveryAreas}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-slate-50">
+                    <span className="text-secondary-text font-semibold">Timings:</span>
+                    <span className="font-bold text-primary-text text-right">{vendor?.deliveryTimings}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-slate-50">
+                    <span className="text-secondary-text font-semibold">Average delivery time:</span>
+                    <span className="font-bold text-primary-text">{vendor?.deliveryTime}</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-secondary-text font-semibold">Daily cutoff hour:</span>
+                    <span className="font-bold text-red-500">{vendor?.cutoffTime}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Why Customers Choose This Vendor */}
             <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-card space-y-5">
