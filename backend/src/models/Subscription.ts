@@ -12,6 +12,7 @@ export interface ISubscription extends Document {
   mealsRemaining: number;
   deliveryAddress: string;
   preferences: string[];
+  deliveryTime?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -70,10 +71,25 @@ const SubscriptionSchema = new Schema<ISubscription>(
       type: [String],
       default: [],
     },
+    deliveryTime: {
+      type: String,
+      default: '12:30 PM',
+    },
   },
   {
     timestamps: true,
   }
 );
+
+SubscriptionSchema.post('save', async function (doc) {
+  if (doc.status === 'Active') {
+    try {
+      const { generateDeliveriesFromSubscription } = await import('../services/delivery.service');
+      await generateDeliveriesFromSubscription(doc._id);
+    } catch (err) {
+      console.error('[Subscription Model Hook] Error generating deliveries:', err);
+    }
+  }
+});
 
 export const Subscription = mongoose.model<ISubscription>('Subscription', SubscriptionSchema);

@@ -9,6 +9,7 @@ import reviewRoutes from './review.routes';
 import notificationRoutes from './notification.routes';
 import addressRoutes from './address.routes';
 import paymentRoutes from './payment.routes';
+import deliveryRoutes from './delivery.routes';
 
 const router = Router();
 
@@ -22,5 +23,8 @@ router.use('/reviews', reviewRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/addresses', addressRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/deliveries', deliveryRoutes);
+router.use('/delivery-partner', deliveryRoutes);
+router.use('/customer', deliveryRoutes);
 
 export default router;

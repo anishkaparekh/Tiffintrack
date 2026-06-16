@@ -8,6 +8,7 @@ import { Payment } from '../models/Payment';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
 import { NotificationService } from '../services/notification.service';
+import { generateDeliveriesFromSubscription } from '../services/delivery.service';
 
 /**
  * Create a new subscription.
@@ -59,6 +60,13 @@ export const createSubscription = asyncHandler(async (req: Request, res: Respons
     deliveryAddress,
     preferences: preferences || [],
   });
+
+  // Generate deliveries for the active subscription
+  try {
+    await generateDeliveriesFromSubscription(subscription._id);
+  } catch (error) {
+    console.error(`[Subscription Controller] Failed to generate deliveries:`, error);
+  }
 
   // Link payment record to this subscription
   if (razorpayPaymentId) {
@@ -270,6 +278,14 @@ export const updateSubscription = asyncHandler(async (req: Request, res: Respons
   }
 
   await subscription.save();
+
+  if (subscription.status === 'Active') {
+    try {
+      await generateDeliveriesFromSubscription(subscription._id);
+    } catch (error) {
+      console.error(`[Subscription Controller] Failed to generate deliveries on update:`, error);
+    }
+  }
 
   res.status(200).json({
     success: true,

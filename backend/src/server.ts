@@ -5,6 +5,7 @@ dotenv.config();
 import app from './app';
 import { connectDB, closeDB } from './config/database';
 import { initializeSocket } from './utils/socket';
+import { syncMissingDeliveries } from './services/delivery.service';
 
 const PORT = process.env.PORT || 5000;
 
@@ -16,6 +17,13 @@ const startServer = async () => {
   try {
     // 1. Connect to MongoDB Atlas
     await connectDB();
+
+    // Sync missing deliveries for active subscriptions
+    try {
+      await syncMissingDeliveries();
+    } catch (err) {
+      console.error('[Startup Sync] Failed to sync missing deliveries:', err);
+    }
 
     // 2. Start Express Server
     const server = app.listen(PORT, () => {

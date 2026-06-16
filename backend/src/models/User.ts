@@ -17,6 +17,7 @@ export interface IUser extends Document {
   description?: string;
   vehicleType?: string;
   vehicleNumber?: string;
+  vendorId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -109,6 +110,10 @@ const UserSchema = new Schema<IUser>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    vendorId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   {
