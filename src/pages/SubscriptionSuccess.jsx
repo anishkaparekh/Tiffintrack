@@ -193,7 +193,7 @@ function DeliveryDetailsCard({ subscription }) {
 
 // 4. Payment Summary Card
 function PaymentSummaryCard({ subscription }) {
-  const price = subscription.price || 3149;
+  const price = subscription.planId?.price || subscription.price || 3149;
   const isDiscounted = price < 3499;
   const discountVal = isDiscounted ? (3499 - price) : 0;
   const subtotal = isDiscounted ? 3499 : price;

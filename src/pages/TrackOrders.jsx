@@ -52,7 +52,7 @@ const TrackingSkeleton = () => (
 );
 
 // Reusable Map Placeholder component preparing for future Google Maps API integration
-function MapPlaceholder({ currentStep }) {
+function MapPlaceholder({ currentStep, partnerName }) {
   // Translate steps into approximate courier coordinates on path
   // Start (Vendor) -> End (Destination)
   let riderOffsetClass = "left-[15%] top-[65%]"; // Default Prepared/Confirmed
@@ -105,7 +105,7 @@ function MapPlaceholder({ currentStep }) {
           <div className="w-6 h-6 rounded-full bg-lemon border-2 border-lemon-hover flex items-center justify-center shadow-md animate-bounce">
             🚴
           </div>
-          <span className="text-[7px] font-black text-slate-700 bg-lemon px-1 rounded border border-lemon-hover shadow-sm mt-0.5 whitespace-nowrap">Rahul Rider</span>
+          <span className="text-[7px] font-black text-slate-700 bg-lemon px-1 rounded border border-lemon-hover shadow-sm mt-0.5 whitespace-nowrap">{partnerName ? partnerName.split(' ')[0] + ' Rider' : 'Rahul Rider'}</span>
         </div>
       )}
 
@@ -187,6 +187,12 @@ export default function TrackOrders() {
   // Modals dialog status
   const [showContactModal, setShowContactModal] = useState(false);
 
+  const activeDp = order?.deliveryPartnerId || null;
+  const partnerName = activeDp ? activeDp.name : "Rider Assignment Pending";
+  const partnerPhone = activeDp ? activeDp.phone : "N/A";
+  const partnerInitials = activeDp ? partnerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : "DP";
+  const partnerVehicle = activeDp ? `${activeDp.vehicleType || ''} (${activeDp.vehicleNumber || ''})` : "Searching for courier partner...";
+
   // Load active subscription from localStorage on each render (prevents useEffect warnings)
   const activeSub = (() => {
     const saved = localStorage.getItem('tiffintrack_active_subscription');
@@ -206,7 +212,12 @@ export default function TrackOrders() {
       return;
     }
     try {
-      const response = await fetch(`/api/v1/orders/customer/${customerId}`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/orders/customer/${customerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (response.ok) {
         const resData = await response.json();
         if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
@@ -459,7 +470,7 @@ export default function TrackOrders() {
                     <span className="text-[10px] text-slate-400 font-bold">Route: Kitchen → Home</span>
                   </div>
 
-                  <MapPlaceholder currentStep={timelineStep} />
+                  <MapPlaceholder currentStep={timelineStep} partnerName={partnerName} />
                 </div>
 
                 {/* 2. Stepper Timeline */}
@@ -478,14 +489,14 @@ export default function TrackOrders() {
                 <div className="bg-white border border-slate-200/50 rounded-3xl p-5 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-mint/20 transition-all">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-lemon-light text-lemon-hover border border-lemon/20 flex items-center justify-center font-black text-sm">
-                      RK
+                      {partnerInitials}
                     </div>
                     <div className="text-xs">
                       <h4 className="font-extrabold text-primary-text text-sm flex items-center gap-1.5">
-                        <span>Rahul Kumar</span>
+                        <span>{partnerName}</span>
                         <span className="text-[9px] font-black text-mint bg-mint-light px-2 py-0.5 rounded-full border border-mint/10 uppercase">Rider</span>
                       </h4>
-                      <p className="text-[10px] text-secondary-text font-bold mt-0.5">TiffinTrack Certified Delivery Partner</p>
+                      <p className="text-[10px] text-secondary-text font-bold mt-0.5">{partnerVehicle}</p>
                     </div>
                   </div>
 
@@ -628,18 +639,18 @@ export default function TrackOrders() {
             <div className="space-y-1">
               <h4 className="text-sm font-extrabold text-primary-text">Contact Help Partner</h4>
               <p className="text-[11px] text-secondary-text leading-normal font-semibold">
-                To contact Chef Priya or Rider Rahul Kumar, dials are automatically redirected to our secure call masking service.
+                To contact the Chef or Rider, dials are automatically redirected to our secure call masking service.
               </p>
             </div>
 
             <div className="bg-slate-50 border border-slate-150 p-3 rounded-xl text-left space-y-2 text-xs font-semibold">
               <div className="flex justify-between items-center">
-                <span>👨‍🍳 Chef Priya Patel:</span>
-                <span className="text-mint font-mono">+91 99741-XXXXX</span>
+                <span>👨‍🍳 Chef {order?.vendorId?.businessName || order?.vendorId?.name || "Priya Patel"}:</span>
+                <span className="text-mint font-mono">{order?.vendorId?.phone || "+91 99741-XXXXX"}</span>
               </div>
               <div className="flex justify-between items-center border-t border-slate-100 pt-2">
-                <span>🚴 Rider Rahul Kumar:</span>
-                <span className="text-mint font-mono">+91 76541-XXXXX</span>
+                <span>🚴 Rider {partnerName}:</span>
+                <span className="text-mint font-mono">{partnerPhone}</span>
               </div>
             </div>
 

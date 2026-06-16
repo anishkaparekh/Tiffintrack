@@ -38,6 +38,7 @@ import { NotificationProvider } from './auth/NotificationContext';
 
 // Delivery Side Components
 import DeliveryLogin from './pages/DeliveryLogin';
+import DeliverySignup from './pages/DeliverySignup';
 import DeliveryDashboard from './pages/DeliveryDashboard';
 
 function App() {
@@ -92,10 +93,11 @@ function App() {
 
         {/* Delivery Dashboard routes */}
         <Route path="/delivery-login" element={<DeliveryLogin />} />
-        <Route path="/delivery-dashboard" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="dashboard" /></ProtectedRoute>} />
-        <Route path="/delivery/history" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="history" /></ProtectedRoute>} />
-        <Route path="/delivery/notifications" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="notifications" /></ProtectedRoute>} />
-        <Route path="/delivery/profile" element={<ProtectedRoute allowedRole="delivery"><DeliveryDashboard defaultTab="profile" /></ProtectedRoute>} />
+        <Route path="/delivery-signup" element={<DeliverySignup />} />
+        <Route path="/delivery-dashboard" element={<ProtectedRoute allowedRole="deliveryPartner"><DeliveryDashboard defaultTab="dashboard" /></ProtectedRoute>} />
+        <Route path="/delivery/history" element={<ProtectedRoute allowedRole="deliveryPartner"><DeliveryDashboard defaultTab="history" /></ProtectedRoute>} />
+        <Route path="/delivery/notifications" element={<ProtectedRoute allowedRole="deliveryPartner"><DeliveryDashboard defaultTab="notifications" /></ProtectedRoute>} />
+        <Route path="/delivery/profile" element={<ProtectedRoute allowedRole="deliveryPartner"><DeliveryDashboard defaultTab="profile" /></ProtectedRoute>} />
 
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />

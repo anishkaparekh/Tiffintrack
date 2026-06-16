@@ -20,11 +20,6 @@ const getPayload = (token) => {
 };
 
 export default function ProtectedRoute({ children, allowedRole }) {
-  // Temporarily bypass authentication check for delivery partner role to run frontend with mock data
-  if (allowedRole === 'delivery') {
-    return <>{children}</>;
-  }
-
   const token = localStorage.getItem('token');
 
   if (!token) {
@@ -34,7 +29,7 @@ export default function ProtectedRoute({ children, allowedRole }) {
         ? '/admin-login'
         : allowedRole === 'vendor'
         ? '/vendor/login'
-        : allowedRole === 'delivery'
+        : allowedRole === 'deliveryPartner'
         ? '/delivery-login'
         : '/customer-auth';
     return <Navigate to={redirectPath} replace />;
@@ -49,7 +44,7 @@ export default function ProtectedRoute({ children, allowedRole }) {
         ? '/admin-login'
         : allowedRole === 'vendor'
         ? '/vendor/login'
-        : allowedRole === 'delivery'
+        : allowedRole === 'deliveryPartner'
         ? '/delivery-login'
         : '/customer-auth';
     return <Navigate to={redirectPath} replace />;
@@ -64,7 +59,7 @@ export default function ProtectedRoute({ children, allowedRole }) {
         ? '/admin-login'
         : allowedRole === 'vendor'
         ? '/vendor/login'
-        : allowedRole === 'delivery'
+        : allowedRole === 'deliveryPartner'
         ? '/delivery-login'
         : '/customer-auth';
     return <Navigate to={redirectPath} replace />;

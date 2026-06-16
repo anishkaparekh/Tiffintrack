@@ -154,19 +154,65 @@ export default function MySubscriptions() {
     return defaultList;
   });
 
+  const fetchSubscriptions = async () => {
+    const userStr = localStorage.getItem('customer_user');
+    const token = localStorage.getItem('token');
+    if (!userStr || !token) {
+      setIsLoading(false);
+      return;
+    }
+    try {
+      const u = JSON.parse(userStr);
+      const customerId = u._id || u.id;
+      if (!customerId) {
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      const response = await fetch(`/api/v1/subscriptions/customer/${customerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const mapped = resData.data.map((sub) => {
+            const planPrice = sub.planId?.price || sub.price || 3149;
+            const startDateStr = new Date(sub.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            const endDateStr = new Date(sub.endDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            return {
+              id: sub._id,
+              vendorId: sub.vendorId?._id || sub.vendorId,
+              vendorName: sub.vendorName || sub.vendorId?.businessName || sub.vendorId?.name || "Home Chef",
+              planName: sub.planName || sub.planId?.planName || "Meal Plan",
+              price: planPrice,
+              startDate: startDateStr,
+              renewalDate: endDateStr,
+              status: sub.status || "Active",
+              deliverySchedule: sub.planName?.includes("Lunch Only") ? "Lunch: 12:30 PM (Mon-Sat)" : "Lunch: 12:30 PM & Dinner: 8:00 PM (Mon-Sat)",
+              mealsRemaining: sub.mealsRemaining,
+              address: sub.deliveryAddress
+            };
+          });
+          setSubscriptionsList(mapped);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch subscriptions:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Load subscriptions list and handle localStorage sync
   useEffect(() => {
-    // Initial load loading simulation
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-
-    return () => clearTimeout(timer);
+    fetchSubscriptions();
   }, []);
 
   // Sync state update to localStorage if active subscription changes
   const updateActiveSubStorage = (updatedList) => {
-    const activeSub = updatedList.find(s => s.id === "sub_active_1" || s.id === "sub_active_fallback");
+    const activeSub = updatedList.find(s => s.status === "Active");
     if (activeSub) {
       const storageObj = {
         vendorId: activeSub.vendorId,
@@ -210,27 +256,57 @@ export default function MySubscriptions() {
   };
 
   // Pause Action Handler
-  const handlePauseSubscription = (subId) => {
-    const updated = subscriptionsList.map(s => {
-      if (s.id === subId) {
-        return { ...s, status: 'Paused' };
+  const handlePauseSubscription = async (subId) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`/api/v1/subscriptions/${subId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}`
+        },
+        body: JSON.stringify({ status: 'Paused' })
+      });
+      if (response.ok) {
+        const updated = subscriptionsList.map(s => {
+          if (s.id === subId) {
+            return { ...s, status: 'Paused' };
+          }
+          return s;
+        });
+        setSubscriptionsList(updated);
+        updateActiveSubStorage(updated);
       }
-      return s;
-    });
-    setSubscriptionsList(updated);
-    updateActiveSubStorage(updated);
+    } catch (e) {
+      console.error("Failed to pause subscription:", e);
+    }
   };
 
   // Resume Action Handler
-  const handleResumeSubscription = (subId) => {
-    const updated = subscriptionsList.map(s => {
-      if (s.id === subId) {
-        return { ...s, status: 'Active' };
+  const handleResumeSubscription = async (subId) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`/api/v1/subscriptions/${subId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}`
+        },
+        body: JSON.stringify({ status: 'Active' })
+      });
+      if (response.ok) {
+        const updated = subscriptionsList.map(s => {
+          if (s.id === subId) {
+            return { ...s, status: 'Active' };
+          }
+          return s;
+        });
+        setSubscriptionsList(updated);
+        updateActiveSubStorage(updated);
       }
-      return s;
-    });
-    setSubscriptionsList(updated);
-    updateActiveSubStorage(updated);
+    } catch (e) {
+      console.error("Failed to resume subscription:", e);
+    }
   };
 
   // Renew Expired Action Handler

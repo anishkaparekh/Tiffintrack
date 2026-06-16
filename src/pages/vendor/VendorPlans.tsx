@@ -50,25 +50,75 @@ export default function VendorPlans() {
     if (!vId) return;
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/v1/plans/vendor/${vId}`);
-      if (response.ok) {
-        const resData = await response.json();
+      const headers: HeadersInit = {};
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const [plansRes, subsRes, paymentsRes] = await Promise.all([
+        fetch(`/api/v1/plans/vendor/${vId}`, { headers }),
+        fetch(`/api/v1/subscriptions/vendor/${vId}`, { headers }),
+        fetch(`/api/v1/payments/vendor/${vId}`, { headers })
+      ]);
+
+      let dbPlansList: any[] = [];
+      if (plansRes.ok) {
+        const resData = await plansRes.json();
         if (resData.success && Array.isArray(resData.data)) {
-          const mappedPlans: PlanItem[] = resData.data.map((p: any) => ({
-            id: p._id,
-            name: p.planName,
-            description: p.description,
-            includedMeals: [],
-            mealsPerWeek: `${p.mealsPerDay * 6} Meals/Week`,
-            monthlyPrice: `₹${p.price}`,
-            subscriberCount: 0,
-            revenueGenerated: 0,
-            duration: p.duration.charAt(0).toUpperCase() + p.duration.slice(1), // 'Weekly' or 'Monthly'
-            status: p.isActive ? 'Active' : 'Paused'
-          }));
-          setPlans(mappedPlans);
+          dbPlansList = resData.data;
         }
       }
+
+      let dbSubsList: any[] = [];
+      if (subsRes.ok) {
+        const resData = await subsRes.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          dbSubsList = resData.data;
+        }
+      }
+
+      let dbPaymentsList: any[] = [];
+      if (paymentsRes.ok) {
+        const resData = await paymentsRes.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          dbPaymentsList = resData.data;
+        }
+      }
+
+      const mappedPlans: PlanItem[] = dbPlansList.map((p: any) => {
+        // Calculate dynamic counts
+        const activeSubs = dbSubsList.filter(s => s.planId?._id === p._id || s.planId === p._id);
+        const activeCount = activeSubs.filter(s => s.status === 'Active').length;
+        
+        // Find subscription IDs linked to this plan
+        const planSubIds = dbSubsList
+          .filter(s => s.planId?._id === p._id || s.planId === p._id)
+          .map(s => s._id);
+
+        // Sum payments for subscriptions matching this plan
+        const planRevenue = dbPaymentsList
+          .filter(pay => {
+            const paySubId = pay.subscriptionId?._id || pay.subscriptionId;
+            return planSubIds.includes(paySubId);
+          })
+          .reduce((acc, pay) => acc + pay.amount, 0);
+
+        return {
+          id: p._id,
+          name: p.planName,
+          description: p.description,
+          includedMeals: [],
+          mealsPerWeek: `${(p.mealsPerDay || 1) * (p.duration === 'weekly' ? 6 : 26)} Meals/${p.duration === 'weekly' ? 'Week' : 'Month'}`,
+          monthlyPrice: `₹${p.price}`,
+          subscriberCount: activeCount,
+          revenueGenerated: planRevenue,
+          duration: p.duration.charAt(0).toUpperCase() + p.duration.slice(1), // 'Weekly' or 'Monthly'
+          status: p.isActive ? 'Active' : 'Paused'
+        };
+      });
+
+      setPlans(mappedPlans);
     } catch (err) {
       console.error(err);
     } finally {
@@ -324,11 +374,19 @@ export default function VendorPlans() {
     const sorted = [...plans].sort((a, b) => b.subscriberCount - a.subscriberCount);
     const bestSeller = sorted[0];
 
+    // Compute actual monthly recurring revenue: sum of active plans' price * subscriberCount
+    const mrr = plans.reduce((acc, p) => {
+      const priceVal = parseInt(p.monthlyPrice.replace(/[^\d]/g, '')) || 0;
+      // If plan is weekly, we estimate its monthly value as weeklyPrice * 4
+      const multiplier = p.duration.toLowerCase() === 'weekly' ? 4 : 1;
+      return acc + (priceVal * multiplier * p.subscriberCount);
+    }, 0);
+
     return {
       totalPlans: total,
       activeSubscribers: activeSubs,
-      monthlyRecurringRevenue: mockPlansStats.monthlyRecurringRevenue,
-      mostPopularPlanName: bestSeller ? bestSeller.name : "None",
+      monthlyRecurringRevenue: mrr,
+      mostPopularPlanName: bestSeller && bestSeller.subscriberCount > 0 ? bestSeller.name : "None",
       mostPopularPlanSubscribers: bestSeller ? bestSeller.subscriberCount : 0
     };
   }, [plans]);

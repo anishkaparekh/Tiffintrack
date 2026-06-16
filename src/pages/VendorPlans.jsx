@@ -747,7 +747,7 @@ export default function VendorPlans() {
                 <p className="text-[10px] text-secondary-text mt-0.5 leading-relaxed max-w-md">Provides complete weekly coverage, express delivery, and full pause/resume capabilities for just ₹3,499/month.</p>
               </div>
               <button 
-                onClick={() => handleSelectPlan(plans[1])}
+                onClick={() => handleSelectPlan(plans.find(p => p.isPopular) || plans[0])}
                 className="w-full sm:w-auto px-5 py-2.5 bg-mint hover:bg-mint-hover text-white text-[11px] font-black rounded-xl shadow-sm cursor-pointer transition-colors"
               >
                 Choose Recommend Plan

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import crypto from 'crypto';
 import razorpay from '../config/razorpay';
 import { Payment } from '../models/Payment';
+import { Subscription } from '../models/Subscription';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
 
@@ -99,6 +100,33 @@ export const getCustomerPayments = asyncHandler(async (req: Request, res: Respon
 
   const payments = await Payment.find({ customerId })
     .populate('subscriptionId')
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    count: payments.length,
+    data: payments
+  });
+});
+
+/**
+ * Get payment logs for a specific vendor's customers.
+ * GET /api/v1/payments/vendor/:vendorId
+ */
+export const getVendorPayments = asyncHandler(async (req: Request, res: Response) => {
+  const { vendorId } = req.params;
+
+  // 1. Find all subscriptions for this vendor
+  const subscriptions = await Subscription.find({ vendorId });
+  const subIds = subscriptions.map(s => s._id);
+
+  // 2. Find all payments linked to these subscriptions
+  const payments = await Payment.find({ subscriptionId: { $in: subIds } })
+    .populate('customerId', 'name email phone')
+    .populate({
+      path: 'subscriptionId',
+      select: 'planName status'
+    })
     .sort({ createdAt: -1 });
 
   res.status(200).json({

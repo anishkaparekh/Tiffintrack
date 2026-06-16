@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface INotification extends Document {
   userId?: mongoose.Types.ObjectId;
-  userRole: 'customer' | 'vendor' | 'admin';
+  userRole: 'customer' | 'vendor' | 'admin' | 'deliveryPartner';
   title: string;
   message: string;
   category: 'ORDER' | 'SUBSCRIPTION' | 'PAYMENT' | 'MEAL' | 'DELIVERY' | 'CUSTOMER' | 'VENDOR' | 'ADMIN' | 'SYSTEM' | 'PROMOTIONAL';
@@ -24,7 +24,7 @@ const NotificationSchema: Schema = new Schema(
     userRole: {
       type: String,
       required: true,
-      enum: ['customer', 'vendor', 'admin'],
+      enum: ['customer', 'vendor', 'admin', 'deliveryPartner'],
       index: true,
     },
     title: {

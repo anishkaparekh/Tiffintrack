@@ -17,6 +17,10 @@ export interface OrderItem {
   remainingMinutes?: number;
   deliveryInstructions?: string;
   assignedDriver?: string;
+  deliveryPartnerName?: string;
+  deliveryPartnerPhone?: string;
+  deliveryPartnerVehicleType?: string;
+  deliveryPartnerVehicleNumber?: string;
 }
 
 export interface DeliveryScheduleItem {

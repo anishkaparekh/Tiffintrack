@@ -47,3 +47,38 @@ export const loginSchema = z.object({
       }),
   }),
 });
+
+export const deliveryRegisterSchema = z.object({
+  body: z.object({
+    name: z
+      .string({
+        required_error: 'Name is required',
+      })
+      .min(2, 'Name must be at least 2 characters')
+      .max(50, 'Name must not exceed 50 characters'),
+    email: z
+      .string({
+        required_error: 'Email is required',
+      })
+      .email('Invalid email address'),
+    password: z
+      .string({
+        required_error: 'Password is required',
+      })
+      .min(6, 'Password must be at least 6 characters'),
+    phone: z
+      .string({
+        required_error: 'Phone number is required',
+      })
+      .min(10, 'Phone must be at least 10 digits'),
+    vehicleType: z
+      .string({
+        required_error: 'Vehicle type is required',
+      }),
+    vehicleNumber: z
+      .string({
+        required_error: 'Vehicle number is required',
+      }),
+  }),
+});
+

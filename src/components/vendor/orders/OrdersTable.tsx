@@ -64,7 +64,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                 <th className="py-4 px-5 font-black">Meal details</th>
                 <th className="py-4 px-5 font-black">Address</th>
                 <th className="py-4 px-5 font-black">Delivery Time</th>
-                <th className="py-4 px-5 font-black">Order Date</th>
+                <th className="py-4 px-5 font-black">Delivery Partner</th>
                 <th className="py-4 px-5 font-black">Status</th>
                 <th className="py-4 px-5 font-black text-right">Actions</th>
               </tr>
@@ -89,7 +89,16 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                     {order.address}
                   </td>
                   <td className="py-4 px-5 font-black text-slate-600">{order.deliveryTime}</td>
-                  <td className="py-4 px-5 text-slate-400 font-semibold">{order.orderDate}</td>
+                  <td className="py-4 px-5">
+                    {order.deliveryPartnerName ? (
+                      <div>
+                        <p className="font-extrabold">{order.deliveryPartnerName}</p>
+                        <p className="text-[10px] text-slate-400 font-semibold">{order.deliveryPartnerPhone}</p>
+                      </div>
+                    ) : (
+                      <span className="text-slate-400 font-semibold">Not Assigned</span>
+                    )}
+                  </td>
                   <td className="py-4 px-5">{getStatusBadge(order.status)}</td>
                   <td className="py-4 px-5 text-right relative">
                     <div className="flex items-center justify-end space-x-2">

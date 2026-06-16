@@ -1,9 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DeliverySidebar from './DeliverySidebar';
 import { Menu } from 'lucide-react';
 
 export default function DeliveryLayout({ children, currentTab, onTabChange }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [partnerName, setPartnerName] = useState('Delivery Partner');
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_delivery_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        if (u.name) {
+          setPartnerName(u.name);
+        }
+      } catch (e) {
+        console.error("Failed to parse delivery partner from localStorage:", e);
+      }
+    }
+  }, []);
+
+  const initials = partnerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'D';
 
   return (
     <div className="flex h-screen bg-[#F4F9F6] font-sans overflow-hidden">
@@ -36,9 +53,9 @@ export default function DeliveryLayout({ children, currentTab, onTabChange }) {
           </div>
 
           <div className="flex items-center space-x-3">
-            <span className="text-xs font-bold text-slate-500 hidden sm:inline">Rahul Kumar</span>
+            <span className="text-xs font-bold text-slate-500 hidden sm:inline">{partnerName}</span>
             <div className="w-8 h-8 rounded-full bg-mint-light text-mint flex items-center justify-center font-bold text-sm">
-              R
+              {initials}
             </div>
           </div>
         </header>

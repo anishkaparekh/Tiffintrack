@@ -68,33 +68,39 @@ export default function DeliveryLogin() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsLoading(true);
     setMessage(null);
 
-    // Simulate network delay
-    setTimeout(() => {
-      setIsLoading(false);
-      
-      // Seed mock delivery partner session
-      const mockToken = makeMockJwt({
-        id: "mock-del-1",
-        name: "Rahul Kumar",
-        email: email || "rahul.delivery@tiffintrack.com",
-        role: "delivery",
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24) // 1 day expiry
+    try {
+      const response = await fetch('/api/v1/auth/delivery/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
       });
 
-      localStorage.setItem('token', mockToken);
-      localStorage.setItem('user', JSON.stringify({
-        id: "mock-del-1",
-        name: "Rahul Kumar",
-        email: email || "rahul.delivery@tiffintrack.com",
-        role: "delivery"
-      }));
+      const resData = await response.json();
+      setIsLoading(false);
+
+      if (!response.ok || !resData.success) {
+        setMessage({
+          type: 'error',
+          text: resData.message || 'Invalid email or password.'
+        });
+        return;
+      }
+
+      // Store JWT token and user info
+      localStorage.setItem('token', resData.data.token);
+      localStorage.setItem('tiffintrack_delivery_user', JSON.stringify(resData.data.user));
 
       setMessage({
         type: 'success',
@@ -104,7 +110,13 @@ export default function DeliveryLogin() {
       setTimeout(() => {
         navigate('/delivery-dashboard');
       }, 800);
-    }, 1200);
+    } catch (err) {
+      setIsLoading(false);
+      setMessage({
+        type: 'error',
+        text: 'Connection error. Please ensure the backend is running.'
+      });
+    }
   };
 
   return (
@@ -260,6 +272,14 @@ export default function DeliveryLogin() {
               )}
             </button>
           </form>
+
+          {/* Registration link */}
+          <p className="mt-5 text-xs text-secondary-text">
+            New Delivery Partner?{' '}
+            <Link to="/delivery-signup" className="font-bold text-mint hover:underline">
+              Register Here
+            </Link>
+          </p>
 
           {/* Guidelines Divider */}
           <div className="border-t border-slate-200/60 pt-5 mt-6 text-left">

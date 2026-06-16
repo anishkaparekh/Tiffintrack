@@ -13,15 +13,24 @@ import {
 } from 'recharts';
 import { mockRevenue } from '../../data/vendorMockData';
 
-export default function RevenueCard() {
+interface RevenueCardProps {
+  data?: {
+    daily: { label: string; value: number }[];
+    weekly: { label: string; value: number }[];
+    monthly: { label: string; value: number }[];
+  };
+}
+
+export default function RevenueCard({ data }: RevenueCardProps) {
   const [timeframe, setTimeframe] = useState<'daily' | 'weekly' | 'monthly'>('daily');
 
   const getData = () => {
+    const source = data || mockRevenue;
     switch (timeframe) {
-      case 'daily': return mockRevenue.daily;
-      case 'weekly': return mockRevenue.weekly;
-      case 'monthly': return mockRevenue.monthly;
-      default: return mockRevenue.daily;
+      case 'daily': return source.daily;
+      case 'weekly': return source.weekly;
+      case 'monthly': return source.monthly;
+      default: return source.daily;
     }
   };
 

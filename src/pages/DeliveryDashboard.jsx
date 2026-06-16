@@ -57,6 +57,130 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
     }
   }, [location.pathname, defaultTab]);
 
+  const fetchAssignedOrders = async (partnerId) => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/orders/delivery/${partnerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mappedDeliveries = resData.data.map(order => {
+            const customer = order.customerId || {};
+            const vendor = order.vendorId || {};
+            const meal = order.mealId || {};
+            const subscription = order.subscriptionId || {};
+
+            let mappedStatus = 'Pending';
+            if (order.status === 'Preparing' || order.status === 'Pending') mappedStatus = 'Pending';
+            else if (order.status === 'Out For Delivery') mappedStatus = 'Picked Up';
+            else if (order.status === 'Delivered') mappedStatus = 'Delivered';
+            else if (order.status === 'Cancelled' || order.status === 'Failed') mappedStatus = 'Failed';
+
+            return {
+              id: order._id,
+              customerName: customer.name || "Customer",
+              customerPhone: customer.phone || "+91 98765 00111",
+              mealType: meal.mealName || "Standard Tiffin Meal",
+              address: order.deliveryAddress || "Anand, Gujarat",
+              landmark: order.landmark || "Near City Center",
+              deliveryInstructions: order.deliveryInstructions || "Deliver carefully.",
+              timeSlot: subscription.deliveryTime || "12:30 PM - 1:00 PM",
+              status: mappedStatus,
+              failReason: order.failReason || "",
+              notes: order.notes || "",
+              vendorName: vendor.businessName || vendor.name || "Chef Kitchen",
+              vendorPhone: vendor.phone || "+91 98765 00222",
+              vendorAddress: vendor.kitchenAddress || "Vendor Kitchen Address",
+              rawOrder: order
+            };
+          });
+
+          // Separate active (Pending, Picked Up, Failed) and completed (Delivered)
+          const active = mappedDeliveries.filter(d => d.status === 'Pending' || d.status === 'Picked Up' || d.status === 'Failed');
+          const completed = mappedDeliveries.filter(d => d.status === 'Delivered');
+
+          setTodayDeliveries(active);
+          setHistoryList(completed);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch assigned deliveries:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchPartnerNotifications = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const response = await fetch('/api/v1/notifications', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped = resData.data.map(notif => {
+            let cat = 'update';
+            if (notif.category === 'DELIVERY') {
+              if (notif.title.includes('Assigned')) cat = 'assignment';
+              else if (notif.title.includes('Delivered')) cat = 'success';
+              else cat = 'update';
+            } else if (notif.type === 'error') {
+              cat = 'unavailable';
+            }
+            
+            const timeAgo = notif.createdAt ? new Date(notif.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+
+            return {
+              id: notif._id || notif.id,
+              category: cat,
+              message: notif.message,
+              timestamp: `Today, ${timeAgo}`,
+              isRead: notif.isRead
+            };
+          });
+          setNotifications(mapped);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch partner notifications:", e);
+    }
+  };
+
+  // Load actual user session details
+  useEffect(() => {
+    const userStr = localStorage.getItem('tiffintrack_delivery_user');
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        const pId = u._id || u.id;
+        setProfile(prev => ({
+          ...prev,
+          id: pId || prev.id,
+          name: u.name || prev.name,
+          email: u.email || prev.email,
+          phone: u.phone || prev.phone,
+          vehicleType: u.vehicleType || prev.vehicleType,
+          vehicleNumber: u.vehicleNumber || prev.vehicleNumber,
+        }));
+        if (pId) {
+          fetchAssignedOrders(pId);
+          fetchPartnerNotifications();
+        }
+      } catch (e) {
+        console.error("Failed to parse delivery partner from localStorage:", e);
+      }
+    }
+  }, []);
+
   // Operational State
   const [todayDeliveries, setTodayDeliveries] = useState(initialDeliveries);
   const [historyList, setHistoryList] = useState(completedDeliveries);
@@ -101,124 +225,54 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
   };
 
   // Update Status Handlers
-  const handleUpdateStatus = (id, newStatus, reason = null) => {
-    // 1. Find delivery item
+  const handleUpdateStatus = async (id, newStatus, reason = null) => {
     const item = todayDeliveries.find(d => d.id === id);
     if (!item) return;
 
-    // 2. Update list state
-    setTodayDeliveries(prev => prev.map(d => {
-      if (d.id === id) {
-        return { 
-          ...d, 
-          status: newStatus,
-          failReason: reason
-        };
-      }
-      return d;
-    }));
-
-    // Synchronize back to shared localStorage database
-    const saved = localStorage.getItem('vendor_deliveries');
-    if (saved) {
-      try {
-        const deliveries = JSON.parse(saved);
-        const updated = deliveries.map(d => {
-          if (d.id === id) {
-            let mappedStatus = d.status;
-            if (newStatus === 'Picked Up') mappedStatus = 'Out for Delivery';
-            else if (newStatus === 'Delivered') mappedStatus = 'Delivered';
-            else if (newStatus === 'Failed') mappedStatus = 'Failed';
-            
-            return {
-              ...d,
-              status: mappedStatus,
-              failReason: reason || undefined
-            };
-          }
-          return d;
-        });
-        localStorage.setItem('vendor_deliveries', JSON.stringify(updated));
-
-        // Create Activity Log
-        const logsStr = localStorage.getItem('delivery_activity_logs') || '[]';
-        const logs = JSON.parse(logsStr);
-        const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        const newLog = {
-          id: `act-${Date.now()}`,
-          orderId: id,
-          customerName: item.customerName,
-          status: newStatus === 'Picked Up' ? 'Out for Delivery' : newStatus,
-          timestamp: "Today, " + timeStr,
-          deliveryPartner: "Rahul Kumar"
-        };
-        localStorage.setItem('delivery_activity_logs', JSON.stringify([newLog, ...logs]));
-
-        // Create notification
-        const notifsStr = localStorage.getItem('delivery_workflow_notifications') || '[]';
-        const notifs = JSON.parse(notifsStr);
-        const customerMsg = newStatus === 'Picked Up' 
-          ? `🚴 Your tiffin is on the way.` 
-          : newStatus === 'Delivered' 
-          ? `❤️ Your homemade meal has arrived.` 
-          : `⚠️ Delivery attempt failed: ${reason || 'Customer Unavailable'}.`;
-
-        const newNotif = {
-          id: `not-${Date.now()}`,
-          title: newStatus === 'Picked Up' ? 'Tiffin On The Way' : newStatus === 'Delivered' ? 'Meal Arrived' : 'Delivery Failed',
-          message: customerMsg,
-          type: newStatus === 'Delivered' ? 'success' : newStatus === 'Failed' ? 'error' : 'info',
-          role: 'customer',
-          timestamp: "Today, " + timeStr,
-          isRead: false
-        };
-        localStorage.setItem('delivery_workflow_notifications', JSON.stringify([newNotif, ...notifs]));
-      } catch (e) {
-        console.error(e);
-      }
+    let backendStatus = 'Pending';
+    if (newStatus === 'Pending') {
+      backendStatus = 'Pending';
+    } else if (newStatus === 'Picked Up') {
+      backendStatus = 'Out For Delivery';
+    } else if (newStatus === 'Delivered') {
+      backendStatus = 'Delivered';
+    } else if (newStatus === 'Failed') {
+      backendStatus = 'Cancelled';
     }
 
-    if (newStatus === 'Delivered') {
-      showToast(`Order ${id} marked as Delivered! Warm thali served.`, 'success');
-      
-      // Move to completed history
-      const now = new Date();
-      const formattedDate = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-      const newHistoryItem = {
-        id: item.id,
-        customerName: item.customerName,
-        date: formattedDate,
-        meal: item.mealType,
-        status: 'Delivered',
-        address: item.address
-      };
-      
-      setHistoryList(prev => [newHistoryItem, ...prev]);
-      
-      // Log success notification
-      const newNotif = {
-        id: `nt-del-${Date.now()}`,
-        category: 'success',
-        message: `Delivery completed successfully: ${item.id} for ${item.customerName}.`,
-        timestamp: 'Just now',
-        isRead: false
-      };
-      setNotifications(prev => [newNotif, ...prev]);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/orders/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          status: backendStatus,
+          notes: reason ? `Attempt failed: ${reason}` : (item.notes || '')
+        })
+      });
 
-    } else if (newStatus === 'Picked Up') {
-      showToast(`Order ${id} Picked Up from vendor kitchen.`, 'info');
-    } else if (newStatus === 'Failed') {
-      showToast(`Order ${id} delivery failed: ${reason}.`, 'error');
-      
-      // Log unavailable notification
-      const newNotif = {
-        id: `nt-del-${Date.now()}`,
-        category: 'unavailable',
-        message: `Delivery failed: Customer unavailable at ${item.address} (${item.customerName}).`,
-        timestamp: 'Just now',
-        isRead: false
-      };
-      setNotifications(prev => [newNotif, ...prev]);
+      if (response.ok) {
+        if (profile.id) {
+          await fetchAssignedOrders(profile.id);
+        }
+        
+        if (newStatus === 'Delivered') {
+          showToast(`Order ${id} marked as Delivered! Warm thali served.`, 'success');
+        } else if (newStatus === 'Picked Up') {
+          showToast(`Order ${id} Picked Up from vendor kitchen.`, 'info');
+        } else if (newStatus === 'Failed') {
+          showToast(`Order ${id} delivery failed: ${reason || 'Customer Unavailable'}.`, 'error');
+        }
+      } else {
+        const errData = await response.json();
+        showToast(errData.message || 'Failed to update order status.', 'error');
+      }
+    } catch (e) {
+      console.error("Failed to update order status via API:", e);
+      showToast('Connection error. Failed to update status.', 'error');
     }
   };
 
@@ -228,9 +282,23 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
   };
 
   // Notification Mark Read Handler
-  const handleMarkNotificationRead = (id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
-    showToast('Alert marked as read.', 'info');
+  const handleMarkNotificationRead = async (id) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const response = await fetch(`/api/v1/notifications/${id}/read`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        await fetchPartnerNotifications();
+        showToast('Alert marked as read.', 'info');
+      }
+    } catch (e) {
+      console.error("Failed to mark notification as read:", e);
+    }
   };
 
   // Sandbox simulations
@@ -334,7 +402,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
           {/* Welcome Intro Section */}
           <div className="pb-2">
             <h1 className="text-2xl font-black text-primary-text tracking-tight flex items-center space-x-2">
-              <span>Welcome Back, Rahul 👋</span>
+              <span>Welcome Back, {profile.name ? profile.name.split(' ')[0] : 'Partner'} 👋</span>
             </h1>
             <p className="text-xs md:text-sm text-secondary-text mt-1">
               Deliver homemade happiness, one meal at a time.
@@ -671,7 +739,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
       {/* Detailed Address Modal */}
       {viewingDeliveryDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
             <button 
               onClick={() => setViewingDeliveryDetails(null)}
               className="absolute right-4 top-4 text-slate-400 hover:text-slate-650 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded-full p-1"
@@ -679,20 +747,76 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
               <X size={16} />
             </button>
             <h3 className="text-sm font-extrabold text-[#1F2937] border-b border-slate-100 pb-3 mb-4">
-              📋 Delivery Location Details
+              📋 Route Details (Pickup & Dropoff)
             </h3>
-            <CustomerDeliveryInfo
-              customerName={viewingDeliveryDetails.customerName}
-              phone={viewingDeliveryDetails.customerPhone || "+91 98765 00111"}
-              address={viewingDeliveryDetails.address}
-              landmark={viewingDeliveryDetails.landmark}
-              deliveryInstructions={viewingDeliveryDetails.deliveryInstructions}
-              onNavigate={() => {
-                setViewingDeliveryDetails(null);
-                handleNavigate(viewingDeliveryDetails);
-              }}
-            />
-            <div className="pt-4 mt-2 flex justify-end">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Customer Column */}
+              <div>
+                <h4 className="text-xs text-slate-400 font-extrabold uppercase tracking-wider mb-2">Customer Dropoff</h4>
+                <CustomerDeliveryInfo
+                  customerName={viewingDeliveryDetails.customerName}
+                  phone={viewingDeliveryDetails.customerPhone || "+91 98765 00111"}
+                  address={viewingDeliveryDetails.address}
+                  landmark={viewingDeliveryDetails.landmark}
+                  deliveryInstructions={viewingDeliveryDetails.deliveryInstructions}
+                  onNavigate={() => {
+                    setViewingDeliveryDetails(null);
+                    handleNavigate(viewingDeliveryDetails);
+                  }}
+                />
+              </div>
+
+              {/* Vendor Column */}
+              <div className="bg-white border border-slate-200/60 p-6 rounded-3xl shadow-card space-y-5 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                        {viewingDeliveryDetails.vendorName ? viewingDeliveryDetails.vendorName.charAt(0).toUpperCase() : 'V'}
+                      </div>
+                      <div>
+                        <h4 className="text-xs text-slate-400 font-extrabold uppercase tracking-wider">Vendor</h4>
+                        <span className="text-sm font-extrabold text-[#1F2937]">{viewingDeliveryDetails.vendorName || "Priya's Home Kitchen"}</span>
+                      </div>
+                    </div>
+                    
+                    <a 
+                      href={`tel:${viewingDeliveryDetails.vendorPhone || "+91 99741 00222"}`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-650/10 border border-blue-600/10 text-blue-600 rounded-xl text-xs font-bold transition-all"
+                    >
+                      <Phone size={13} />
+                      <span>Call Vendor</span>
+                    </a>
+                  </div>
+
+                  <div className="space-y-4 text-xs text-slate-650 font-semibold leading-relaxed mt-4">
+                    <div className="flex items-start gap-2.5">
+                      <MapPin size={15} className="text-blue-600 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider mb-0.5">Kitchen Address</span>
+                        <span className="text-[#1F2937] leading-normal block">{viewingDeliveryDetails.vendorAddress || "12, Shastri Marg, Anand"}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100">
+                  <button
+                    onClick={() => {
+                      setViewingDeliveryDetails(null);
+                      handleNavigate({ address: viewingDeliveryDetails.vendorAddress || "12, Shastri Marg, Anand" });
+                    }}
+                    className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                  >
+                    <Navigation size={14} fill="white" />
+                    <span>Navigate to Kitchen</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 mt-4 border-t border-slate-100 flex justify-end">
               <button 
                 onClick={() => setViewingDeliveryDetails(null)}
                 className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl cursor-pointer"

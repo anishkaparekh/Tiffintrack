@@ -232,6 +232,7 @@ export default function CustomerDashboard() {
     if (customerId) {
       fetchCustomerSubscription(customerId);
       fetchPaymentHistory(customerId);
+      fetchCustomerLatestOrder(customerId);
     } else {
       setSubscription(null);
     }
@@ -242,6 +243,29 @@ export default function CustomerDashboard() {
 
   // Active Subscription State
   const [subscription, setSubscription] = useState(null);
+  const [latestOrder, setLatestOrder] = useState(null);
+
+  const fetchCustomerLatestOrder = async (customerId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/orders/customer/${customerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const latest = resData.data.find(o => o.status !== 'Cancelled') || resData.data[0];
+          setLatestOrder(latest);
+        } else {
+          setLatestOrder(null);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch customer latest order:", e);
+    }
+  };
 
   // Recent Activity log state
   const [activities, setActivities] = useState([
@@ -509,6 +533,12 @@ export default function CustomerDashboard() {
 
     return matchesSearch && matchesCategory && matchesArea;
   });
+
+  const activeOrderDp = latestOrder?.deliveryPartnerId || null;
+  const customerDashPartnerName = activeOrderDp ? activeOrderDp.name : "Rider Assignment Pending";
+  const customerDashPartnerPhone = activeOrderDp ? activeOrderDp.phone : "N/A";
+  const customerDashPartnerInitials = activeOrderDp ? customerDashPartnerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : "DP";
+  const customerDashPartnerVehicle = activeOrderDp ? `${activeOrderDp.vehicleType || ''} (${activeOrderDp.vehicleNumber || ''})` : "Searching for courier partner...";
 
   return (
     <div className="min-h-screen bg-snow text-primary-text font-sans flex flex-col justify-between">
@@ -1477,19 +1507,19 @@ export default function CustomerDashboard() {
                       <h3 className="text-base font-bold text-primary-text border-b border-slate-100 pb-3">Delivery Partner</h3>
                       
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500">
-                          RK
+                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 animate-pulse">
+                          {customerDashPartnerInitials}
                         </div>
                         <div>
-                          <h4 className="text-sm font-bold text-primary-text">Rahul Kumar</h4>
-                          <span className="text-[10px] text-secondary-text block">TiffinTrack Express Logistics</span>
+                          <h4 className="text-sm font-bold text-primary-text">{customerDashPartnerName}</h4>
+                          <span className="text-[10px] text-secondary-text block truncate max-w-[150px]">{customerDashPartnerVehicle}</span>
                         </div>
                       </div>
 
                       <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs">
                         <div className="flex justify-between">
                           <span className="text-secondary-text">Mobile No:</span>
-                          <span className="font-semibold text-primary-text">+91-9999911111</span>
+                          <span className="font-semibold text-primary-text">{customerDashPartnerPhone}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-secondary-text">Tiffin Code:</span>
@@ -1499,10 +1529,16 @@ export default function CustomerDashboard() {
                           <span className="text-secondary-text">Est. Delivery:</span>
                           <span className="font-bold text-primary-text">{subscription.nextDelivery}</span>
                         </div>
+                        <div className="flex justify-between">
+                          <span className="text-secondary-text">Delivery Status:</span>
+                          <span className={`font-bold ${latestOrder?.status === 'Delivered' ? 'text-mint' : 'text-amber-500'}`}>
+                            {latestOrder?.status || 'Pending'}
+                          </span>
+                        </div>
                       </div>
 
                       <button 
-                        onClick={() => setMessage({ type: 'success', text: 'Calling Courier +91-9999911111...' })}
+                        onClick={() => setMessage({ type: 'success', text: `Calling Courier ${customerDashPartnerPhone}...` })}
                         className="w-full py-3 px-4 rounded-xl bg-mint hover:bg-mint-hover text-white font-bold text-xs transition-colors duration-200 cursor-pointer shadow-sm text-center"
                       >
                         Call Delivery Partner

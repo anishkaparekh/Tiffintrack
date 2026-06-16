@@ -146,8 +146,15 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
               </div>
 
               <div>
-                <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Assigned Logistics Partner</span>
-                <span className="text-[#1F2937] font-extrabold block mt-0.5">{order.assignedDriver || "Awaiting Driver Allocation"}</span>
+                <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Assigned Delivery Partner</span>
+                {order.deliveryPartnerName ? (
+                  <div className="mt-1 space-y-1">
+                    <span className="text-[#1F2937] font-extrabold block">{order.deliveryPartnerName}</span>
+                    <span className="text-slate-650 font-semibold block">📞 {order.deliveryPartnerPhone || 'N/A'}</span>
+                  </div>
+                ) : (
+                  <span className="text-[#1F2937] font-extrabold block mt-0.5">{order.assignedDriver || "Awaiting Driver Allocation"}</span>
+                )}
               </div>
             </div>
           </div>

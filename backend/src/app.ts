@@ -42,7 +42,7 @@ app.use(cookieParser());
 
 // Rate limiter for API routes
 const limiter = rateLimit({
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'development' ? 100000 : 100, // Limit each IP to 100 requests per windowMs (100k in dev)
   windowMs: 15 * 60 * 1000, // 15 minutes
   message: 'Too many requests from this IP, please try again in 15 minutes!',
   standardHeaders: true,

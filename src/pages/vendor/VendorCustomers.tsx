@@ -246,28 +246,28 @@ export default function VendorCustomers() {
   const liveStats = useMemo(() => {
     const total = customers.length;
     const active = customers.filter(c => c.status === 'Active').length;
-    const newCount = customers.filter(c => c.isNew).length + 14; // Mocked aggregate
+    const newCount = customers.filter(c => c.isNew).length;
 
     return {
-      totalCustomers: total + 121, // Scale up mock numbers
-      activeSubscribers: active + 95,
+      totalCustomers: total,
+      activeSubscribers: active,
       newCustomersThisMonth: newCount,
-      avgRetentionRate: mockCustomerStats.avgRetentionRate
+      avgRetentionRate: total > 0 ? Math.round((active / total) * 100) : 0
     };
   }, [customers]);
 
   // Compute live segment sizes
   const liveSegments = useMemo(() => {
     return mockCustomerSegments.map(seg => {
-      let count = seg.count;
+      let count = 0;
       if (seg.type === 'loyal') {
-        count = customers.filter(c => c.isLoyal).length + 39;
+        count = customers.filter(c => c.isLoyal).length;
       } else if (seg.type === 'new') {
-        count = customers.filter(c => c.isNew).length + 16;
+        count = customers.filter(c => c.isNew).length;
       } else if (seg.type === 'high_value') {
-        count = customers.filter(c => c.lifetimeValue >= 10000).length + 13;
+        count = customers.filter(c => c.lifetimeValue >= 10000).length;
       } else if (seg.type === 'at_risk') {
-        count = customers.filter(c => c.status === 'Renewal Due').length + 7;
+        count = customers.filter(c => c.status === 'Expired' || c.status === 'Renewal Due').length;
       }
       return { ...seg, count };
     });

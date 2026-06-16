@@ -6,7 +6,7 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
 export interface TokenPayload {
   id: string;
   email: string;
-  role: 'customer' | 'vendor' | 'admin';
+  role: 'customer' | 'vendor' | 'admin' | 'deliveryPartner';
 }
 
 /**

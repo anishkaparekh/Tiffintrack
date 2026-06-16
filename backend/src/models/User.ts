@@ -15,6 +15,8 @@ export interface IUser extends Document {
   city?: string;
   mealsPerDay?: number;
   description?: string;
+  vehicleType?: string;
+  vehicleNumber?: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -60,6 +62,20 @@ const UserSchema = new Schema<IUser>(
     phone: {
       type: String,
       trim: true,
+    },
+    vehicleType: {
+      type: String,
+      trim: true,
+      required: function(this: any) {
+        return this.role === ROLES.DELIVERY_PARTNER;
+      },
+    },
+    vehicleNumber: {
+      type: String,
+      trim: true,
+      required: function(this: any) {
+        return this.role === ROLES.DELIVERY_PARTNER;
+      },
     },
     businessName: {
       type: String,

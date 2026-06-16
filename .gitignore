@@ -30,3 +30,11 @@ Tiffintrack/
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary and Scratch Files
+scratch/
+*.txt
+backend/check_db_conn.js
+backend/db_audit.js
+backend/find_vendor_pwd.js
+backend/src/debug-db.ts

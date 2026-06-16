@@ -60,6 +60,7 @@ export default function VendorOrders() {
             const meal = order.mealId || {};
             const uiStatus: OrderStatus = order.status === 'Out For Delivery' ? 'Out for Delivery' : order.status;
 
+            const dp = order.deliveryPartnerId || null;
             return {
               id: order._id,
               customerName: customer.name || 'Unknown Customer',
@@ -71,7 +72,11 @@ export default function VendorOrders() {
               deliveryTime: '12:30 PM',
               orderDate: new Date(order.orderDate || order.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
               quantity: 1,
-              priority: 'On Track' as PriorityLevel
+              priority: 'On Track' as PriorityLevel,
+              deliveryPartnerName: dp ? dp.name : undefined,
+              deliveryPartnerPhone: dp ? dp.phone : undefined,
+              deliveryPartnerVehicleType: dp ? dp.vehicleType : undefined,
+              deliveryPartnerVehicleNumber: dp ? dp.vehicleNumber : undefined
             };
           });
           setOrders(mapped);

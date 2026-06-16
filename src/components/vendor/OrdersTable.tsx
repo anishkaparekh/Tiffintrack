@@ -58,7 +58,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               <th className="py-4 px-6">Order ID</th>
               <th className="py-4 px-6">Customer Name</th>
               <th className="py-4 px-6">Subscription Plan</th>
-              <th className="py-4 px-6">Delivery Schedule</th>
+              <th className="py-4 px-6">Delivery Partner</th>
               <th className="py-4 px-6">Status</th>
             </tr>
           </thead>
@@ -74,8 +74,15 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                 <td className="py-4.5 px-6 font-semibold text-slate-500">
                   {order.plan}
                 </td>
-                <td className="py-4.5 px-6 font-bold text-[#1F2937]">
-                  {order.deliveryTime}
+                <td className="py-4.5 px-6">
+                  {order.deliveryPartnerName ? (
+                    <div>
+                      <p className="font-bold text-[#1F2937]">{order.deliveryPartnerName}</p>
+                      <p className="text-[10px] text-slate-400 font-semibold">{order.deliveryPartnerPhone}</p>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 font-semibold">Not Assigned</span>
+                  )}
                 </td>
                 <td className="py-4.5 px-6">
                   {getStatusBadge(order.status)}

@@ -7,7 +7,7 @@ export class NotificationService {
    */
   static async createNotification(data: {
     userId: string;
-    userRole: 'customer' | 'vendor' | 'admin';
+    userRole: 'customer' | 'vendor' | 'admin' | 'deliveryPartner';
     title: string;
     message: string;
     category: 'ORDER' | 'SUBSCRIPTION' | 'PAYMENT' | 'MEAL' | 'DELIVERY' | 'CUSTOMER' | 'VENDOR' | 'ADMIN' | 'SYSTEM' | 'PROMOTIONAL';

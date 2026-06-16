@@ -5,16 +5,8 @@ import { Menu as MenuIcon, Plus, Utensils, MapPin, Sparkles, RefreshCw, CheckCir
 // Sidebar
 import Sidebar from '../components/Sidebar';
 
-// Data Mock
-import { 
-  Address, 
-  getStoredAddresses, 
-  saveAddresses, 
-  addAddress, 
-  updateAddress, 
-  deleteAddress, 
-  setDefaultAddress 
-} from '../data/addressMockData';
+// Data Mock Type
+import { Address } from '../data/addressMockData';
 
 // Custom Components
 import AddressList from '../components/customer/addresses/AddressList';
@@ -39,19 +31,57 @@ export default function CustomerAddresses() {
   // Banner message state
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-  // Sync state with local storage
-  const syncAddresses = () => {
-    setAddresses(getStoredAddresses());
+  // Fetch addresses from backend
+  const fetchAddresses = async () => {
+    const userStr = localStorage.getItem('customer_user');
+    const token = localStorage.getItem('token');
+    if (!userStr || !token) {
+      setIsLoading(false);
+      return;
+    }
+    try {
+      const u = JSON.parse(userStr);
+      const customerId = u._id || u.id;
+      if (!customerId) {
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      const response = await fetch(`/api/v1/addresses/customer/${customerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped = resData.data.map((addr: any) => ({
+            id: addr._id,
+            label: addr.landmark || 'Address',
+            fullName: addr.fullName,
+            phone: addr.phoneNumber,
+            addressLine1: addr.addressLine1,
+            addressLine2: addr.addressLine2 || '',
+            area: addr.landmark || addr.city,
+            city: addr.city,
+            state: addr.state,
+            pincode: addr.pincode,
+            landmark: addr.landmark || '',
+            deliveryInstructions: '',
+            isDefault: addr.isDefault
+          }));
+          setAddresses(mapped);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch addresses:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    syncAddresses();
-    // Simulate initial loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-
-    return () => clearTimeout(timer);
+    fetchAddresses();
   }, []);
 
   // Auto-clear banner messages
@@ -87,19 +117,64 @@ export default function CustomerAddresses() {
   };
 
   // CRUD Trigger wrappers
-  const handleSave = (addressData: Omit<Address, 'id'> & { id?: string }) => {
-    if (addressData.id) {
-      // Edit mode
-      updateAddress(addressData as Address);
-      setMessage({ type: 'success', text: `Address "${addressData.label}" updated successfully!` });
-    } else {
-      // Create mode
-      const created = addAddress(addressData);
-      setMessage({ type: 'success', text: `New address "${created.label}" added successfully!` });
+  const handleSave = async (addressData: Omit<Address, 'id'> & { id?: string }) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const backendPayload = {
+      fullName: addressData.fullName,
+      phoneNumber: addressData.phone,
+      addressLine1: addressData.addressLine1,
+      addressLine2: addressData.addressLine2,
+      landmark: addressData.label || addressData.landmark,
+      city: addressData.city,
+      state: addressData.state,
+      pincode: addressData.pincode,
+      isDefault: addressData.isDefault
+    };
+
+    try {
+      let response;
+      if (addressData.id) {
+        // Edit mode (PUT)
+        response = await fetch(`/api/v1/addresses/${addressData.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(backendPayload)
+        });
+      } else {
+        // Create mode (POST)
+        response = await fetch('/api/v1/addresses', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(backendPayload)
+        });
+      }
+
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        setMessage({ 
+          type: 'success', 
+          text: addressData.id 
+            ? `Address "${addressData.label}" updated successfully!` 
+            : `New address "${addressData.label}" added successfully!` 
+        });
+        fetchAddresses();
+        setShowForm(false);
+        setCurrentEditAddress(null);
+      } else {
+        setMessage({ type: 'error', text: resData.message || 'Failed to save address.' });
+      }
+    } catch (err) {
+      console.error('Failed to save address:', err);
+      setMessage({ type: 'error', text: 'An error occurred while saving the address.' });
     }
-    syncAddresses();
-    setShowForm(false);
-    setCurrentEditAddress(null);
   };
 
   const handleEditTrigger = (address: Address) => {
@@ -107,36 +182,67 @@ export default function CustomerAddresses() {
     setShowForm(true);
   };
 
-  const handleDeleteTrigger = (id: string) => {
+  const handleDeleteTrigger = async (id: string) => {
     const target = addresses.find(a => a.id === id);
     if (!target) return;
     
     if (window.confirm(`Are you sure you want to delete the address "${target.label}"?`)) {
-      deleteAddress(id);
-      syncAddresses();
-      setMessage({ type: 'success', text: `Address "${target.label}" deleted successfully.` });
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const response = await fetch(`/api/v1/addresses/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const resData = await response.json();
+        if (response.ok && resData.success) {
+          setMessage({ type: 'success', text: `Address "${target.label}" deleted successfully.` });
+          fetchAddresses();
+        } else {
+          setMessage({ type: 'error', text: resData.message || 'Failed to delete address.' });
+        }
+      } catch (err) {
+        console.error('Failed to delete address:', err);
+        setMessage({ type: 'error', text: 'An error occurred while deleting the address.' });
+      }
     }
   };
 
-  const handleSetDefaultTrigger = (id: string) => {
+  const handleSetDefaultTrigger = async (id: string) => {
     const target = addresses.find(a => a.id === id);
     if (!target) return;
 
-    setDefaultAddress(id);
-    syncAddresses();
-    setMessage({ type: 'success', text: `"${target.label}" set as your default delivery address.` });
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch(`/api/v1/addresses/${id}/default`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        setMessage({ type: 'success', text: `"${target.label}" set as your default delivery address.` });
+        fetchAddresses();
+      } else {
+        setMessage({ type: 'error', text: resData.message || 'Failed to set default address.' });
+      }
+    } catch (err) {
+      console.error('Failed to set default address:', err);
+      setMessage({ type: 'error', text: 'An error occurred while setting the default address.' });
+    }
   };
 
   const handleResetSandbox = () => {
-    localStorage.removeItem('tiffintrack_customer_addresses');
-    setForceLoadingState(false);
-    setEmptyAddresses(false);
-    setIsLoading(true);
-    syncAddresses();
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-    setMessage({ type: 'success', text: 'Restored default mock address database.' });
+    fetchAddresses();
+    setMessage({ type: 'success', text: 'Reloaded addresses from backend.' });
   };
 
   const activeLoading = isLoading || forceLoadingState;

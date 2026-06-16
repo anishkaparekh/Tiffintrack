@@ -4,6 +4,7 @@ export interface IOrder extends Document {
   customerId: mongoose.Types.ObjectId;
   vendorId: mongoose.Types.ObjectId;
   subscriptionId?: mongoose.Types.ObjectId;
+  deliveryPartnerId?: mongoose.Types.ObjectId;
   mealId: mongoose.Types.ObjectId;
   orderDate: Date;
   deliveryDate: Date;
@@ -29,6 +30,10 @@ const OrderSchema = new Schema<IOrder>(
     subscriptionId: {
       type: Schema.Types.ObjectId,
       ref: 'Subscription',
+    },
+    deliveryPartnerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
     mealId: {
       type: Schema.Types.ObjectId,

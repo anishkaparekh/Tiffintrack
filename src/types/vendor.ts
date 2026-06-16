@@ -33,6 +33,8 @@ export interface Order {
   plan: string;
   status: OrderStatus;
   deliveryTime: string;
+  deliveryPartnerName?: string;
+  deliveryPartnerPhone?: string;
 }
 
 export type MealStatus = 'Available' | 'Limited Availability' | 'Unavailable';
