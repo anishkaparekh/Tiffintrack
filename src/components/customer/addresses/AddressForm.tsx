@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Address } from '../../../data/addressMockData';
 import { Home, Briefcase, MapPin, Check } from 'lucide-react';
+import LocationMap from '../../common/LocationMap';
 
 interface AddressFormProps {
   address?: Address | null; // Null if adding
@@ -21,7 +22,9 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
     pincode: '',
     landmark: '',
     deliveryInstructions: '',
-    isDefault: false
+    isDefault: false,
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,6 +74,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      console.log('Submitting form data:', formData);
       onSave({
         ...formData,
         id: address?.id
@@ -78,7 +82,30 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
     }
   };
 
+  // Get user location using browser Geolocation API
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log('Location retrieved:', position.coords);
+        setFormData(prev => ({
+          ...prev,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }));
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        alert('Unable to retrieve location. Please allow location access or enter manually.');
+      }
+    );
+  };
+
   const selectLabelTag = (tag: string) => {
+    console.log('Label selected:', tag);
     setFormData(prev => ({ ...prev, label: tag }));
     if (errors.label) {
       setErrors(prev => {
@@ -213,24 +240,41 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
 
         {/* Area, City, State, Pincode */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="space-y-1">
-            <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-              Area/Locality *
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Kalawad Road"
-              value={formData.area}
-              onChange={e => {
-                setFormData({ ...formData, area: e.target.value });
-                if (errors.area) setErrors({ ...errors, area: '' });
-              }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
-            />
-            {errors.area && (
-              <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.area}</span>
-            )}
-          </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                Area/Locality *
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Kalawad Road"
+                value={formData.area}
+                onChange={e => {
+                  setFormData({ ...formData, area: e.target.value });
+                  if (errors.area) setErrors({ ...errors, area: '' });
+                }}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              />
+              {errors.area && (
+                <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.area}</span>
+              )}
+            </div>
+            {/* Geolocation button */}
+            <div className="flex items-center space-x-2 mt-2">
+              <button
+                type="button"
+                onClick={getLocation}
+                className="px-3 py-1.5 bg-mint text-white text-xs rounded-lg hover:bg-mint-hover transition"
+              >
+                Use My Location
+              </button>
+              {formData.latitude !== undefined && formData.longitude !== undefined && (
+                <LocationMap
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  title="Selected Location"
+                />
+              )}
+            </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
