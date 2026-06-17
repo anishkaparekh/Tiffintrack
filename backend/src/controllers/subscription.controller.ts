@@ -129,10 +129,28 @@ export const getCustomerSubscriptions = asyncHandler(async (req: Request, res: R
     .populate('planId')
     .sort({ createdAt: -1 });
 
+  // Transform subscriptions to flatten plan details for frontend compatibility
+  const transformed = subscriptions.map((sub: any) => ({
+    _id: sub._id,
+    customerId: sub.customerId,
+    vendorId: sub.vendorId,
+    planId: sub.planId?._id,
+    planName: sub.planId?.planName,
+    planPrice: sub.planId?.price,
+    status: sub.status,
+    startDate: sub.startDate,
+    endDate: sub.endDate,
+    mealsRemaining: sub.mealsRemaining,
+    deliveryAddress: sub.deliveryAddress,
+    preferences: sub.preferences,
+    createdAt: sub.createdAt,
+    updatedAt: sub.updatedAt,
+  }));
+
   res.status(200).json({
     success: true,
-    count: subscriptions.length,
-    data: subscriptions,
+    count: transformed.length,
+    data: transformed,
   });
 });
 
@@ -148,10 +166,28 @@ export const getVendorSubscriptions = asyncHandler(async (req: Request, res: Res
     .populate('planId')
     .sort({ createdAt: -1 });
 
+  // Transform subscriptions to flatten plan details for frontend compatibility
+  const transformed = subscriptions.map((sub: any) => ({
+    _id: sub._id,
+    customerId: sub.customerId,
+    vendorId: sub.vendorId,
+    planId: sub.planId?._id,
+    planName: sub.planId?.planName,
+    planPrice: sub.planId?.price,
+    status: sub.status,
+    startDate: sub.startDate,
+    endDate: sub.endDate,
+    mealsRemaining: sub.mealsRemaining,
+    deliveryAddress: sub.deliveryAddress,
+    preferences: sub.preferences,
+    createdAt: sub.createdAt,
+    updatedAt: sub.updatedAt,
+  }));
+
   res.status(200).json({
     success: true,
-    count: subscriptions.length,
-    data: subscriptions,
+    count: transformed.length,
+    data: transformed,
   });
 });
 
