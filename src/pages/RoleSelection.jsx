@@ -48,14 +48,49 @@ export default function RoleSelection() {
           </div>
         </nav>
 
-        {/* Hero Section - Short height, authentic human copywriting */}
-        <header className="max-w-4xl mx-auto px-4 pt-8 pb-4 text-center">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-primary-text mb-3">
-            Fresh Home-Cooked Meals Delivered Daily
-          </h1>
-          <p className="text-sm md:text-base text-secondary-text max-w-xl mx-auto leading-relaxed mb-6">
-            We connect busy professionals with certified local home chefs. Choose a plan that fits your routine, manage subscription preferences, and eat healthy every day.
-          </p>
+        {/* Premium Hero Section with Food Background and Soft Overlay */}
+        <header className="relative overflow-hidden bg-slate-900 py-20 md:py-28 px-4 text-center text-white mb-10 rounded-b-[2.5rem] shadow-xl">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            <img 
+              src="/src/assets/tiffin_hero_bg.png" 
+              alt="Homemade food backdrop" 
+              className="w-full h-full object-cover object-center filter blur-[1px] brightness-[0.4] scale-105"
+            />
+            {/* Warm gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3E2723]/30 to-[#3E2723]/70 opacity-90"></div>
+          </div>
+
+          {/* Hero Content */}
+          <div className="relative z-10 max-w-4xl mx-auto">
+            {/* Soft badge */}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-mint/95 text-white uppercase tracking-wider mb-6 animate-pulse">
+              🍲 Homely & Fresh
+            </span>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-4 drop-shadow-md">
+              Healthy Homemade Meals Delivered Daily
+            </h1>
+            <p className="text-sm md:text-lg text-yellow-50/90 max-w-xl mx-auto leading-relaxed mb-8 drop-shadow-sm font-medium">
+              Connecting customers with trusted local tiffin providers through flexible subscriptions.
+            </p>
+            
+            {/* Hero CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+              <button 
+                onClick={() => navigate('/customer-auth')}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-mint hover:bg-mint-hover text-white font-extrabold text-xs transition-all duration-350 transform hover:-translate-y-0.5 hover:shadow-lg shadow-mint/20 cursor-pointer flex items-center justify-center space-x-2"
+              >
+                <span>Explore Plans</span>
+                <ArrowRight size={14} />
+              </button>
+              <button 
+                onClick={() => navigate('/vendor/login')}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs transition-all duration-350 border border-white/20 backdrop-blur-sm cursor-pointer flex items-center justify-center space-x-2"
+              >
+                <span>Become a Vendor</span>
+              </button>
+            </div>
+          </div>
         </header>
 
         {/* Onboarding Role Cards - Visible above the fold */}
