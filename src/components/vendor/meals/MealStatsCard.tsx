@@ -25,7 +25,7 @@ function StatsCardItem({ title, value, description, trend, icon: Icon }: StatsCa
           <span className="text-xs font-semibold text-slate-400">{description}</span>
         </div>
       </div>
-      <div className="w-12 h-12 rounded-xl bg-[#F4F9F6] text-[#00B074] flex items-center justify-center shrink-0 border border-[#E5E7EB]/50">
+      <div className="w-12 h-12 rounded-xl bg-[#FFF8E7] text-[#F59E0B] flex items-center justify-center shrink-0 border border-[#E5E7EB]/50">
         <Icon size={20} />
       </div>
     </div>

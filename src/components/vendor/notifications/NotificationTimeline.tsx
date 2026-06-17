@@ -53,9 +53,9 @@ export default function NotificationTimeline({
         {/* Timeline Group Header */}
         <div className="flex items-center space-x-2.5 z-10 relative">
           <div className="w-8 h-8 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center text-slate-400 shadow-xs">
-            <Calendar size={13} className="text-[#00B074]" />
+            <Calendar size={13} className="text-[#F59E0B]" />
           </div>
-          <span className="text-xs font-black uppercase tracking-wider text-[#1F2937] bg-[#F4F9F6] pr-4">
+          <span className="text-xs font-black uppercase tracking-wider text-[#1F2937] bg-[#FFF8E7] pr-4">
             {title} ({items.length})
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function NotificationTimeline({
           {items.map((item) => (
             <div key={item.id} className="relative">
               {/* Timeline Connector Bullet */}
-              <div className="absolute -left-[21px] md:-left-[29px] top-5 w-2.5 h-2.5 rounded-full bg-slate-300 border-2 border-white ring-4 ring-[#F4F9F6]" />
+              <div className="absolute -left-[21px] md:-left-[29px] top-5 w-2.5 h-2.5 rounded-full bg-slate-300 border-2 border-white ring-4 ring-[#FFF8E7]" />
               
               <NotificationCard
                 notification={item}

@@ -242,8 +242,8 @@ export default function VendorDeliveryAssignments() {
       {/* Sandbox controller panel */}
       <div className="mb-6 p-4 bg-slate-900 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-md text-white border border-slate-800">
         <div className="space-y-1">
-          <p className="text-[#FFD200] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
-            <Sparkles size={12} className="text-[#FFD200]" />
+          <p className="text-[#C2410C] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
+            <Sparkles size={12} className="text-[#C2410C]" />
             <span>Operational Sandbox Toggles</span>
           </p>
           <h3 className="font-bold text-xs text-slate-100">Simulate order states for review</h3>
@@ -258,7 +258,7 @@ export default function VendorDeliveryAssignments() {
             <button
               onClick={() => setIsLoading(!isLoading)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isLoading ? 'bg-[#00B074]' : 'bg-slate-600'
+                isLoading ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -274,7 +274,7 @@ export default function VendorDeliveryAssignments() {
             <button
               onClick={() => setIsEmpty(!isEmpty)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isEmpty ? 'bg-[#00B074]' : 'bg-slate-600'
+                isEmpty ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${

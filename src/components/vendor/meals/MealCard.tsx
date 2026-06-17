@@ -57,7 +57,7 @@ export default function MealCard({
       <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
         type === 'Jain' 
           ? 'bg-amber-100/70 text-amber-800 border border-amber-200/50' 
-          : 'bg-[#F4F9F6] text-[#00B074] border border-[#00B074]/20'
+          : 'bg-[#FFF8E7] text-[#F59E0B] border border-[#F59E0B]/20'
       }`}>
         {type}
       </span>
@@ -89,8 +89,8 @@ export default function MealCard({
       {/* Upper Section */}
       <div>
         {/* Mock Image Area */}
-        <div className="h-40 bg-[#F4F9F6] border-b border-[#E5E7EB] flex items-center justify-center text-[#00B074]/30 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[#00B074]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="h-40 bg-[#FFF8E7] border-b border-[#E5E7EB] flex items-center justify-center text-[#F59E0B]/30 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-[#F59E0B]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <span className="text-5xl group-hover:scale-110 transition-transform duration-300 select-none">🍱</span>
           
           {/* Badge overlays */}
@@ -115,7 +115,7 @@ export default function MealCard({
             <div className="relative">
               <button 
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="p-1 rounded-lg text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] transition-colors cursor-pointer"
               >
                 <MoreVertical size={16} />
               </button>
@@ -126,23 +126,23 @@ export default function MealCard({
                   <div className="absolute right-0 mt-1 w-44 bg-white border border-[#E5E7EB] rounded-xl shadow-lg py-1.5 z-20 animate-fadeIn">
                     <button 
                       onClick={() => handleActionClick('mark_available')}
-                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#F4F9F6] hover:text-[#00B074] transition-colors flex items-center space-x-2"
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#FFF8E7] hover:text-[#F59E0B] transition-colors flex items-center space-x-2"
                     >
                       <CheckCircle size={14} className="text-[#16A34A]" />
                       <span>Mark Available</span>
                     </button>
                     <button 
                       onClick={() => handleActionClick('mark_unavailable')}
-                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#F4F9F6] hover:text-[#DC2626] transition-colors flex items-center space-x-2"
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#FFF8E7] hover:text-[#DC2626] transition-colors flex items-center space-x-2"
                     >
                       <XCircle size={14} className="text-[#DC2626]" />
                       <span>Mark Unavailable</span>
                     </button>
                     <button 
                       onClick={() => handleActionClick('duplicate')}
-                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#F4F9F6] hover:text-[#00B074] transition-colors flex items-center space-x-2"
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#FFF8E7] hover:text-[#F59E0B] transition-colors flex items-center space-x-2"
                     >
-                      <Copy size={14} className="text-[#00B074]" />
+                      <Copy size={14} className="text-[#F59E0B]" />
                       <span>Duplicate Meal</span>
                     </button>
                     <div className="border-t border-[#E5E7EB] my-1" />
@@ -166,7 +166,7 @@ export default function MealCard({
           {/* Orders this week counter */}
           <div className="flex items-center space-x-2 pt-1">
             <div className="flex items-center space-x-1 text-slate-400 text-xs font-bold">
-              <ShoppingBag size={12} className="text-[#00B074]" />
+              <ShoppingBag size={12} className="text-[#F59E0B]" />
               <span>{meal.weeklyOrders} orders <span className="text-slate-400 font-semibold uppercase text-[9px] tracking-wide">This Week</span></span>
             </div>
           </div>
@@ -177,19 +177,19 @@ export default function MealCard({
       <div className="px-5 py-4 border-t border-[#E5E7EB] bg-slate-50/50 flex items-center justify-between">
         <div>
           <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Price</span>
-          <span className="text-lg font-black text-[#00B074]">₹{meal.price}</span>
+          <span className="text-lg font-black text-[#F59E0B]">₹{meal.price}</span>
         </div>
 
         <div className="flex items-center space-x-2">
           <button
             onClick={() => onView(meal)}
-            className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-xs font-bold text-slate-600 hover:text-[#00B074] transition-all cursor-pointer"
+            className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-xs font-bold text-slate-600 hover:text-[#F59E0B] transition-all cursor-pointer"
           >
             Details
           </button>
           <button
             onClick={() => onEdit(meal)}
-            className="px-3 py-1.5 rounded-lg bg-[#00B074] hover:bg-[#00B074]/90 text-white text-xs font-bold shadow-sm shadow-[#00B074]/10 transition-all cursor-pointer"
+            className="px-3 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-white text-xs font-bold shadow-sm shadow-[#F59E0B]/10 transition-all cursor-pointer"
           >
             Edit
           </button>

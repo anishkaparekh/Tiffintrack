@@ -20,7 +20,7 @@ import {
   mockPlanDistribution 
 } from '../../../data/plansMockData';
 
-const COLORS = ['#00B074', '#FFD200', '#F59E0B', '#DC2626'];
+const COLORS = ['#F59E0B', '#C2410C', '#F59E0B', '#DC2626'];
 
 export default function PlanAnalyticsCard() {
   
@@ -72,10 +72,10 @@ export default function PlanAnalyticsCard() {
                 <Line 
                   type="monotone" 
                   dataKey="subscribers" 
-                  stroke="#00B074" 
+                  stroke="#F59E0B" 
                   strokeWidth={3} 
                   dot={{ r: 4, strokeWidth: 2, fill: 'white' }}
-                  activeDot={{ r: 6, strokeWidth: 0, fill: '#00B074' }} 
+                  activeDot={{ r: 6, strokeWidth: 0, fill: '#F59E0B' }} 
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -121,7 +121,7 @@ export default function PlanAnalyticsCard() {
                 />
                 <Bar 
                   dataKey="revenue" 
-                  fill="#00B074" 
+                  fill="#F59E0B" 
                   radius={[8, 8, 0, 0]} 
                   maxBarSize={40}
                 />

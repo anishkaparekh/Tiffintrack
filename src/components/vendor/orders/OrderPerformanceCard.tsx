@@ -11,7 +11,7 @@ export default function OrderPerformanceCard({ performance }: OrderPerformanceCa
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E5E7EB] space-y-4">
       <div>
         <h3 className="font-extrabold text-sm text-[#1F2937] uppercase tracking-wider flex items-center">
-          <Award size={16} className="text-[#00B074] mr-1.5 shrink-0" />
+          <Award size={16} className="text-[#F59E0B] mr-1.5 shrink-0" />
           <span>Kitchen Performance KPIs</span>
         </h3>
         <p className="text-[11px] text-slate-400 font-semibold">Real-time delivery & preparation metrics</p>

@@ -39,7 +39,7 @@ export default function CustomerDeliveryInfo({
       {/* Header with Name & Phone */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-[#e6f7f1] text-[#00B074] flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-full bg-[#FEF3C7] text-[#F59E0B] flex items-center justify-center font-bold">
             {customerName ? customerName.charAt(0).toUpperCase() : 'C'}
           </div>
           <div>
@@ -51,7 +51,7 @@ export default function CustomerDeliveryInfo({
         {/* Phone Button Link */}
         <a 
           href={`tel:${phone}`}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e6f7f1] hover:bg-[#00B074]/10 border border-[#00B074]/10 text-[#00B074] rounded-xl text-xs font-bold transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FEF3C7] hover:bg-[#F59E0B]/10 border border-[#F59E0B]/10 text-[#F59E0B] rounded-xl text-xs font-bold transition-all"
         >
           <Phone size={13} />
           <span>Call Client</span>
@@ -62,7 +62,7 @@ export default function CustomerDeliveryInfo({
       <div className="space-y-4 text-xs text-slate-650 font-semibold leading-relaxed">
         {/* Address */}
         <div className="flex items-start gap-2.5">
-          <MapPin size={15} className="text-[#00B074] mt-0.5 shrink-0" />
+          <MapPin size={15} className="text-[#F59E0B] mt-0.5 shrink-0" />
           <div>
             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider mb-0.5">Address</span>
             <span className="text-[#1F2937] leading-normal block">{address}</span>
@@ -71,7 +71,7 @@ export default function CustomerDeliveryInfo({
 
         {/* Landmark */}
         <div className="flex items-start gap-2.5">
-          <Compass size={15} className="text-[#FFD200] mt-0.5 shrink-0" />
+          <Compass size={15} className="text-[#C2410C] mt-0.5 shrink-0" />
           <div>
             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider mb-0.5">Landmark</span>
             <span className="text-[#1F2937] leading-normal block">

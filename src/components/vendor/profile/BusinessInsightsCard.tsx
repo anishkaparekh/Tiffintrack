@@ -18,7 +18,7 @@ export default function BusinessInsightsCard({
       <div className="grid grid-cols-2 gap-4">
         {/* Customers */}
         <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center space-x-3">
-          <div className="p-2 rounded-lg bg-[#00B074]/10 text-[#00B074] shrink-0">
+          <div className="p-2 rounded-lg bg-[#F59E0B]/10 text-[#F59E0B] shrink-0">
             <Users size={14} />
           </div>
           <div>

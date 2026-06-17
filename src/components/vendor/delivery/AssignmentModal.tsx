@@ -51,7 +51,7 @@ export default function AssignmentModal({
           </div>
           <button 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all cursor-pointer"
+            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -89,7 +89,7 @@ export default function AssignmentModal({
                     key={partner.id} 
                     className={`p-4 border rounded-xl flex items-center justify-between transition-all hover:bg-slate-50/50 ${
                       partner.coversZone 
-                        ? 'border-[#00B074]/30 bg-[#00B074]/5' 
+                        ? 'border-[#F59E0B]/30 bg-[#F59E0B]/5' 
                         : 'border-slate-200/70'
                     }`}
                   >
@@ -97,7 +97,7 @@ export default function AssignmentModal({
                       <div className="flex items-center space-x-2">
                         <span className="font-extrabold text-xs text-[#1F2937]">{partner.name}</span>
                         {partner.coversZone && (
-                          <span className="bg-[#00B074]/15 text-[#00B074] px-2 py-0.5 rounded text-[8px] font-extrabold uppercase">
+                          <span className="bg-[#F59E0B]/15 text-[#F59E0B] px-2 py-0.5 rounded text-[8px] font-extrabold uppercase">
                             Zone Match
                           </span>
                         )}
@@ -113,7 +113,7 @@ export default function AssignmentModal({
                         
                         <span>
                           Workload: &nbsp;
-                          <strong className={partner.todayDeliveriesCount > 2 ? 'text-amber-500' : 'text-[#00B074]'}>
+                          <strong className={partner.todayDeliveriesCount > 2 ? 'text-amber-500' : 'text-[#F59E0B]'}>
                             {partner.todayDeliveriesCount} Assigned
                           </strong>
                         </span>
@@ -130,7 +130,7 @@ export default function AssignmentModal({
 
                     <button
                       onClick={() => onSelectPartner(partner.id)}
-                      className="py-2 px-3.5 bg-[#00B074] hover:bg-[#00B074]/95 text-white text-[10px] font-bold rounded-lg flex items-center space-x-1 cursor-pointer shadow-sm shrink-0"
+                      className="py-2 px-3.5 bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white text-[10px] font-bold rounded-lg flex items-center space-x-1 cursor-pointer shadow-sm shrink-0"
                     >
                       <UserPlus size={12} />
                       <span>Select</span>

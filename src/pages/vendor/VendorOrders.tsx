@@ -205,8 +205,8 @@ export default function VendorOrders() {
       {/* Sandbox Toggle bar */}
       <div className="mb-6 p-4 bg-slate-900 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-md text-white border border-slate-800">
         <div className="space-y-1">
-          <p className="text-[#FFD200] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
-            <Sparkles size={12} className="text-[#FFD200]" />
+          <p className="text-[#C2410C] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
+            <Sparkles size={12} className="text-[#C2410C]" />
             <span>Operational Sandbox Toggles</span>
           </p>
           <h3 className="font-bold text-xs text-slate-100">Simulate states for review</h3>
@@ -222,7 +222,7 @@ export default function VendorOrders() {
             <button
               onClick={() => setIsLoading(!isLoading)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isLoading ? 'bg-[#00B074]' : 'bg-slate-600'
+                isLoading ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -239,7 +239,7 @@ export default function VendorOrders() {
             <button
               onClick={() => setIsEmpty(!isEmpty)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isEmpty ? 'bg-[#00B074]' : 'bg-slate-600'
+                isEmpty ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -341,7 +341,7 @@ export default function VendorOrders() {
         <div className="fixed bottom-6 right-6 z-50 animate-slideUp bg-[#1F2937] text-white px-5 py-3.5 rounded-2xl border border-slate-700 shadow-2xl flex items-center space-x-3 max-w-sm">
           <div className={`p-1.5 rounded-lg ${
             toast.type === 'success' 
-              ? 'bg-[#00B074]/20 text-[#00B074]' 
+              ? 'bg-[#F59E0B]/20 text-[#F59E0B]' 
               : toast.type === 'info' 
               ? 'bg-sky-500/20 text-sky-400' 
               : 'bg-red-500/20 text-red-400'

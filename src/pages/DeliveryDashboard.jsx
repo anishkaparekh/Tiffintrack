@@ -676,7 +676,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
       {/* DEVELOPER SANDBOX CONTROL PANEL */}
       <div className="bg-white border border-slate-200/60 p-5 rounded-3xl shadow-card space-y-4 max-w-6xl">
         <div className="flex items-center space-x-2 pb-2 border-b border-slate-100">
-          <Sparkles size={16} className="text-[#FFD200]" />
+          <Sparkles size={16} className="text-[#C2410C]" />
           <h3 className="text-xs font-bold text-primary-text uppercase tracking-wider">Delivery Agent Sandbox Controller</h3>
         </div>
 

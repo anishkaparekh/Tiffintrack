@@ -56,7 +56,7 @@ export default function NotificationsFilterBar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search notifications..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-[#F4F9F6] text-xs font-semibold text-[#1F2937] placeholder-slate-400 focus:outline-none focus:border-[#00B074] focus:ring-1 focus:ring-[#00B074] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-[#FFF8E7] text-xs font-semibold text-[#1F2937] placeholder-slate-400 focus:outline-none focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B] transition-all"
           />
         </div>
 
@@ -66,7 +66,7 @@ export default function NotificationsFilterBar({
             <select
               value={selectedCategory}
               onChange={(e) => onCategoryChange(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-white text-xs font-semibold text-[#1F2937] appearance-none focus:outline-none focus:border-[#00B074] focus:ring-1 focus:ring-[#00B074] transition-all cursor-pointer"
+              className="w-full px-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-white text-xs font-semibold text-[#1F2937] appearance-none focus:outline-none focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B] transition-all cursor-pointer"
             >
               {categories.map((cat) => (
                 <option key={cat.value} value={cat.value}>
@@ -86,7 +86,7 @@ export default function NotificationsFilterBar({
             <select
               value={selectedStatus}
               onChange={(e) => onStatusChange(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-white text-xs font-semibold text-[#1F2937] appearance-none focus:outline-none focus:border-[#00B074] focus:ring-1 focus:ring-[#00B074] transition-all cursor-pointer"
+              className="w-full px-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-white text-xs font-semibold text-[#1F2937] appearance-none focus:outline-none focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B] transition-all cursor-pointer"
             >
               {statuses.map((st) => (
                 <option key={st.value} value={st.value}>
@@ -108,7 +108,7 @@ export default function NotificationsFilterBar({
           {unreadCount > 0 && (
             <>
               {' • '}
-              <span className="text-[#00B074]">{unreadCount} unread</span>
+              <span className="text-[#F59E0B]">{unreadCount} unread</span>
             </>
           )}
         </div>
@@ -118,7 +118,7 @@ export default function NotificationsFilterBar({
           <button
             onClick={onMarkAllRead}
             disabled={unreadCount === 0}
-            className="flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[#E5E7EB] bg-white text-[11px] font-bold text-slate-600 hover:bg-[#F4F9F6] hover:text-[#00B074] hover:border-[#00B074]/30 disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-slate-600 disabled:hover:border-[#E5E7EB] transition-all"
+            className="flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[#E5E7EB] bg-white text-[11px] font-bold text-slate-600 hover:bg-[#FFF8E7] hover:text-[#F59E0B] hover:border-[#F59E0B]/30 disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-slate-600 disabled:hover:border-[#E5E7EB] transition-all"
           >
             <CheckSquare size={13} />
             <span>Mark All Read</span>

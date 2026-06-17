@@ -66,12 +66,12 @@ export default function CustomerDetailsDrawer({
         {/* Header */}
         <div className="px-6 py-5 border-b border-[#E5E7EB] flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <User className="text-[#00B074]" size={20} />
+            <User className="text-[#F59E0B]" size={20} />
             <h3 className="font-extrabold text-base text-[#1F2937]">Customer Profile</h3>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -81,7 +81,7 @@ export default function CustomerDetailsDrawer({
         <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs font-bold text-slate-500">
           
           {/* Profile Name Header Summary */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F4F9F6]/50 p-4 rounded-xl border border-[#00B074]/15">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFF8E7]/50 p-4 rounded-xl border border-[#F59E0B]/15">
             <div>
               <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider block">ID: {customer.id}</span>
               <h2 className="text-base font-black text-[#1F2937] leading-none mt-0.5">{customer.name}</h2>
@@ -153,7 +153,7 @@ export default function CustomerDetailsDrawer({
 
             <div className="grid grid-cols-2 gap-4 pl-7 text-center">
               <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                <ShoppingBag size={14} className="text-[#00B074] mx-auto mb-1" />
+                <ShoppingBag size={14} className="text-[#F59E0B] mx-auto mb-1" />
                 <span className="text-base font-black text-[#1F2937] block leading-none">{customer.totalOrders}</span>
                 <span className="text-[8px] text-slate-400 font-bold uppercase block mt-1 tracking-wider">Total Tiffins</span>
               </div>
@@ -165,12 +165,12 @@ export default function CustomerDetailsDrawer({
               </div>
 
               <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[#00B074] font-black text-xs block leading-none">₹{customer.avgMonthlySpend.toLocaleString()}</span>
+                <span className="text-[#F59E0B] font-black text-xs block leading-none">₹{customer.avgMonthlySpend.toLocaleString()}</span>
                 <span className="text-[8px] text-slate-400 font-bold uppercase block mt-2.5 tracking-wider">Avg spend / Mo</span>
               </div>
 
               <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[#00B074] font-black text-xs block leading-none">₹{customer.lifetimeValue.toLocaleString()}</span>
+                <span className="text-[#F59E0B] font-black text-xs block leading-none">₹{customer.lifetimeValue.toLocaleString()}</span>
                 <span className="text-[8px] text-slate-400 font-bold uppercase block mt-2.5 tracking-wider">Lifetime value</span>
               </div>
             </div>
@@ -192,7 +192,7 @@ export default function CustomerDetailsDrawer({
               {customer.activityFeed.map((log) => (
                 <div key={log.id} className="relative flex items-start space-x-3 group">
                   {/* Dot */}
-                  <div className="absolute -left-[20px] w-2.5 h-2.5 rounded-full bg-white border-2 border-[#00B074] flex items-center justify-center z-10">
+                  <div className="absolute -left-[20px] w-2.5 h-2.5 rounded-full bg-white border-2 border-[#F59E0B] flex items-center justify-center z-10">
                     <div className="w-1 h-1 rounded-full bg-white" />
                   </div>
 
@@ -211,7 +211,7 @@ export default function CustomerDetailsDrawer({
         <div className="px-6 py-4 bg-slate-50 border-t border-[#E5E7EB] flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-3 w-full bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#00B074]/15 transition-all cursor-pointer text-center"
+            className="px-6 py-3 w-full bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer text-center"
           >
             Close Details
           </button>

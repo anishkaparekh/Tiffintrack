@@ -14,8 +14,8 @@ export default function NotificationStatsCard({ stats }: NotificationStatsCardPr
       title: 'Total Notifications',
       value: `${total} Notifications`,
       icon: Bell,
-      color: 'text-[#00B074]',
-      bg: 'bg-[#00B074]/10',
+      color: 'text-[#F59E0B]',
+      bg: 'bg-[#F59E0B]/10',
       border: 'border-[#E5E7EB]'
     },
     {

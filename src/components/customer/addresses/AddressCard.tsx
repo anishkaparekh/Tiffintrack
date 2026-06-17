@@ -34,7 +34,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault }:
 
   return (
     <div className={`bg-white border-2 rounded-3xl p-6 shadow-card hover:shadow-card-hover transition-all flex flex-col justify-between relative overflow-hidden group ${
-      address.isDefault ? 'border-[#00B074]' : 'border-slate-200/60'
+      address.isDefault ? 'border-[#F59E0B]' : 'border-slate-200/60'
     }`}>
       
       <div className="space-y-4">
@@ -43,7 +43,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault }:
           <div className="flex items-center space-x-2">
             <div className={`p-2 rounded-xl border ${
               address.isDefault 
-                ? 'bg-[#e6f7f1] text-[#00B074] border-[#00B074]/15' 
+                ? 'bg-[#FEF3C7] text-[#F59E0B] border-[#F59E0B]/15' 
                 : 'bg-slate-50 text-slate-500 border-slate-200/50'
             }`}>
               <Icon size={16} strokeWidth={2.25} />
@@ -54,7 +54,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault }:
           </div>
           
           {address.isDefault && (
-            <span className="text-[9px] font-black uppercase tracking-wider bg-[#e6f7f1] text-[#00B074] px-2.5 py-1 rounded-md border border-[#00B074]/15 flex items-center gap-1 shadow-sm">
+            <span className="text-[9px] font-black uppercase tracking-wider bg-[#FEF3C7] text-[#F59E0B] px-2.5 py-1 rounded-md border border-[#F59E0B]/15 flex items-center gap-1 shadow-sm">
               <Check size={10} strokeWidth={3} />
               <span>Default</span>
             </span>
@@ -84,7 +84,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault }:
           {/* Landmark */}
           {address.landmark && (
             <div className="flex items-start gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100 text-[11px]">
-              <Compass size={13} className="text-[#FFD200] mt-0.5 shrink-0" />
+              <Compass size={13} className="text-[#C2410C] mt-0.5 shrink-0" />
               <span>
                 <strong className="text-[#1F2937]">Landmark:</strong> {address.landmark}
               </span>
@@ -94,7 +94,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault }:
           {/* Delivery Instructions */}
           {address.deliveryInstructions && (
             <div className="flex items-start gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100 text-[11px]">
-              <FileText size={13} className="text-[#00B074] mt-0.5 shrink-0" />
+              <FileText size={13} className="text-[#F59E0B] mt-0.5 shrink-0" />
               <span>
                 <strong className="text-[#1F2937]">Instructions:</strong> {address.deliveryInstructions}
               </span>
@@ -108,7 +108,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault }:
         {!address.isDefault && (
           <button
             onClick={() => onSetDefault(address.id)}
-            className="flex-1 py-2 bg-[#e6f7f1] hover:bg-[#00B074]/10 border border-[#00B074]/10 text-[#00B074] text-[10px] font-extrabold rounded-xl transition flex items-center justify-center gap-1 cursor-pointer"
+            className="flex-1 py-2 bg-[#FEF3C7] hover:bg-[#F59E0B]/10 border border-[#F59E0B]/10 text-[#F59E0B] text-[10px] font-extrabold rounded-xl transition flex items-center justify-center gap-1 cursor-pointer"
           >
             <Check size={12} strokeWidth={2.5} />
             <span>Set Default</span>

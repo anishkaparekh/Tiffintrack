@@ -39,8 +39,8 @@ export default function MealCard({ meal, onEditClick }: MealCardProps) {
       {/* Upper header */}
       <div className="p-5 space-y-4">
         <div className="flex justify-between items-start">
-          <span className="bg-[#F4F9F6] text-[#00B074] border border-[#00B074]/15 text-[10px] font-black px-2.5 py-1 rounded-full flex items-center space-x-1">
-            <Sparkles size={10} className="text-[#00B074]" />
+          <span className="bg-[#FFF8E7] text-[#F59E0B] border border-[#F59E0B]/15 text-[10px] font-black px-2.5 py-1 rounded-full flex items-center space-x-1">
+            <Sparkles size={10} className="text-[#F59E0B]" />
             <span>{meal.category}</span>
           </span>
           {getStatusBadge(meal.status)}
@@ -52,8 +52,8 @@ export default function MealCard({ meal, onEditClick }: MealCardProps) {
         </div>
 
         {/* Stats Row */}
-        <div className="flex items-center space-x-2 bg-[#F4F9F6] p-3 rounded-xl border border-[#E5E7EB]/50">
-          <ShoppingBag size={14} className="text-[#00B074]" />
+        <div className="flex items-center space-x-2 bg-[#FFF8E7] p-3 rounded-xl border border-[#E5E7EB]/50">
+          <ShoppingBag size={14} className="text-[#F59E0B]" />
           <p className="text-xs font-bold text-[#1F2937]">
             {meal.ordersThisWeek} orders <span className="text-slate-400 font-semibold">this week</span>
           </p>
@@ -64,11 +64,11 @@ export default function MealCard({ meal, onEditClick }: MealCardProps) {
       <div className="px-5 py-4 border-t border-[#E5E7EB] bg-slate-50/50 flex items-center justify-between">
         <div>
           <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">Price</span>
-          <span className="text-lg font-black text-[#00B074]">₹{meal.price}</span>
+          <span className="text-lg font-black text-[#F59E0B]">₹{meal.price}</span>
         </div>
         <button
           onClick={() => onEditClick?.(meal)}
-          className="p-2 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] hover:text-[#00B074] text-[#1F2937] transition-all cursor-pointer"
+          className="p-2 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] hover:text-[#F59E0B] text-[#1F2937] transition-all cursor-pointer"
           title="Edit Meal"
         >
           <Edit3 size={14} />

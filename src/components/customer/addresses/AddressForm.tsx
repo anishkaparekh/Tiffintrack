@@ -111,7 +111,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                   onClick={() => selectLabelTag(tag)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     isActive 
-                      ? 'bg-[#00B074] border-[#00B074] text-white shadow-sm shadow-[#00B074]/10' 
+                      ? 'bg-[#F59E0B] border-[#F59E0B] text-white shadow-sm shadow-[#F59E0B]/10' 
                       : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-650'
                   }`}
                 >
@@ -128,7 +128,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
               setFormData({ ...formData, label: e.target.value });
               if (errors.label) setErrors({ ...errors, label: '' });
             }}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937] transition-all"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937] transition-all"
           />
           {errors.label && (
             <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.label}</span>
@@ -149,7 +149,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                 setFormData({ ...formData, fullName: e.target.value });
                 if (errors.fullName) setErrors({ ...errors, fullName: '' });
               }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
             {errors.fullName && (
               <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.fullName}</span>
@@ -168,7 +168,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                 setFormData({ ...formData, phone: e.target.value });
                 if (errors.phone) setErrors({ ...errors, phone: '' });
               }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
             {errors.phone && (
               <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.phone}</span>
@@ -190,7 +190,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                 setFormData({ ...formData, addressLine1: e.target.value });
                 if (errors.addressLine1) setErrors({ ...errors, addressLine1: '' });
               }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
             {errors.addressLine1 && (
               <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.addressLine1}</span>
@@ -206,7 +206,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
               placeholder="Street Name, Society Lane"
               value={formData.addressLine2}
               onChange={e => setFormData({ ...formData, addressLine2: e.target.value })}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
           </div>
         </div>
@@ -225,7 +225,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                 setFormData({ ...formData, area: e.target.value });
                 if (errors.area) setErrors({ ...errors, area: '' });
               }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
             {errors.area && (
               <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.area}</span>
@@ -244,7 +244,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                 setFormData({ ...formData, city: e.target.value });
                 if (errors.city) setErrors({ ...errors, city: '' });
               }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
             {errors.city && (
               <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.city}</span>
@@ -263,7 +263,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                 setFormData({ ...formData, state: e.target.value });
                 if (errors.state) setErrors({ ...errors, state: '' });
               }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
             {errors.state && (
               <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.state}</span>
@@ -283,7 +283,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
                 setFormData({ ...formData, pincode: e.target.value });
                 if (errors.pincode) setErrors({ ...errors, pincode: '' });
               }}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
             {errors.pincode && (
               <span className="text-[10px] text-red-500 font-bold block mt-1">⚠️ {errors.pincode}</span>
@@ -302,7 +302,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
               placeholder="e.g. Opposite Crystal Mall"
               value={formData.landmark}
               onChange={e => setFormData({ ...formData, landmark: e.target.value })}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
           </div>
 
@@ -315,7 +315,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
               placeholder="e.g. Ring bell twice, deliver to first floor."
               value={formData.deliveryInstructions}
               onChange={e => setFormData({ ...formData, deliveryInstructions: e.target.value })}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00B074] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
           </div>
         </div>
@@ -333,7 +333,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
             onClick={() => setFormData({ ...formData, isDefault: !formData.isDefault })}
             disabled={address?.isDefault} // Disable toggling off if it's already the default address
             className={`w-12 h-6 rounded-full transition-all relative cursor-pointer ${
-              formData.isDefault ? 'bg-[#00B074]' : 'bg-slate-300'
+              formData.isDefault ? 'bg-[#F59E0B]' : 'bg-slate-300'
             } ${address?.isDefault ? 'opacity-60 cursor-not-allowed' : ''}`}
           >
             <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${
@@ -353,7 +353,7 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
           </button>
           <button
             type="submit"
-            className="px-5 py-2.5 bg-[#00B074] hover:bg-mint-hover text-white text-xs font-bold rounded-xl transition shadow-sm cursor-pointer shadow-[#00B074]/15"
+            className="px-5 py-2.5 bg-[#F59E0B] hover:bg-mint-hover text-white text-xs font-bold rounded-xl transition shadow-sm cursor-pointer shadow-[#F59E0B]/15"
           >
             {address ? 'Save Changes' : 'Add Address'}
           </button>

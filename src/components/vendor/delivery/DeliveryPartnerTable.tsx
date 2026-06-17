@@ -35,7 +35,7 @@ export default function DeliveryPartnerTable({
           </thead>
           <tbody className="divide-y divide-[#E5E7EB]">
             {partners.map((partner) => (
-              <tr key={partner.id} className="hover:bg-[#F4F9F6]/30 transition-colors">
+              <tr key={partner.id} className="hover:bg-[#FFF8E7]/30 transition-colors">
                 <td className="py-4 px-6 text-slate-500 font-bold">{partner.id}</td>
                 <td className="py-4 px-6 font-bold text-[#1F2937]">{partner.name}</td>
                 <td className="py-4 px-6 text-slate-500">{partner.phone}</td>
@@ -80,7 +80,7 @@ export default function DeliveryPartnerTable({
                   </button>
                 </td>
                 <td className="py-4 px-6">
-                  <span className={`font-extrabold ${partner.todayDeliveriesCount > 0 ? 'text-[#00B074]' : 'text-slate-400'}`}>
+                  <span className={`font-extrabold ${partner.todayDeliveriesCount > 0 ? 'text-[#F59E0B]' : 'text-slate-400'}`}>
                     {partner.todayDeliveriesCount} Runs
                   </span>
                 </td>
@@ -103,7 +103,7 @@ export default function DeliveryPartnerTable({
                     {partner.status === 'Active' && (
                       <button
                         onClick={() => onAssignClick(partner)}
-                        className="py-1 px-2.5 bg-[#00B074]/10 hover:bg-[#00B074]/20 text-[#00B074] rounded-lg text-[10px] font-extrabold flex items-center space-x-1 cursor-pointer"
+                        className="py-1 px-2.5 bg-[#F59E0B]/10 hover:bg-[#F59E0B]/20 text-[#F59E0B] rounded-lg text-[10px] font-extrabold flex items-center space-x-1 cursor-pointer"
                         title="Assign Deliveries"
                       >
                         <Compass size={11} />

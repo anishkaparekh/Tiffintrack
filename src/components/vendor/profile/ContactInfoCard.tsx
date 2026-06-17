@@ -46,7 +46,7 @@ export default function ContactInfoCard({ contacts, onUpdateClick }: ContactInfo
 
       <button
         onClick={onUpdateClick}
-        className="w-full py-2.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-xs font-bold text-slate-600 hover:text-[#00B074] transition-all cursor-pointer text-center"
+        className="w-full py-2.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-xs font-bold text-slate-600 hover:text-[#F59E0B] transition-all cursor-pointer text-center"
       >
         Update Contact Information
       </button>

@@ -45,19 +45,19 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
       <div className="flex items-center space-x-4">
         <button
           onClick={onMenuToggle}
-          className="lg:hidden p-2 hover:bg-[#F4F9F6] rounded-lg text-[#1F2937] transition-all"
+          className="lg:hidden p-2 hover:bg-[#FFF8E7] rounded-lg text-[#1F2937] transition-all"
         >
           {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
 
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-[#00B074] flex items-center justify-center text-white font-extrabold text-lg shadow-sm shadow-[#00B074]/20">
+          <div className="w-10 h-10 rounded-xl bg-[#F59E0B] flex items-center justify-center text-white font-extrabold text-lg shadow-sm shadow-[#F59E0B]/20">
             TT
           </div>
           <div>
             <div className="flex items-center space-x-1.5">
-              <span className="font-extrabold text-base md:text-lg tracking-tight text-[#1F2937]">Tiffin<span className="text-[#00B074]">Track</span></span>
-              <span className="bg-[#00B074]/10 text-[#00B074] text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#00B074]/20">V2.0</span>
+              <span className="font-extrabold text-base md:text-lg tracking-tight text-[#1F2937]">Tiffin<span className="text-[#F59E0B]">Track</span></span>
+              <span className="bg-[#F59E0B]/10 text-[#F59E0B] text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#F59E0B]/20">V2.0</span>
             </div>
             <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider -mt-1">Vendor Dashboard</span>
           </div>
@@ -72,7 +72,7 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
           </div>
           <input
             type="text"
-            className="w-full pl-9 pr-4 py-2.5 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm text-[#1F2937] placeholder-[#1F2937]/40 focus:outline-none focus:border-[#00B074] focus:bg-white transition-all font-medium"
+            className="w-full pl-9 pr-4 py-2.5 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm text-[#1F2937] placeholder-[#1F2937]/40 focus:outline-none focus:border-[#F59E0B] focus:bg-white transition-all font-medium"
             placeholder="Search meals, subscribers or orders..."
           />
         </div>
@@ -84,7 +84,7 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
         <div className="relative">
           <button 
             onClick={() => setShowNotificationPopup(!showNotificationPopup)}
-            className="p-2.5 text-[#1F2937] hover:text-[#00B074] hover:bg-[#F4F9F6] rounded-xl transition-all relative"
+            className="p-2.5 text-[#1F2937] hover:text-[#F59E0B] hover:bg-[#FFF8E7] rounded-xl transition-all relative"
           >
             <Bell size={20} />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#DC2626] rounded-full" />
@@ -99,14 +99,14 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
                     setShowNotificationPopup(false);
                     onViewNotifications();
                   }}
-                  className="text-[10px] text-[#00B074] font-bold uppercase hover:underline"
+                  className="text-[10px] text-[#F59E0B] font-bold uppercase hover:underline"
                 >
                   View All
                 </button>
               </div>
               <div className="divide-y divide-[#E5E7EB] max-h-64 overflow-y-auto">
                 {mockNotifications.map((n) => (
-                  <div key={n.id} className="p-3.5 hover:bg-[#F4F9F6] flex items-start space-x-2.5 transition-colors">
+                  <div key={n.id} className="p-3.5 hover:bg-[#FFF8E7] flex items-start space-x-2.5 transition-colors">
                     <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
                       n.priority === 'high' ? 'bg-[#DC2626]' : n.priority === 'medium' ? 'bg-[#F59E0B]' : 'bg-[#16A34A]'
                     }`} />
@@ -125,9 +125,9 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
         <div className="relative">
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center space-x-2.5 hover:bg-[#F4F9F6] p-1.5 pr-3 rounded-xl transition-all"
+            className="flex items-center space-x-2.5 hover:bg-[#FFF8E7] p-1.5 pr-3 rounded-xl transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#00B074] to-[#16A34A] text-white flex items-center justify-center font-bold text-sm shadow-sm shadow-[#00B074]/10">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#F59E0B] to-[#16A34A] text-white flex items-center justify-center font-bold text-sm shadow-sm shadow-[#F59E0B]/10">
               {vendorUser.initials}
             </div>
             <div className="hidden sm:block text-left">
@@ -145,13 +145,13 @@ export default function TopNavbar({ onMenuToggle, isSidebarOpen, onViewNotificat
               <div className="py-1">
                 <button
                   onClick={() => setShowProfileMenu(false)}
-                  className="w-full text-left px-4 py-2 text-xs font-semibold text-[#1F2937] hover:bg-[#F4F9F6] transition-colors"
+                  className="w-full text-left px-4 py-2 text-xs font-semibold text-[#1F2937] hover:bg-[#FFF8E7] transition-colors"
                 >
                   My Profile Settings
                 </button>
                 <button
                   onClick={() => setShowProfileMenu(false)}
-                  className="w-full text-left px-4 py-2 text-xs font-semibold text-[#1F2937] hover:bg-[#F4F9F6] transition-colors"
+                  className="w-full text-left px-4 py-2 text-xs font-semibold text-[#1F2937] hover:bg-[#FFF8E7] transition-colors"
                 >
                   Payout Details
                 </button>

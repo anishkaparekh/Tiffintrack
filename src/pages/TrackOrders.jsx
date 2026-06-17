@@ -80,7 +80,7 @@ function MapPlaceholder({ currentStep, partnerName }) {
         <line x1="50%" y1="80%" x2="60%" y2="10%" stroke="#e2e8f0" strokeWidth="4" strokeLinecap="round" strokeDasharray="4" />
         
         {/* Active Route Path */}
-        <path d="M 15 140 L 50 85 L 120 70 L 260 70 L 360 55" fill="none" stroke="#00B074" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="opacity-80" />
+        <path d="M 15 140 L 50 85 L 120 70 L 260 70 L 360 55" fill="none" stroke="#F59E0B" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="opacity-80" />
       </svg>
 
       {/* Starting point pin (Vendor) */}

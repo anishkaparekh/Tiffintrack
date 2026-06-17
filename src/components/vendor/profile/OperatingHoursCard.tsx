@@ -13,7 +13,7 @@ export default function OperatingHoursCard({ hours, onUpdateClick }: OperatingHo
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-extrabold text-sm text-[#1F2937] uppercase tracking-wider flex items-center">
-            <Clock size={16} className="text-[#00B074] mr-1.5 shrink-0" />
+            <Clock size={16} className="text-[#F59E0B] mr-1.5 shrink-0" />
             <span>Operating Hours</span>
           </h3>
           <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Kitchen operating and delivery slots schedule</p>
@@ -29,11 +29,11 @@ export default function OperatingHoursCard({ hours, onUpdateClick }: OperatingHo
           </div>
           <div className="text-right text-[11px] font-semibold text-slate-600 space-y-1">
             <div className="flex items-center space-x-1 justify-end">
-              <span className="bg-[#00B074]/10 text-[#00B074] text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Lunch</span>
+              <span className="bg-[#F59E0B]/10 text-[#F59E0B] text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Lunch</span>
               <span>{hours.mondayFriday.lunch.openTime} – {hours.mondayFriday.lunch.closeTime}</span>
             </div>
             <div className="flex items-center space-x-1 justify-end">
-              <span className="bg-[#00B074]/10 text-[#00B074] text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Dinner</span>
+              <span className="bg-[#F59E0B]/10 text-[#F59E0B] text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Dinner</span>
               <span>{hours.mondayFriday.dinner.openTime} – {hours.mondayFriday.dinner.closeTime}</span>
             </div>
           </div>
@@ -47,7 +47,7 @@ export default function OperatingHoursCard({ hours, onUpdateClick }: OperatingHo
           </div>
           <div className="text-right text-[11px] font-semibold text-slate-600 space-y-1">
             <div className="flex items-center space-x-1 justify-end">
-              <span className="bg-[#00B074]/10 text-[#00B074] text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Lunch</span>
+              <span className="bg-[#F59E0B]/10 text-[#F59E0B] text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Lunch</span>
               <span>{hours.saturday.lunch.openTime} – {hours.saturday.lunch.closeTime}</span>
             </div>
             <div className="flex items-center space-x-1 justify-end">
@@ -72,7 +72,7 @@ export default function OperatingHoursCard({ hours, onUpdateClick }: OperatingHo
 
       <button
         onClick={onUpdateClick}
-        className="w-full py-2.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-xs font-bold text-slate-600 hover:text-[#00B074] transition-all cursor-pointer text-center"
+        className="w-full py-2.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-xs font-bold text-slate-600 hover:text-[#F59E0B] transition-all cursor-pointer text-center"
       >
         Update Timings
       </button>

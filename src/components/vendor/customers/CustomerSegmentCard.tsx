@@ -31,15 +31,15 @@ export default function CustomerSegmentCard({
   const getSegmentColors = (type: string, isSelected: boolean) => {
     if (isSelected) {
       switch (type) {
-        case 'loyal': return 'bg-[#00B074] text-white border-[#00B074]';
+        case 'loyal': return 'bg-[#F59E0B] text-white border-[#F59E0B]';
         case 'new': return 'bg-blue-600 text-white border-blue-600';
         case 'high_value': return 'bg-amber-500 text-white border-amber-500';
         case 'at_risk': return 'bg-red-600 text-white border-red-600';
-        default: return 'bg-[#00B074] text-white border-[#00B074]';
+        default: return 'bg-[#F59E0B] text-white border-[#F59E0B]';
       }
     } else {
       switch (type) {
-        case 'loyal': return 'bg-white border-[#E5E7EB] hover:border-[#00B074]/30 text-slate-700 hover:bg-[#F4F9F6]';
+        case 'loyal': return 'bg-white border-[#E5E7EB] hover:border-[#F59E0B]/30 text-slate-700 hover:bg-[#FFF8E7]';
         case 'new': return 'bg-white border-[#E5E7EB] hover:border-blue-300 text-slate-700 hover:bg-blue-50/50';
         case 'high_value': return 'bg-white border-[#E5E7EB] hover:border-amber-300 text-slate-700 hover:bg-amber-50/50';
         case 'at_risk': return 'bg-white border-[#E5E7EB] hover:border-red-300 text-slate-700 hover:bg-red-50/50';
@@ -51,7 +51,7 @@ export default function CustomerSegmentCard({
   const getIconContainerColors = (type: string, isSelected: boolean) => {
     if (isSelected) return 'bg-white/20 text-white';
     switch (type) {
-      case 'loyal': return 'bg-[#F4F9F6] text-[#00B074]';
+      case 'loyal': return 'bg-[#FFF8E7] text-[#F59E0B]';
       case 'new': return 'bg-blue-50 text-blue-600';
       case 'high_value': return 'bg-amber-50 text-amber-500';
       case 'at_risk': return 'bg-red-50 text-red-600';

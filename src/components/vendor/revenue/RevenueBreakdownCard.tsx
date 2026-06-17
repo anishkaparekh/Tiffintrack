@@ -9,8 +9,8 @@ export default function RevenueBreakdownCard() {
       contribution: 72,
       desc: "Recurring monthly memberships",
       icon: Layers,
-      color: "bg-[#00B074]/10 text-[#00B074]",
-      progressColor: "bg-[#00B074]"
+      color: "bg-[#F59E0B]/10 text-[#F59E0B]",
+      progressColor: "bg-[#F59E0B]"
     },
     {
       title: "One-Time Orders",

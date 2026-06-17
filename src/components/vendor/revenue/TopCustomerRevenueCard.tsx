@@ -11,7 +11,7 @@ export default function TopCustomerRevenueCard({ topCustomers }: TopCustomerReve
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E5E7EB] space-y-4">
       <div>
         <h3 className="font-extrabold text-sm text-[#1F2937] uppercase tracking-wider flex items-center">
-          <Users size={16} className="text-[#00B074] mr-1.5 shrink-0" />
+          <Users size={16} className="text-[#F59E0B] mr-1.5 shrink-0" />
           <span>Top Contributing Customers</span>
         </h3>
         <p className="text-[11px] text-slate-400 font-semibold">Customers with the highest billing contribution</p>
@@ -21,7 +21,7 @@ export default function TopCustomerRevenueCard({ topCustomers }: TopCustomerReve
         {topCustomers.map((customer, idx) => (
           <div 
             key={idx}
-            className="flex items-center justify-between p-3.5 bg-[#F4F9F6]/50 border border-[#E5E7EB]/50 rounded-xl hover:bg-[#F4F9F6] transition-all"
+            className="flex items-center justify-between p-3.5 bg-[#FFF8E7]/50 border border-[#E5E7EB]/50 rounded-xl hover:bg-[#FFF8E7] transition-all"
           >
             <div className="flex items-center space-x-3.5 overflow-hidden">
               <span className="text-sm font-black text-slate-400">#{idx + 1}</span>
@@ -36,7 +36,7 @@ export default function TopCustomerRevenueCard({ topCustomers }: TopCustomerReve
             {/* Metrics */}
             <div className="text-right shrink-0 font-bold text-xs">
               <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">LTV Earnings</span>
-              <span className="text-[#00B074] font-black flex items-center justify-end">
+              <span className="text-[#F59E0B] font-black flex items-center justify-end">
                 <TrendingUp size={12} className="text-[#16A34A] mr-0.5" />
                 ₹{customer.lifetimeValue.toLocaleString()}
               </span>

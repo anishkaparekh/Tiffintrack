@@ -84,7 +84,7 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
           </h3>
           <button 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all"
+            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all"
           >
             <X size={18} />
           </button>
@@ -101,7 +101,7 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                 placeholder="e.g. Gujarati Special Thali"
               />
             </div>
@@ -112,7 +112,7 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as MealCategory)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white cursor-pointer"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white cursor-pointer"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -129,7 +129,7 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
                 min={10}
                 value={price}
                 onChange={(e) => setPrice(parseInt(e.target.value))}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
               />
             </div>
 
@@ -144,7 +144,7 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
                     onClick={() => setType(t as MealDietType)}
                     className={`py-3 rounded-xl border text-xs font-bold transition-all ${
                       type === t 
-                        ? 'border-[#00B074] bg-[#F4F9F6] text-[#00B074]' 
+                        ? 'border-[#F59E0B] bg-[#FFF8E7] text-[#F59E0B]' 
                         : 'border-[#E5E7EB] bg-white text-slate-600 hover:bg-stone-50'
                     }`}
                   >
@@ -160,7 +160,7 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as MealAvailability)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white cursor-pointer"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white cursor-pointer"
               >
                 <option value="Available">Available</option>
                 <option value="Limited Availability">Limited Availability</option>
@@ -176,7 +176,7 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
               required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white min-h-[70px] resize-none"
+              className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white min-h-[70px] resize-none"
               placeholder="e.g. Traditional full meal with rotis, sabzi, dessert..."
             />
           </div>
@@ -189,11 +189,11 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
               className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all flex flex-col items-center justify-center space-y-2 ${
                 imageUploaded 
                   ? 'border-[#16A34A] bg-[#16A34A]/5 text-[#16A34A]' 
-                  : 'border-[#E5E7EB] hover:border-[#00B074] hover:bg-[#F4F9F6]/30'
+                  : 'border-[#E5E7EB] hover:border-[#F59E0B] hover:bg-[#FFF8E7]/30'
               }`}
             >
               {uploadProgress ? (
-                <div className="h-5 w-5 border-2 border-[#00B074] border-t-transparent rounded-full animate-spin" />
+                <div className="h-5 w-5 border-2 border-[#F59E0B] border-t-transparent rounded-full animate-spin" />
               ) : imageUploaded ? (
                 <>
                   <Check size={18} className="text-[#16A34A]" />
@@ -213,13 +213,13 @@ export default function AddMealModal({ isOpen, onClose, onSave, editMeal }: AddM
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#F4F9F6] text-slate-700 font-bold text-xs transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#FFF8E7] text-slate-700 font-bold text-xs transition-all cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs shadow-md shadow-[#00B074]/15 transition-all cursor-pointer"
+              className="px-6 py-2.5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer"
             >
               {editMeal ? 'Save Meal' : 'Add Meal'}
             </button>

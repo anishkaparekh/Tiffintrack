@@ -99,7 +99,7 @@ export default function PlanCard({
             <div className="relative">
               <button 
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="p-1 rounded-lg text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] transition-colors cursor-pointer"
               >
                 <MoreVertical size={16} />
               </button>
@@ -111,7 +111,7 @@ export default function PlanCard({
                     {plan.status !== 'Active' && (
                       <button 
                         onClick={() => handleActionClick('activate')}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#F4F9F6] hover:text-[#00B074] transition-colors flex items-center space-x-2"
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#FFF8E7] hover:text-[#F59E0B] transition-colors flex items-center space-x-2"
                       >
                         <Play size={14} className="text-[#16A34A]" />
                         <span>Activate Plan</span>
@@ -120,7 +120,7 @@ export default function PlanCard({
                     {plan.status === 'Active' && (
                       <button 
                         onClick={() => handleActionClick('pause')}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#F4F9F6] hover:text-[#F59E0B] transition-colors flex items-center space-x-2"
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#FFF8E7] hover:text-[#F59E0B] transition-colors flex items-center space-x-2"
                       >
                         <Pause size={14} className="text-[#F59E0B]" />
                         <span>Pause Plan</span>
@@ -128,14 +128,14 @@ export default function PlanCard({
                     )}
                     <button 
                       onClick={() => handleActionClick('duplicate')}
-                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#F4F9F6] hover:text-[#00B074] transition-colors flex items-center space-x-2"
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#FFF8E7] hover:text-[#F59E0B] transition-colors flex items-center space-x-2"
                     >
-                      <Copy size={14} className="text-[#00B074]" />
+                      <Copy size={14} className="text-[#F59E0B]" />
                       <span>Duplicate Plan</span>
                     </button>
                     <button 
                       onClick={() => handleActionClick('archive')}
-                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#F4F9F6] hover:text-slate-900 transition-colors flex items-center space-x-2"
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-[#FFF8E7] hover:text-slate-900 transition-colors flex items-center space-x-2"
                     >
                       <Archive size={14} className="text-slate-400" />
                       <span>Archive Plan</span>
@@ -167,7 +167,7 @@ export default function PlanCard({
               {plan.includedMeals.map((meal, idx) => (
                 <span 
                   key={idx}
-                  className="bg-[#F4F9F6] text-[#00B074] border border-[#00B074]/15 px-2 py-0.5 rounded text-[10px] font-bold"
+                  className="bg-[#FFF8E7] text-[#F59E0B] border border-[#F59E0B]/15 px-2 py-0.5 rounded text-[10px] font-bold"
                 >
                   {meal}
                 </span>
@@ -178,16 +178,16 @@ export default function PlanCard({
 
         {/* Analytics counts indicators */}
         <div className="grid grid-cols-2 gap-3 pt-2">
-          <div className="p-3 bg-[#F4F9F6]/50 border border-[#E5E7EB]/40 rounded-xl flex items-center space-x-2.5 shadow-inner">
-            <Users size={14} className="text-[#00B074]" />
+          <div className="p-3 bg-[#FFF8E7]/50 border border-[#E5E7EB]/40 rounded-xl flex items-center space-x-2.5 shadow-inner">
+            <Users size={14} className="text-[#F59E0B]" />
             <div>
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Subscribers</span>
               <span className="text-xs font-extrabold text-[#1F2937]">{plan.subscriberCount} Users</span>
             </div>
           </div>
 
-          <div className="p-3 bg-[#F4F9F6]/50 border border-[#E5E7EB]/40 rounded-xl flex items-center space-x-2.5 shadow-inner">
-            <IndianRupee size={14} className="text-[#00B074]" />
+          <div className="p-3 bg-[#FFF8E7]/50 border border-[#E5E7EB]/40 rounded-xl flex items-center space-x-2.5 shadow-inner">
+            <IndianRupee size={14} className="text-[#F59E0B]" />
             <div>
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Revenue</span>
               <span className="text-xs font-extrabold text-[#1F2937]">₹{plan.revenueGenerated.toLocaleString()}</span>
@@ -199,7 +199,7 @@ export default function PlanCard({
       {/* Footer Area */}
       <div className="px-6 py-4 border-t border-[#E5E7EB] bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center space-x-1.5 text-xs">
-          <Clock size={12} className="text-[#00B074]" />
+          <Clock size={12} className="text-[#F59E0B]" />
           <span className="font-extrabold text-[#1F2937]">{plan.monthlyPrice}</span>
           <span className="text-[9px] text-slate-400 font-bold uppercase">({plan.duration})</span>
         </div>
@@ -207,13 +207,13 @@ export default function PlanCard({
         <div className="flex items-center space-x-2">
           <button
             onClick={() => onView(plan)}
-            className="px-3.5 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-xs font-bold text-slate-600 hover:text-[#00B074] transition-all cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-xs font-bold text-slate-600 hover:text-[#F59E0B] transition-all cursor-pointer"
           >
             Details
           </button>
           <button
             onClick={() => onEdit(plan)}
-            className="px-3.5 py-1.5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/90 text-white text-xs font-bold shadow-sm shadow-[#00B074]/10 transition-all cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-white text-xs font-bold shadow-sm shadow-[#F59E0B]/10 transition-all cursor-pointer"
           >
             Edit
           </button>

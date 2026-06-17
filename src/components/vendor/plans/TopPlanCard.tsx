@@ -32,7 +32,7 @@ export default function TopPlanCard({ bestPerformingPlans }: TopPlanCardProps) {
         {bestPerformingPlans.map((plan) => (
           <div 
             key={plan.rank}
-            className="flex items-center justify-between p-3.5 bg-[#F4F9F6]/50 border border-[#E5E7EB]/50 rounded-xl hover:bg-[#F4F9F6] transition-all"
+            className="flex items-center justify-between p-3.5 bg-[#FFF8E7]/50 border border-[#E5E7EB]/50 rounded-xl hover:bg-[#FFF8E7] transition-all"
           >
             <div className="flex items-center space-x-3.5 overflow-hidden">
               {/* Rank Medal */}
@@ -50,7 +50,7 @@ export default function TopPlanCard({ bestPerformingPlans }: TopPlanCardProps) {
             {/* Revenue value */}
             <div className="text-right shrink-0">
               <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Monthly MRR</span>
-              <span className="text-xs font-black text-[#00B074] flex items-center justify-end">
+              <span className="text-xs font-black text-[#F59E0B] flex items-center justify-end">
                 <TrendingUp size={12} className="text-[#16A34A] mr-0.5" />
                 ₹{plan.revenueGenerated.toLocaleString()}
               </span>

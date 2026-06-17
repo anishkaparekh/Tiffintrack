@@ -22,7 +22,7 @@ import {
   mockRevenueDistribution 
 } from '../../../data/revenueMockData';
 
-const COLORS = ['#00B074', '#FFD200', '#F59E0B', '#DC2626'];
+const COLORS = ['#F59E0B', '#C2410C', '#F59E0B', '#DC2626'];
 
 export default function RevenueChartCard() {
   
@@ -76,10 +76,10 @@ export default function RevenueChartCard() {
                   <Line 
                     type="monotone" 
                     dataKey="revenue" 
-                    stroke="#00B074" 
+                    stroke="#F59E0B" 
                     strokeWidth={3} 
                     dot={{ r: 4, strokeWidth: 2, fill: 'white' }}
-                    activeDot={{ r: 6, strokeWidth: 0, fill: '#00B074' }} 
+                    activeDot={{ r: 6, strokeWidth: 0, fill: '#F59E0B' }} 
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -100,8 +100,8 @@ export default function RevenueChartCard() {
                 <AreaChart data={mockMonthlyRevenue} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00B074" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#00B074" stopOpacity={0.01}/>
+                      <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.01}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -134,7 +134,7 @@ export default function RevenueChartCard() {
                   <Area 
                     type="monotone" 
                     dataKey="revenue" 
-                    stroke="#00B074" 
+                    stroke="#F59E0B" 
                     strokeWidth={3} 
                     fillOpacity={1} 
                     fill="url(#colorRevenue)" 
@@ -189,7 +189,7 @@ export default function RevenueChartCard() {
                   />
                   <Bar 
                     dataKey="revenue" 
-                    fill="#00B074" 
+                    fill="#F59E0B" 
                     radius={[6, 6, 0, 0]} 
                     maxBarSize={35}
                   />

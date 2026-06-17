@@ -95,7 +95,7 @@ export default function VendorSidebar({ activeTab, onTabSelect, isOpen, onClose 
                   onClick={() => handleItemClick(item.tab)}
                   className={`w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl text-xs font-bold transition-all text-left ${
                     isActive
-                      ? 'bg-[#00B074] text-white shadow-md shadow-[#00B074]/15'
+                      ? 'bg-[#F59E0B] text-white shadow-md shadow-[#F59E0B]/15'
                       : 'hover:bg-slate-800 hover:text-white text-slate-400'
                   }`}
                 >

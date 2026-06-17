@@ -97,7 +97,7 @@ export default function CustomersTable({
                     <div className="flex items-center justify-end space-x-2">
                       <button
                         onClick={() => onViewProfile(c)}
-                        className="px-2.5 py-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-slate-500 hover:text-[#00B074] transition-all cursor-pointer flex items-center space-x-1"
+                        className="px-2.5 py-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-slate-500 hover:text-[#F59E0B] transition-all cursor-pointer flex items-center space-x-1"
                         title="View Profile"
                       >
                         <User size={13} />
@@ -106,7 +106,7 @@ export default function CustomersTable({
 
                       <button
                         onClick={() => onViewActivity(c)}
-                        className="px-2.5 py-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-slate-500 hover:text-[#00B074] transition-all cursor-pointer flex items-center space-x-1"
+                        className="px-2.5 py-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-slate-500 hover:text-[#F59E0B] transition-all cursor-pointer flex items-center space-x-1"
                         title="View Activity"
                       >
                         <Activity size={13} />
@@ -128,7 +128,7 @@ export default function CustomersTable({
                             <div className="absolute right-0 mt-1.5 w-44 bg-white border border-[#E5E7EB] rounded-xl shadow-lg py-1.5 z-20 text-left font-semibold">
                               <button
                                 onClick={() => handleDropdownAction(c.id, 'reminder')}
-                                className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                                className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                               >
                                 <Bell size={13} className="text-amber-500" />
                                 <span>Send Reminder</span>
@@ -137,7 +137,7 @@ export default function CustomersTable({
                               {c.status === 'Active' ? (
                                 <button
                                   onClick={() => handleDropdownAction(c.id, 'pause')}
-                                  className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                                  className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                                 >
                                   <Pause size={13} className="text-[#F59E0B]" />
                                   <span>Pause Sub</span>
@@ -145,9 +145,9 @@ export default function CustomersTable({
                               ) : c.status === 'Paused' ? (
                                 <button
                                   onClick={() => handleDropdownAction(c.id, 'resume')}
-                                  className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                                  className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                                 >
-                                  <Play size={13} className="text-[#00B074]" />
+                                  <Play size={13} className="text-[#F59E0B]" />
                                   <span>Resume Sub</span>
                                 </button>
                               ) : null}
@@ -155,7 +155,7 @@ export default function CustomersTable({
                               <div className="border-t border-slate-100 my-1" />
                               <button
                                 onClick={() => handleDropdownAction(c.id, 'export')}
-                                className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                                className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                               >
                                 <Download size={13} className="text-slate-400" />
                                 <span>Export Data</span>
@@ -197,7 +197,7 @@ export default function CustomersTable({
               </div>
               <div className="text-right">
                 <span className="text-slate-400 block uppercase tracking-wide">Lifetime Value</span>
-                <span className="text-[#00B074] font-black">₹{c.lifetimeValue.toLocaleString()}</span>
+                <span className="text-[#F59E0B] font-black">₹{c.lifetimeValue.toLocaleString()}</span>
               </div>
             </div>
 
@@ -218,7 +218,7 @@ export default function CustomersTable({
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => onViewProfile(c)}
-                  className="px-3.5 py-1.5 bg-[#F4F9F6] border border-[#00B074]/10 rounded-xl text-xs font-extrabold text-[#00B074] hover:bg-[#00B074]/5 transition-all cursor-pointer"
+                  className="px-3.5 py-1.5 bg-[#FFF8E7] border border-[#F59E0B]/10 rounded-xl text-xs font-extrabold text-[#F59E0B] hover:bg-[#F59E0B]/5 transition-all cursor-pointer"
                 >
                   Profile
                 </button>
@@ -246,7 +246,7 @@ export default function CustomersTable({
                     <div className="absolute right-0 bottom-full mb-1.5 w-44 bg-white border border-[#E5E7EB] rounded-xl shadow-lg py-1.5 z-40 text-left font-semibold">
                       <button
                         onClick={() => handleDropdownAction(c.id, 'reminder')}
-                        className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                        className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                       >
                         <Bell size={13} className="text-amber-500" />
                         <span>Send Reminder</span>
@@ -255,7 +255,7 @@ export default function CustomersTable({
                       {c.status === 'Active' ? (
                         <button
                           onClick={() => handleDropdownAction(c.id, 'pause')}
-                          className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                          className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                         >
                           <Pause size={13} className="text-[#F59E0B]" />
                           <span>Pause Sub</span>
@@ -263,9 +263,9 @@ export default function CustomersTable({
                       ) : c.status === 'Paused' ? (
                         <button
                           onClick={() => handleDropdownAction(c.id, 'resume')}
-                          className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                          className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                         >
-                          <Play size={13} className="text-[#00B074]" />
+                          <Play size={13} className="text-[#F59E0B]" />
                           <span>Resume Sub</span>
                         </button>
                       ) : null}
@@ -273,7 +273,7 @@ export default function CustomersTable({
                       <div className="border-t border-slate-100 my-1" />
                       <button
                         onClick={() => handleDropdownAction(c.id, 'export')}
-                        className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                        className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                       >
                         <Download size={13} className="text-slate-400" />
                         <span>Export Data</span>

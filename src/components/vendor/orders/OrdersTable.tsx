@@ -82,7 +82,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                   <td className="py-4 px-5">
                     <div>
                       <p className="font-extrabold text-slate-800">{order.mealName}</p>
-                      <p className="text-[10px] text-[#00B074] font-bold">{order.plan} {order.quantity > 1 ? `x${order.quantity}` : ''}</p>
+                      <p className="text-[10px] text-[#F59E0B] font-bold">{order.plan} {order.quantity > 1 ? `x${order.quantity}` : ''}</p>
                     </div>
                   </td>
                   <td className="py-4 px-5 max-w-[200px] truncate" title={order.address}>
@@ -104,7 +104,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                     <div className="flex items-center justify-end space-x-2">
                       <button
                         onClick={() => onViewDetails(order)}
-                        className="p-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-slate-500 hover:text-[#00B074] transition-all cursor-pointer"
+                        className="p-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-slate-500 hover:text-[#F59E0B] transition-all cursor-pointer"
                         title="View Details"
                       >
                         <Eye size={14} />
@@ -127,7 +127,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                               {order.status !== 'Preparing' && (
                                 <button
                                   onClick={() => handleActionClick(order.id, 'Preparing')}
-                                  className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                                  className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                                 >
                                   <Play size={13} className="text-[#F59E0B]" />
                                   <span>Mark Preparing</span>
@@ -136,7 +136,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                               {order.status !== 'Out for Delivery' && (
                                 <button
                                   onClick={() => handleActionClick(order.id, 'Out for Delivery')}
-                                  className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                                  className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                                 >
                                   <Truck size={13} className="text-blue-600" />
                                   <span>Mark Out for Delivery</span>
@@ -145,7 +145,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                               {order.status !== 'Delivered' && (
                                 <button
                                   onClick={() => handleActionClick(order.id, 'Delivered')}
-                                  className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                                  className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                                 >
                                   <Check size={13} className="text-[#16A34A]" />
                                   <span>Mark Delivered</span>
@@ -194,7 +194,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
             <div className="p-3 bg-slate-50 rounded-xl space-y-1">
               <p className="text-xs font-black text-slate-800">{order.mealName}</p>
               <div className="flex justify-between items-center text-[10px] font-bold">
-                <span className="text-[#00B074]">{order.plan} {order.quantity > 1 ? `x${order.quantity}` : ''}</span>
+                <span className="text-[#F59E0B]">{order.plan} {order.quantity > 1 ? `x${order.quantity}` : ''}</span>
                 <span className="text-slate-400">Due: {order.deliveryTime}</span>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
             <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between">
               <button
                 onClick={() => onViewDetails(order)}
-                className="px-4 py-2 bg-[#F4F9F6] border border-[#00B074]/10 rounded-xl text-xs font-extrabold text-[#00B074] hover:bg-[#00B074]/5 transition-all cursor-pointer"
+                className="px-4 py-2 bg-[#FFF8E7] border border-[#F59E0B]/10 rounded-xl text-xs font-extrabold text-[#F59E0B] hover:bg-[#F59E0B]/5 transition-all cursor-pointer"
               >
                 View Details
               </button>
@@ -231,7 +231,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                       {order.status !== 'Preparing' && (
                         <button
                           onClick={() => handleActionClick(order.id, 'Preparing')}
-                          className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                          className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                         >
                           <Play size={13} className="text-[#F59E0B]" />
                           <span>Mark Preparing</span>
@@ -240,7 +240,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                       {order.status !== 'Out for Delivery' && (
                         <button
                           onClick={() => handleActionClick(order.id, 'Out for Delivery')}
-                          className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                          className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                         >
                           <Truck size={13} className="text-blue-600" />
                           <span>Mark Out for Delivery</span>
@@ -249,7 +249,7 @@ export default function OrdersTable({ orders, onViewDetails, onStatusUpdate }: O
                       {order.status !== 'Delivered' && (
                         <button
                           onClick={() => handleActionClick(order.id, 'Delivered')}
-                          className="w-full px-3.5 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
+                          className="w-full px-3.5 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] flex items-center space-x-2 text-slate-700 transition-colors text-xs"
                         >
                           <Check size={13} className="text-[#16A34A]" />
                           <span>Mark Delivered</span>

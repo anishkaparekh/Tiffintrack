@@ -35,56 +35,56 @@ body {
 }
 
 /* Hardcoded hex overrides for original colors */
-.bg-\[\#00B074\] {
+.bg-\[\#F59E0B\] {
   background-color: var(--color-mint) !important;
 }
-.bg-\[\#00B074\]\/10 {
+.bg-\[\#F59E0B\]\/10 {
   background-color: rgba(245, 158, 11, 0.1) !important;
 }
-.bg-\[\#00B074\]\/15 {
+.bg-\[\#F59E0B\]\/15 {
   background-color: rgba(245, 158, 11, 0.15) !important;
 }
-.bg-\[\#00B074\]\/5 {
+.bg-\[\#F59E0B\]\/5 {
   background-color: rgba(245, 158, 11, 0.05) !important;
 }
-.hover\:bg-\[\#009b65\]:hover {
+.hover\:bg-\[\#D97706\]:hover {
   background-color: var(--color-mint-hover) !important;
 }
-.text-\[\#00B074\] {
+.text-\[\#F59E0B\] {
   color: var(--color-mint) !important;
 }
-.border-\[\#00B074\] {
+.border-\[\#F59E0B\] {
   border-color: var(--color-mint) !important;
 }
-.border-\[\#00B074\]\/20 {
+.border-\[\#F59E0B\]\/20 {
   border-color: rgba(245, 158, 11, 0.2) !important;
 }
-.border-\[\#00B074\]\/15 {
+.border-\[\#F59E0B\]\/15 {
   border-color: rgba(245, 158, 11, 0.15) !important;
 }
-.shadow-\[\#00B074\]\/15 {
+.shadow-\[\#F59E0B\]\/15 {
   box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.15), 0 4px 6px -4px rgba(245, 158, 11, 0.15) !important;
 }
-.focus\:border-\[\#00B074\]:focus {
+.focus\:border-\[\#F59E0B\]:focus {
   border-color: var(--color-mint) !important;
 }
-.focus\:ring-\[\#00B074\]:focus {
+.focus\:ring-\[\#F59E0B\]:focus {
   --tw-ring-color: var(--color-mint) !important;
 }
 
 /* Light background overrides */
-.bg-\[\#e6f7f1\] {
+.bg-\[\#FEF3C7\] {
   background-color: var(--color-mint-light) !important;
 }
-.text-\[\#e6f7f1\] {
+.text-\[\#FEF3C7\] {
   color: var(--color-mint) !important;
 }
-.border-\[\#e6f7f1\] {
+.border-\[\#FEF3C7\] {
   border-color: var(--color-mint-light) !important;
 }
 
 /* Body / Snow background overrides */
-.bg-\[\#F4F9F6\] {
+.bg-\[\#FFF8E7\] {
   background-color: var(--color-snow) !important;
 }
 
@@ -97,10 +97,10 @@ body {
 }
 
 /* Yellow accent overrides to Terracotta */
-.text-\[\#FFD200\] {
+.text-\[\#C2410C\] {
   color: var(--color-lemon) !important;
 }
-.bg-\[\#FFFDF0\] {
+.bg-\[\#FFEDD5\] {
   background-color: var(--color-lemon-light) !important;
 }
 

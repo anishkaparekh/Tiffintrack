@@ -95,7 +95,7 @@ export default function ReviewModal({
               <select
                 value={selectedItemId}
                 onChange={(e) => setSelectedItemId(e.target.value)}
-                className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+                className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
               >
                 {eligibleItems.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -141,7 +141,7 @@ export default function ReviewModal({
               placeholder="Tell other customers about the quality of the food, portion sizes, packing, and delivery. (Min 3 characters)"
               rows={4}
               required
-              className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-2xl px-4 py-3 text-xs md:text-sm text-[#1F2937] placeholder-slate-400/60 focus:outline-none focus:border-[#00B074] focus:bg-white transition-all font-medium resize-none leading-relaxed"
+              className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-2xl px-4 py-3 text-xs md:text-sm text-[#1F2937] placeholder-slate-400/60 focus:outline-none focus:border-[#F59E0B] focus:bg-white transition-all font-medium resize-none leading-relaxed"
             />
           </div>
 
@@ -158,7 +158,7 @@ export default function ReviewModal({
             <button
               type="submit"
               disabled={isSubmitting || rating === 0 || reviewText.trim().length < 3}
-              className="flex items-center space-x-2 px-6 py-2.5 bg-[#00B074] text-white text-xs font-bold rounded-xl shadow-md shadow-[#00B074]/15 hover:bg-[#009b65] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex items-center space-x-2 px-6 py-2.5 bg-[#F59E0B] text-white text-xs font-bold rounded-xl shadow-md shadow-[#F59E0B]/15 hover:bg-[#D97706] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting && <Loader2 size={13} className="animate-spin" />}
               <span>{initialData ? 'Update Review' : 'Submit Review'}</span>

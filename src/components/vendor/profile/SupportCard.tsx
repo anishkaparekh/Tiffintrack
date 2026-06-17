@@ -10,7 +10,7 @@ interface SupportCardProps {
 export default function SupportCard({ links, onLinkClick }: SupportCardProps) {
   
   const getSupportIcon = (title: string) => {
-    if (title.includes('FAQ')) return <HelpCircle size={18} className="text-[#00B074]" />;
+    if (title.includes('FAQ')) return <HelpCircle size={18} className="text-[#F59E0B]" />;
     if (title.includes('Hotline')) return <MessageSquare size={18} className="text-blue-600" />;
     if (title.includes('Guidelines')) return <BookOpen size={18} className="text-amber-500" />;
     return <ShieldAlert size={18} className="text-red-500" />;
@@ -28,20 +28,20 @@ export default function SupportCard({ links, onLinkClick }: SupportCardProps) {
           <div 
             key={idx}
             onClick={() => onLinkClick(link.title)}
-            className="p-4 bg-slate-50/50 hover:bg-[#F4F9F6] border border-[#E5E7EB]/50 hover:border-[#00B074]/30 rounded-xl transition-all cursor-pointer flex flex-col justify-between space-y-2.5 group"
+            className="p-4 bg-slate-50/50 hover:bg-[#FFF8E7] border border-[#E5E7EB]/50 hover:border-[#F59E0B]/30 rounded-xl transition-all cursor-pointer flex flex-col justify-between space-y-2.5 group"
           >
             <div className="flex items-center justify-between">
-              <div className="p-1.5 rounded-lg bg-white border border-[#E5E7EB]/40 group-hover:border-[#00B074]/20 transition-all shrink-0">
+              <div className="p-1.5 rounded-lg bg-white border border-[#E5E7EB]/40 group-hover:border-[#F59E0B]/20 transition-all shrink-0">
                 {getSupportIcon(link.title)}
               </div>
             </div>
             
             <div className="space-y-1">
-              <h4 className="font-extrabold text-xs text-[#1F2937] group-hover:text-[#00B074] transition-colors">{link.title}</h4>
+              <h4 className="font-extrabold text-xs text-[#1F2937] group-hover:text-[#F59E0B] transition-colors">{link.title}</h4>
               <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">{link.description}</p>
             </div>
             
-            <span className="text-[10px] font-black text-[#00B074] uppercase tracking-wider mt-1 block">
+            <span className="text-[10px] font-black text-[#F59E0B] uppercase tracking-wider mt-1 block">
               {link.label} →
             </span>
           </div>
