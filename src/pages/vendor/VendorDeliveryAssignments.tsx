@@ -46,26 +46,120 @@ export default function VendorDeliveryAssignments() {
     setToastType(type);
   };
 
-  const syncState = () => {
-    setDeliveries(getStoredDeliveries());
-    setPartners(getStoredPartners());
-    
-    const logsStr = localStorage.getItem('delivery_activity_logs');
-    if (logsStr) setActivityLogs(JSON.parse(logsStr));
-    
-    const notifsStr = localStorage.getItem('delivery_workflow_notifications');
-    if (notifsStr) setNotifications(JSON.parse(notifsStr));
+  const fetchDeliveries = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      // 1. Fetch Today's Deliveries
+      const dResponse = await fetch('/api/v1/deliveries/vendor/today', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (dResponse.ok) {
+        const resData = await dResponse.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped: DeliveryAssignment[] = resData.data.map((d: any) => {
+            const customer = d.customerId || {};
+            const partner = d.deliveryPartnerId || {};
+            const subscription = d.subscriptionId || {};
+            
+            let mappedStatus: DeliveryAssignment['status'] = 'Pending Assignment';
+            if (d.status === 'pending') mappedStatus = 'Pending Assignment';
+            else if (d.status === 'assigned') mappedStatus = 'Assigned';
+            else if (d.status === 'picked_up') mappedStatus = 'Preparing';
+            else if (d.status === 'out_for_delivery') mappedStatus = 'Out for Delivery';
+            else if (d.status === 'delivered') mappedStatus = 'Delivered';
+            else if (d.status === 'failed') mappedStatus = 'Failed';
+
+            return {
+              id: d._id,
+              customerName: customer.name || 'Customer',
+              customerPhone: customer.phone || '',
+              mealName: subscription.planName || 'Veg Warm Thali',
+              deliveryAddress: subscription.deliveryAddress || d.deliveryAddress || 'Anand, Gujarat',
+              landmark: subscription.landmark || '',
+              deliveryInstructions: subscription.preferences ? subscription.preferences.join(', ') : '',
+              deliveryTime: d.deliveryTime || subscription.deliveryTime || '12:30 PM',
+              status: mappedStatus,
+              assignedPartnerId: partner._id || null,
+              assignedPartnerName: partner.name || null
+            };
+          });
+          setDeliveries(mapped);
+        }
+      }
+      
+      // 2. Fetch Active Partners
+      const pResponse = await fetch('/api/v1/deliveries/vendor/partners', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (pResponse.ok) {
+        const resData = await pResponse.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mappedPartners = resData.data.map((p: any) => ({
+            id: p.id || p.deliveryPartnerId || p._id,
+            name: p.name,
+            phone: p.phone,
+            email: p.email,
+            vehicleType: p.vehicleType || 'Bike',
+            deliveryZones: p.deliveryZones || [RAJKOT_ZONES[0], RAJKOT_ZONES[1]],
+            status: p.status || 'Active',
+            todayDeliveriesCount: p.activeDeliveriesCount || 0
+          }));
+          setPartners(mappedPartners);
+        }
+      }
+
+      // 3. Fetch Notifications & Activity Logs
+      const notifResponse = await fetch('/api/v1/notifications', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (notifResponse.ok) {
+        const resData = await notifResponse.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mappedNotifs = resData.data
+            .filter((n: any) => n.category === 'DELIVERY')
+            .map((n: any) => ({
+              id: n._id,
+              title: n.title,
+              message: n.message,
+              type: n.type === 'success' ? ('success' as const) : ('info' as const),
+              role: 'vendor' as const,
+              timestamp: new Date(n.createdAt).toLocaleTimeString(),
+              isRead: n.isRead
+            }));
+          setNotifications(mappedNotifs);
+          
+          // Generate activity logs based on delivery-related notifications
+          const mappedLogs = resData.data
+            .filter((n: any) => n.category === 'DELIVERY' && n.title.includes('Delivery'))
+            .map((n: any) => ({
+              id: n._id,
+              orderId: n.message.match(/subscription\s([a-f\d]{24})/i)?.[1] || 'Fulfillment',
+              customerName: n.message.includes('to ') ? n.message.split('to ')[1].split(' has')[0] : 'Customer',
+              status: n.title.includes('Completed') ? 'Delivered' : 'Failed',
+              timestamp: new Date(n.createdAt).toLocaleTimeString(),
+              deliveryPartner: 'Delivery Staff'
+            }));
+          setActivityLogs(mappedLogs);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to sync deliveries dashboard:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    syncState();
-    window.addEventListener('storage', syncState);
-    const interval = setInterval(syncState, 2000);
-
-    return () => {
-      window.removeEventListener('storage', syncState);
-      clearInterval(interval);
-    };
+    fetchDeliveries();
+    const interval = setInterval(fetchDeliveries, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   // Compute metrics
@@ -73,7 +167,7 @@ export default function VendorDeliveryAssignments() {
     const total = deliveries.length;
     const assigned = deliveries.filter(d => d.status !== 'Pending Assignment').length;
     const unassigned = deliveries.filter(d => d.status === 'Pending Assignment').length;
-    const activePartners = partners.filter(p => p.status === 'Active').length;
+    const activePartners = partners.filter(p => p.status === 'Active' || p.status === 'active').length;
 
     return { total, assigned, unassigned, activePartners };
   }, [deliveries, partners]);
@@ -85,138 +179,58 @@ export default function VendorDeliveryAssignments() {
   };
 
   // Perform Partner Selection and Save Assignment
-  const handleSelectPartner = (partnerId: string) => {
+  const handleSelectPartner = async (partnerId: string) => {
     if (!activeDelivery) return;
 
-    const partner = partners.find(p => p.id === partnerId);
-    if (!partner) return;
-
-    const previousPartnerId = activeDelivery.assignedPartnerId;
-    const isReassignment = previousPartnerId !== null && previousPartnerId !== partnerId;
-
-    // 1. Update deliveries database
-    const updatedDeliveries = deliveries.map(d => {
-      if (d.id === activeDelivery.id) {
-        return {
-          ...d,
-          status: 'Assigned' as const,
-          assignedPartnerId: partner.id,
-          assignedPartnerName: partner.name
-        };
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/deliveries/${activeDelivery.id}/assign`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ deliveryPartnerId: partnerId })
+      });
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        const partnerName = partners.find(p => p.id === partnerId)?.name || 'Rider';
+        triggerToast(`Delivery assigned to ${partnerName} successfully!`, 'success');
+        setIsModalOpen(false);
+        setActiveDelivery(null);
+        fetchDeliveries();
+      } else {
+        triggerToast(resData.message || 'Failed to assign delivery partner.', 'error');
       }
-      return d;
-    });
-
-    // 2. Adjust delivery partner workload counts
-    const updatedPartners = partners.map(p => {
-      let workload = p.todayDeliveriesCount;
-      if (p.id === partnerId) {
-        workload += 1;
-      }
-      if (previousPartnerId && p.id === previousPartnerId) {
-        workload = Math.max(0, workload - 1);
-      }
-      return { ...p, todayDeliveriesCount: workload };
-    });
-
-    setDeliveries(updatedDeliveries);
-    saveDeliveries(updatedDeliveries);
-    setPartners(updatedPartners);
-    savePartners(updatedPartners);
-
-    // 3. Write Activity Log
-    const logsStr = localStorage.getItem('delivery_activity_logs') || '[]';
-    const logs = JSON.parse(logsStr);
-    const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const dateStr = "Today, " + timeStr;
-    const newLog: ActivityLog = {
-      id: `act-${Date.now()}`,
-      orderId: activeDelivery.id,
-      customerName: activeDelivery.customerName,
-      status: 'Assigned',
-      timestamp: dateStr,
-      deliveryPartner: partner.name
-    };
-    localStorage.setItem('delivery_activity_logs', JSON.stringify([newLog, ...logs]));
-
-    // 4. Write Notifications
-    const notifsStr = localStorage.getItem('delivery_workflow_notifications') || '[]';
-    const notifs = JSON.parse(notifsStr);
-    const newNotif: WorkflowNotification = {
-      id: `not-${Date.now()}`,
-      title: isReassignment ? "Delivery Reassigned" : "New Delivery Assigned",
-      message: isReassignment 
-        ? `Delivery reassigned: Order ${activeDelivery.id} reassigned to ${partner.name}.`
-        : `New delivery assigned: Order ${activeDelivery.id} assigned to ${partner.name}.`,
-      type: 'info',
-      role: 'delivery',
-      timestamp: dateStr,
-      isRead: false
-    };
-    localStorage.setItem('delivery_workflow_notifications', JSON.stringify([newNotif, ...notifs]));
-
-    setIsModalOpen(false);
-    setActiveDelivery(null);
-    syncState();
-
-    // Trigger Notification
-    if (isReassignment) {
-      triggerToast(`Delivery Reassigned: Order ${activeDelivery.id} reassigned to ${partner.name}.`, 'info');
-    } else {
-      triggerToast(`Delivery Assigned: Order ${activeDelivery.id} successfully assigned to ${partner.name}.`, 'success');
+    } catch (err) {
+      console.error(err);
+      triggerToast('Connection error', 'error');
     }
   };
 
   // Remove Assignment Handler
-  const handleRemoveAssignment = (id: string) => {
-    const item = deliveries.find(d => d.id === id);
-    if (!item) return;
-
-    const assignedPartnerId = item.assignedPartnerId;
-
-    // 1. Update deliveries
-    const updatedDeliveries = deliveries.map(d => {
-      if (d.id === id) {
-        return {
-          ...d,
-          status: 'Pending Assignment' as const,
-          assignedPartnerId: null,
-          assignedPartnerName: null
-        };
+  const handleRemoveAssignment = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/deliveries/${id}/assign`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ deliveryPartnerId: null })
+      });
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        triggerToast(`Assignment removed successfully.`, 'info');
+        fetchDeliveries();
+      } else {
+        triggerToast(resData.message || 'Failed to remove assignment.', 'error');
       }
-      return d;
-    });
-
-    // 2. Update partner workload count
-    const updatedPartners = partners.map(p => {
-      if (assignedPartnerId && p.id === assignedPartnerId) {
-        return { ...p, todayDeliveriesCount: Math.max(0, p.todayDeliveriesCount - 1) };
-      }
-      return p;
-    });
-
-    setDeliveries(updatedDeliveries);
-    saveDeliveries(updatedDeliveries);
-    setPartners(updatedPartners);
-    savePartners(updatedPartners);
-
-    // 3. Update logs
-    const logsStr = localStorage.getItem('delivery_activity_logs') || '[]';
-    const logs = JSON.parse(logsStr);
-    const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const dateStr = "Today, " + timeStr;
-    const newLog: ActivityLog = {
-      id: `act-${Date.now()}`,
-      orderId: id,
-      customerName: item.customerName,
-      status: 'Pending Assignment',
-      timestamp: dateStr,
-      deliveryPartner: item.assignedPartnerName || 'Rahul Patel'
-    };
-    localStorage.setItem('delivery_activity_logs', JSON.stringify([newLog, ...logs]));
-
-    syncState();
-    triggerToast(`Assignment Removed: Order ${id} set back to Pending.`, 'info');
+    } catch (err) {
+      console.error(err);
+      triggerToast('Connection error', 'error');
+    }
   };
 
   const handleViewDetails = (delivery: DeliveryAssignment) => {

@@ -61,55 +61,96 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/orders/delivery/${partnerId}`, {
+      // Fetch Today's Active Deliveries
+      const todayResponse = await fetch('/api/v1/deliveries/delivery-partner/deliveries/today', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (response.ok) {
-        const resData = await response.json();
+      let activeDeliveries = [];
+      if (todayResponse.ok) {
+        const resData = await todayResponse.json();
         if (resData.success && Array.isArray(resData.data)) {
-          const mappedDeliveries = resData.data.map(order => {
-            const customer = order.customerId || {};
-            const vendor = order.vendorId || {};
-            const meal = order.mealId || {};
-            const subscription = order.subscriptionId || {};
+          activeDeliveries = resData.data.map(d => {
+            const customer = d.customerId || {};
+            const vendor = d.vendorId || {};
+            const subscription = d.subscriptionId || {};
+            const meal = d.mealId || {};
 
             let mappedStatus = 'Pending';
-            if (order.status === 'Preparing' || order.status === 'Pending') mappedStatus = 'Pending';
-            else if (order.status === 'Out For Delivery') mappedStatus = 'Picked Up';
-            else if (order.status === 'Delivered') mappedStatus = 'Delivered';
-            else if (order.status === 'Cancelled' || order.status === 'Failed') mappedStatus = 'Failed';
+            if (d.status === 'assigned' || d.status === 'pending') mappedStatus = 'Pending';
+            else if (d.status === 'picked_up' || d.status === 'out_for_delivery') mappedStatus = 'Picked Up';
+            else if (d.status === 'delivered') mappedStatus = 'Delivered';
+            else if (d.status === 'failed') mappedStatus = 'Failed';
 
             return {
-              id: order._id,
+              id: d._id,
               customerName: customer.name || "Customer",
               customerPhone: customer.phone || "+91 98765 00111",
-              mealType: meal.mealName || "Standard Tiffin Meal",
-              address: subscription.deliveryAddress || order.deliveryAddress || "Anand, Gujarat",
-              latitude: subscription.latitude,
-              longitude: subscription.longitude,
-              landmark: order.landmark || "Near City Center",
-              deliveryInstructions: order.deliveryInstructions || "Deliver carefully.",
-              timeSlot: subscription.deliveryTime || "12:30 PM - 1:00 PM",
+              mealType: subscription.planName || meal.mealName || "Standard Tiffin Meal",
+              address: subscription.deliveryAddress || d.deliveryAddress || "Anand, Gujarat",
+              latitude: subscription.latitude || d.latitude,
+              longitude: subscription.longitude || d.longitude,
+              landmark: d.landmark || "Near City Center",
+              deliveryInstructions: d.notes || subscription.preferences?.join(', ') || "Deliver carefully.",
+              timeSlot: d.deliveryTime || subscription.deliveryTime || "12:30 PM - 1:00 PM",
               status: mappedStatus,
-              failReason: order.failReason || "",
-              notes: order.notes || "",
+              failReason: d.notes || "",
+              notes: d.notes || "",
               vendorName: vendor.businessName || vendor.name || "Chef Kitchen",
               vendorPhone: vendor.phone || "+91 98765 00222",
               vendorAddress: vendor.kitchenAddress || "Vendor Kitchen Address",
-              rawOrder: order
+              rawDelivery: d
             };
           });
-
-          // Separate active (Pending, Picked Up, Failed) and completed (Delivered)
-          const active = mappedDeliveries.filter(d => d.status === 'Pending' || d.status === 'Picked Up' || d.status === 'Failed');
-          const completed = mappedDeliveries.filter(d => d.status === 'Delivered');
-
-          setTodayDeliveries(active);
-          setHistoryList(completed);
         }
       }
+
+      // Fetch History Deliveries
+      const historyResponse = await fetch('/api/v1/deliveries/delivery-partner/deliveries/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      let completedDeliveriesList = [];
+      if (historyResponse.ok) {
+        const resData = await historyResponse.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          completedDeliveriesList = resData.data.map(d => {
+            const customer = d.customerId || {};
+            const vendor = d.vendorId || {};
+            const subscription = d.subscriptionId || {};
+            const meal = d.mealId || {};
+
+            let mappedStatus = 'Delivered';
+            if (d.status === 'delivered') mappedStatus = 'Delivered';
+            else if (d.status === 'failed') mappedStatus = 'Failed';
+
+            return {
+              id: d._id,
+              customerName: customer.name || "Customer",
+              customerPhone: customer.phone || "+91 98765 00111",
+              mealType: subscription.planName || meal.mealName || "Standard Tiffin Meal",
+              address: subscription.deliveryAddress || d.deliveryAddress || "Anand, Gujarat",
+              latitude: subscription.latitude || d.latitude,
+              longitude: subscription.longitude || d.longitude,
+              landmark: d.landmark || "Near City Center",
+              deliveryInstructions: d.notes || subscription.preferences?.join(', ') || "Deliver carefully.",
+              timeSlot: d.deliveryTime || subscription.deliveryTime || "12:30 PM - 1:00 PM",
+              status: mappedStatus,
+              failReason: d.notes || "",
+              notes: d.notes || "",
+              vendorName: vendor.businessName || vendor.name || "Chef Kitchen",
+              vendorPhone: vendor.phone || "+91 98765 00222",
+              vendorAddress: vendor.kitchenAddress || "Vendor Kitchen Address",
+              rawDelivery: d
+            };
+          });
+        }
+      }
+
+      setTodayDeliveries(activeDeliveries);
+      setHistoryList(completedDeliveriesList);
     } catch (e) {
       console.error("Failed to fetch assigned deliveries:", e);
     } finally {
@@ -226,26 +267,23 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
     setStatusModalParams(null);
   };
 
-  // Update Status Handlers
   const handleUpdateStatus = async (id, newStatus, reason = null) => {
     const item = todayDeliveries.find(d => d.id === id);
     if (!item) return;
 
-    let backendStatus = 'Pending';
-    if (newStatus === 'Pending') {
-      backendStatus = 'Pending';
-    } else if (newStatus === 'Picked Up') {
-      backendStatus = 'Out For Delivery';
+    let backendStatus = 'picked_up';
+    if (newStatus === 'Picked Up') {
+      backendStatus = 'picked_up';
     } else if (newStatus === 'Delivered') {
-      backendStatus = 'Delivered';
+      backendStatus = 'delivered';
     } else if (newStatus === 'Failed') {
-      backendStatus = 'Cancelled';
+      backendStatus = 'failed';
     }
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/orders/${id}`, {
-        method: 'PUT',
+      const response = await fetch(`/api/v1/deliveries/delivery-partner/deliveries/${id}/status`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -262,18 +300,18 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
         }
         
         if (newStatus === 'Delivered') {
-          showToast(`Order ${id} marked as Delivered! Warm thali served.`, 'success');
+          showToast(`Delivery ${id} marked as Delivered! Warm thali served.`, 'success');
         } else if (newStatus === 'Picked Up') {
-          showToast(`Order ${id} Picked Up from vendor kitchen.`, 'info');
+          showToast(`Delivery ${id} Picked Up from vendor kitchen.`, 'info');
         } else if (newStatus === 'Failed') {
-          showToast(`Order ${id} delivery failed: ${reason || 'Customer Unavailable'}.`, 'error');
+          showToast(`Delivery ${id} failed: ${reason || 'Customer Unavailable'}.`, 'error');
         }
       } else {
         const errData = await response.json();
-        showToast(errData.message || 'Failed to update order status.', 'error');
+        showToast(errData.message || 'Failed to update delivery status.', 'error');
       }
     } catch (e) {
-      console.error("Failed to update order status via API:", e);
+      console.error("Failed to update delivery status via API:", e);
       showToast('Connection error. Failed to update status.', 'error');
     }
   };

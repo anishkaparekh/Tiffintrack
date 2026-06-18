@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -26,8 +26,33 @@ export default function DeliverySignup() {
     confirmPassword: '',
     vehicleType: 'Motorcycle',
     vehicleNumber: '',
+    vendorId: '',
     termsAccepted: false
   });
+
+  // Approved vendors state
+  const [vendors, setVendors] = useState([]);
+
+  // Fetch approved vendors
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        const response = await fetch('/api/v1/vendors');
+        if (response.ok) {
+          const resData = await response.json();
+          if (resData.success && Array.isArray(resData.data)) {
+            setVendors(resData.data);
+            if (resData.data.length > 0) {
+              setFormData(prev => ({ ...prev, vendorId: resData.data[0]._id }));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch vendors:', err);
+      }
+    };
+    fetchVendors();
+  }, []);
 
   // UI States
   const [showPassword, setShowPassword] = useState(false);
@@ -85,6 +110,10 @@ export default function DeliverySignup() {
       newErrors.vehicleNumber = 'Vehicle registration number is required';
     }
 
+    if (!formData.vendorId) {
+      newErrors.vendorId = 'Please select a vendor you belong to';
+    }
+
     if (!formData.termsAccepted) {
       newErrors.termsAccepted = 'You must accept the Delivery Partner Agreement';
     }
@@ -112,7 +141,8 @@ export default function DeliverySignup() {
           phone: formData.phone,
           password: formData.password,
           vehicleType: formData.vehicleType,
-          vehicleNumber: formData.vehicleNumber
+          vehicleNumber: formData.vehicleNumber,
+          vendorId: formData.vendorId
         }),
       });
 
@@ -329,6 +359,36 @@ export default function DeliverySignup() {
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* Vendor Dropdown */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-primary-text uppercase tracking-wider block">
+                Assign to Vendor
+              </label>
+              <div className="relative">
+                <select
+                  name="vendorId"
+                  value={formData.vendorId}
+                  onChange={handleInputChange}
+                  className={`w-full p-2.5 bg-snow border ${
+                    errors.vendorId ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-mint'
+                  } rounded-xl text-xs text-primary-text focus:outline-none transition-all font-semibold`}
+                >
+                  <option value="">-- Select Vendor --</option>
+                  {vendors.map(vendor => (
+                    <option key={vendor._id || vendor.id} value={vendor._id || vendor.id}>
+                      {vendor.businessName || vendor.name} ({vendor.city})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {errors.vendorId && (
+                <p className="text-[10px] text-red-500 font-semibold flex items-center space-x-1 mt-1">
+                  <AlertCircle size={12} />
+                  <span>{errors.vendorId}</span>
+                </p>
+              )}
             </div>
 
             {/* Password Field */}

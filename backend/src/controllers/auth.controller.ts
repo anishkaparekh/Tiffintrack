@@ -277,7 +277,10 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
         businessName: user.businessName,
         kitchenAddress: user.kitchenAddress,
         city: user.city,
-        description: user.description
+        description: user.description,
+        vehicleType: user.vehicleType,
+        vehicleNumber: user.vehicleNumber,
+        vendorId: user.vendorId,
       },
     },
   });
@@ -288,9 +291,20 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
  * POST /api/v1/auth/delivery/register
  */
 export const deliveryRegister = asyncHandler(async (req: Request, res: Response) => {
-  const { name, email, password, phone, vehicleType, vehicleNumber } = req.body;
+  const { name, email, password, phone, vehicleType, vehicleNumber, vendorId } = req.body;
 
   console.log(`[Auth Audit] Delivery register request received for email: ${email}`);
+
+  const targetVendorId = vendorId || (req.user?.role === 'vendor' ? req.user.id : null);
+  if (!targetVendorId) {
+    throw new ApiError(400, 'Vendor selection is required. Every delivery partner must belong to a vendor.');
+  }
+
+  // Verify vendor exists
+  const vendor = await User.findOne({ _id: targetVendorId, role: 'vendor' });
+  if (!vendor) {
+    throw new ApiError(404, 'Selected Vendor does not exist.');
+  }
 
   // Check if user already exists
   const existingUser = await User.findOne({ email });
@@ -308,6 +322,7 @@ export const deliveryRegister = asyncHandler(async (req: Request, res: Response)
     phone,
     vehicleType,
     vehicleNumber,
+    vendorId: targetVendorId,
     isActive: true
   });
 
@@ -341,6 +356,7 @@ export const deliveryRegister = asyncHandler(async (req: Request, res: Response)
         phone: user.phone,
         vehicleType: user.vehicleType,
         vehicleNumber: user.vehicleNumber,
+        vendorId: user.vendorId,
         createdAt: user.createdAt,
       },
       token,
@@ -409,6 +425,7 @@ export const deliveryLogin = asyncHandler(async (req: Request, res: Response) =>
         phone: user.phone,
         vehicleType: user.vehicleType,
         vehicleNumber: user.vehicleNumber,
+        vendorId: user.vendorId,
       },
       token,
     },

@@ -27,7 +27,9 @@ export default function VendorDeliveryTeam() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('Tiffin@123');
   const [vehicleType, setVehicleType] = useState<DeliveryPartner['vehicleType']>('Bike');
+  const [vehicleNumber, setVehicleNumber] = useState('');
   const [status, setStatus] = useState<DeliveryPartner['status']>('Active');
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
 
@@ -44,32 +46,83 @@ export default function VendorDeliveryTeam() {
     setToastType(type);
   };
 
+  const fetchPartners = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/v1/deliveries/vendor/partners', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped = resData.data.map((p: any) => ({
+            id: p.id || p.deliveryPartnerId || p._id,
+            name: p.name,
+            phone: p.phone,
+            email: p.email,
+            vehicleType: p.vehicleType || 'Bike',
+            vehicleNumber: p.vehicleNumber || '',
+            deliveryZones: p.deliveryZones || [RAJKOT_ZONES[0], RAJKOT_ZONES[1]],
+            status: p.status || 'Active',
+            todayDeliveriesCount: p.activeDeliveriesCount || 0,
+            activeDeliveriesCount: p.activeDeliveriesCount || 0,
+            completedDeliveriesCount: p.completedDeliveriesCount || 0,
+            failedDeliveriesCount: p.failedDeliveriesCount || 0
+          }));
+          setPartners(mapped);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch delivery partners:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setPartners(getStoredPartners());
+    fetchPartners();
   }, []);
 
   // Compute metrics
   const stats = useMemo(() => {
     const total = partners.length;
-    const active = partners.filter(p => p.status === 'Active').length;
-    const inactive = partners.filter(p => p.status === 'Inactive').length;
+    const active = partners.filter(p => p.status === 'Active' || p.status === 'active').length;
+    const inactive = partners.filter(p => p.status === 'Inactive' || p.status === 'inactive').length;
     const totalDeliveries = partners.reduce((acc, p) => acc + p.todayDeliveriesCount, 0);
 
     return { total, active, inactive, totalDeliveries };
   }, [partners]);
 
   // Toggle active status
-  const handleToggleStatus = (id: string) => {
-    const updated = partners.map(p => {
-      if (p.id === id) {
-        const nextStatus: DeliveryPartner['status'] = p.status === 'Active' ? 'Inactive' : 'Active';
-        triggerToast(`Partner ${p.name} marked as ${nextStatus}`, 'info');
-        return { ...p, status: nextStatus };
+  const handleToggleStatus = async (id: string) => {
+    const partner = partners.find(p => p.id === id);
+    if (!partner) return;
+
+    const nextStatus = partner.status === 'Active' ? 'Inactive' : 'Active';
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/v1/deliveries/vendor/partners/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: nextStatus })
+      });
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        triggerToast(`Partner ${partner.name} marked as ${nextStatus}`, 'info');
+        fetchPartners();
+      } else {
+        triggerToast(resData.message || 'Failed to update partner status', 'error');
       }
-      return p;
-    });
-    setPartners(updated);
-    savePartners(updated);
+    } catch (err) {
+      console.error(err);
+      triggerToast('Connection error', 'error');
+    }
   };
 
   // Open modal to add partner
@@ -78,7 +131,9 @@ export default function VendorDeliveryTeam() {
     setName('');
     setPhone('');
     setEmail('');
+    setPassword('Tiffin@123');
     setVehicleType('Bike');
+    setVehicleNumber('');
     setStatus('Active');
     setSelectedZones([]);
     setIsFormModalOpen(true);
@@ -90,7 +145,9 @@ export default function VendorDeliveryTeam() {
     setName(partner.name);
     setPhone(partner.phone);
     setEmail(partner.email);
+    setPassword('');
     setVehicleType(partner.vehicleType);
+    setVehicleNumber((partner as any).vehicleNumber || '');
     setStatus(partner.status);
     setSelectedZones(partner.deliveryZones);
     setIsFormModalOpen(true);
@@ -106,52 +163,62 @@ export default function VendorDeliveryTeam() {
   };
 
   // Save Partner Form Submit
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !phone.trim() || !email.trim() || selectedZones.length === 0) {
-      alert("Please fill all required fields and select at least one delivery zone.");
+    if (!name.trim() || !phone.trim() || !email.trim() || (!editingPartner && !password.trim()) || !vehicleNumber.trim()) {
+      alert("Please fill all required fields.");
       return;
     }
 
-    let updatedList: DeliveryPartner[];
-
-    if (editingPartner) {
-      // Edit Mode
-      updatedList = partners.map(p => {
-        if (p.id === editingPartner.id) {
-          return {
-            ...p,
+    try {
+      const token = localStorage.getItem('token');
+      let response;
+      if (editingPartner) {
+        response = await fetch(`/api/v1/deliveries/vendor/partners/${editingPartner.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
             name,
             phone,
             email,
             vehicleType,
-            status,
-            deliveryZones: selectedZones
-          };
-        }
-        return p;
-      });
-      triggerToast(`Saved details for ${name}`);
-    } else {
-      // Create Mode
-      const newId = `DP-00${partners.length + 1}`;
-      const newPartner: DeliveryPartner = {
-        id: newId,
-        name,
-        phone,
-        email,
-        vehicleType,
-        deliveryZones: selectedZones,
-        status,
-        todayDeliveriesCount: 0
-      };
-      updatedList = [...partners, newPartner];
-      triggerToast(`Successfully registered ${name} 🚴`);
-    }
+            vehicleNumber,
+            status
+          })
+        });
+      } else {
+        response = await fetch('/api/v1/deliveries/vendor/partners', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name,
+            phone,
+            email,
+            password,
+            vehicleType,
+            vehicleNumber
+          })
+        });
+      }
 
-    setPartners(updatedList);
-    savePartners(updatedList);
-    setIsFormModalOpen(false);
+      const resData = await response.json();
+      if (response.ok && resData.success) {
+        triggerToast(editingPartner ? `Saved details for ${name}` : `Successfully registered ${name} 🚴`);
+        setIsFormModalOpen(false);
+        fetchPartners();
+      } else {
+        alert(resData.message || 'Failed to save partner');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to connect to backend.');
+    }
   };
 
   const activePartnersList = isEmpty ? [] : partners;
@@ -378,6 +445,34 @@ export default function VendorDeliveryTeam() {
                     <option value="Inactive">Inactive</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="uppercase tracking-wider">Vehicle Number *</label>
+                  <input
+                    type="text"
+                    required
+                    value={vehicleNumber}
+                    onChange={(e) => setVehicleNumber(e.target.value)}
+                    className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
+                    placeholder="e.g. GJ-01-AB-1234"
+                  />
+                </div>
+
+                {!editingPartner && (
+                  <div className="space-y-1">
+                    <label className="uppercase tracking-wider">Login Password *</label>
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
+                      placeholder="Enter password"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Delivery Zone checkboxes */}

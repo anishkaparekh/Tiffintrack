@@ -114,6 +114,9 @@ const UserSchema = new Schema<IUser>(
     vendorId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: function(this: any) {
+        return this.role === ROLES.DELIVERY_PARTNER;
+      },
     },
   },
   {

@@ -7,6 +7,8 @@ import {
   getVendorFailedDeliveries,
   getVendorDeliveriesByStatus,
   getVendorDeliveryPartners,
+  createVendorDeliveryPartner,
+  updateVendorDeliveryPartner,
   assignDeliveryPartner,
   assignDeliveryPartnerBulk,
   getVendorAnalytics,
@@ -29,6 +31,8 @@ router.get('/vendor/assigned', authenticate, authorize('vendor'), getVendorAssig
 router.get('/vendor/delivered', authenticate, authorize('vendor'), getVendorDeliveredDeliveries);
 router.get('/vendor/failed', authenticate, authorize('vendor'), getVendorFailedDeliveries);
 router.get('/vendor/partners', authenticate, authorize('vendor'), getVendorDeliveryPartners);
+router.post('/vendor/partners', authenticate, authorize('vendor'), createVendorDeliveryPartner);
+router.put('/vendor/partners/:partnerId', authenticate, authorize('vendor'), updateVendorDeliveryPartner);
 router.get('/vendor/analytics', authenticate, authorize('vendor'), getVendorAnalytics);
 router.get('/vendor/status/:status', authenticate, authorize('vendor'), getVendorDeliveriesByStatus);
 

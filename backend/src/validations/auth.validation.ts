@@ -79,6 +79,9 @@ export const deliveryRegisterSchema = z.object({
       .string({
         required_error: 'Vehicle number is required',
       }),
+    vendorId: z
+      .string()
+      .optional(),
   }),
 });
 

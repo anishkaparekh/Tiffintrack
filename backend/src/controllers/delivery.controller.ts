@@ -203,13 +203,28 @@ export const getVendorDeliveryPartners = asyncHandler(async (req: Request, res: 
       status: { $in: ['assigned', 'picked_up', 'out_for_delivery'] }
     });
 
-    result.push({
+    const completedDeliveriesCount = await Delivery.countDocuments({
       deliveryPartnerId: partner._id,
+      status: 'delivered'
+    });
+
+    const failedDeliveriesCount = await Delivery.countDocuments({
+      deliveryPartnerId: partner._id,
+      status: 'failed'
+    });
+
+    result.push({
+      id: partner._id.toString(),
+      deliveryPartnerId: partner._id.toString(),
       name: partner.name,
       email: partner.email,
       phone: partner.phone || '',
-      status: partner.isActive ? 'active' : 'inactive',
-      activeDeliveriesCount
+      vehicleType: partner.vehicleType || 'Bike',
+      vehicleNumber: partner.vehicleNumber || '',
+      status: partner.isActive ? 'Active' : 'Inactive',
+      activeDeliveriesCount,
+      completedDeliveriesCount,
+      failedDeliveriesCount
     });
   }
 
@@ -217,6 +232,109 @@ export const getVendorDeliveryPartners = asyncHandler(async (req: Request, res: 
     success: true,
     count: result.length,
     data: result
+  });
+});
+
+/**
+ * POST: Register a new delivery partner by Vendor
+ * POST /api/v1/deliveries/vendor/partners
+ */
+export const createVendorDeliveryPartner = asyncHandler(async (req: Request, res: Response) => {
+  const vendorId = req.user?.id;
+  if (!vendorId) {
+    throw new ApiError(401, 'User not authenticated.');
+  }
+
+  const { name, email, password, phone, vehicleType, vehicleNumber } = req.body;
+
+  if (!name || !email || !password || !phone || !vehicleType || !vehicleNumber) {
+    throw new ApiError(400, 'All fields are required (name, email, password, phone, vehicleType, vehicleNumber).');
+  }
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new ApiError(400, 'User with this email already exists.');
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role: 'deliveryPartner',
+    phone,
+    vehicleType,
+    vehicleNumber,
+    vendorId,
+    isActive: true
+  });
+
+  res.status(201).json({
+    success: true,
+    message: 'Delivery partner registered successfully',
+    data: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      vehicleType: user.vehicleType,
+      vehicleNumber: user.vehicleNumber,
+      vendorId: user.vendorId,
+      status: 'Active'
+    }
+  });
+});
+
+/**
+ * PUT: Update an existing delivery partner by Vendor
+ * PUT /api/v1/deliveries/vendor/partners/:partnerId
+ */
+export const updateVendorDeliveryPartner = asyncHandler(async (req: Request, res: Response) => {
+  const vendorId = req.user?.id;
+  if (!vendorId) {
+    throw new ApiError(401, 'User not authenticated.');
+  }
+
+  const { partnerId } = req.params;
+  const { name, email, phone, vehicleType, vehicleNumber, status, isActive } = req.body;
+
+  const partner = await User.findOne({ _id: partnerId, vendorId });
+  if (!partner) {
+    throw new ApiError(404, 'Delivery partner not found or does not belong to your vendor organization.');
+  }
+
+  if (name !== undefined) partner.name = name;
+  if (email !== undefined) {
+    const existing = await User.findOne({ email, _id: { $ne: partnerId } });
+    if (existing) {
+      throw new ApiError(400, 'User with this email already exists.');
+    }
+    partner.email = email;
+  }
+  if (phone !== undefined) partner.phone = phone;
+  if (vehicleType !== undefined) partner.vehicleType = vehicleType;
+  if (vehicleNumber !== undefined) partner.vehicleNumber = vehicleNumber;
+  
+  if (isActive !== undefined) {
+    partner.isActive = isActive;
+  } else if (status !== undefined) {
+    partner.isActive = status === 'Active' || status === 'active';
+  }
+
+  await partner.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Delivery partner updated successfully',
+    data: {
+      id: partner._id,
+      name: partner.name,
+      email: partner.email,
+      phone: partner.phone,
+      vehicleType: partner.vehicleType,
+      vehicleNumber: partner.vehicleNumber,
+      vendorId: partner.vendorId,
+      status: partner.isActive ? 'Active' : 'Inactive'
+    }
   });
 });
 
@@ -232,14 +350,29 @@ export const assignDeliveryPartner = asyncHandler(async (req: Request, res: Resp
   if (!vendorId) {
     throw new ApiError(401, 'User not authenticated.');
   }
-  if (!deliveryPartnerId) {
-    throw new ApiError(400, 'deliveryPartnerId is required.');
-  }
 
   // 1. Delivery must exist and belong to the Vendor
   const delivery = await Delivery.findOne({ _id: deliveryId, vendorId });
   if (!delivery) {
     throw new ApiError(404, 'Delivery not found or does not belong to this vendor.');
+  }
+
+  // Support unassigning partner
+  if (deliveryPartnerId === null || deliveryPartnerId === '') {
+    delivery.deliveryPartnerId = undefined;
+    delivery.status = 'pending';
+    delivery.assignedAt = undefined;
+    await delivery.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Delivery partner unassigned successfully.',
+      data: delivery
+    });
+  }
+
+  if (!deliveryPartnerId) {
+    throw new ApiError(400, 'deliveryPartnerId is required.');
   }
 
   // 3. Delivery status must be "pending"
@@ -251,6 +384,11 @@ export const assignDeliveryPartner = asyncHandler(async (req: Request, res: Resp
   const partner = await User.findById(deliveryPartnerId);
   if (!partner || partner.role !== 'deliveryPartner') {
     throw new ApiError(404, 'Delivery Partner not found.');
+  }
+
+  // Enforce Domino's business rule: Delivery Partner must belong to current vendor
+  if (!partner.vendorId || partner.vendorId.toString() !== vendorId.toString()) {
+    throw new ApiError(403, 'Access denied. This delivery partner does not belong to your vendor organization.');
   }
 
   // 5. Delivery Partner must be active
@@ -279,7 +417,7 @@ export const assignDeliveryPartner = asyncHandler(async (req: Request, res: Resp
     console.error('[Notification Error] Failed to send assignment notification:', notifErr);
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: 'Delivery partner assigned successfully.',
     data: delivery
@@ -310,6 +448,12 @@ export const assignDeliveryPartnerBulk = asyncHandler(async (req: Request, res: 
   if (!partner || partner.role !== 'deliveryPartner') {
     throw new ApiError(404, 'Delivery Partner not found.');
   }
+
+  // Enforce Domino's business rule: Delivery Partner must belong to current vendor
+  if (!partner.vendorId || partner.vendorId.toString() !== vendorId.toString()) {
+    throw new ApiError(403, 'Access denied. This delivery partner does not belong to your vendor organization.');
+  }
+
   if (!partner.isActive) {
     throw new ApiError(400, 'Delivery Partner is inactive.');
   }
@@ -495,8 +639,8 @@ export const updateDeliveryStatus = asyncHandler(async (req: Request, res: Respo
 
   const currentStatus = delivery.status;
   const allowedTransitions: Record<string, string[]> = {
-    'assigned': ['picked_up', 'failed'],
-    'picked_up': ['out_for_delivery', 'failed'],
+    'assigned': ['picked_up', 'out_for_delivery', 'delivered', 'failed'],
+    'picked_up': ['out_for_delivery', 'delivered', 'failed'],
     'out_for_delivery': ['delivered', 'failed'],
     'pending': [],
     'delivered': [],
