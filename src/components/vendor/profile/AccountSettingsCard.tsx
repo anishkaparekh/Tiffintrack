@@ -16,7 +16,7 @@ export default function AccountSettingsCard({
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E5E7EB] space-y-4">
       <div className="flex items-center space-x-2">
-        <div className="p-1.5 rounded-lg bg-[#00B074]/10 text-[#00B074]">
+        <div className="p-1.5 rounded-lg bg-[#F59E0B]/10 text-[#F59E0B]">
           <Settings size={18} />
         </div>
         <div>
@@ -34,7 +34,7 @@ export default function AccountSettingsCard({
           </div>
           <button
             onClick={onPasswordChangeClick}
-            className="px-3.5 py-1.5 bg-[#F4F9F6] border border-[#00B074]/10 rounded-xl text-xs font-extrabold text-[#00B074] hover:bg-[#00B074]/5 transition-all cursor-pointer flex items-center space-x-1"
+            className="px-3.5 py-1.5 bg-[#FFF8E7] border border-[#F59E0B]/10 rounded-xl text-xs font-extrabold text-[#F59E0B] hover:bg-[#F59E0B]/5 transition-all cursor-pointer flex items-center space-x-1"
           >
             <Lock size={12} className="mr-0.5" />
             <span>Change</span>
@@ -51,7 +51,7 @@ export default function AccountSettingsCard({
           <button
             onClick={() => setIsTwoFactorEnabled(!isTwoFactorEnabled)}
             className={`w-10 h-5 rounded-full transition-all relative shrink-0 cursor-pointer ${
-              isTwoFactorEnabled ? 'bg-[#00B074]' : 'bg-slate-300'
+              isTwoFactorEnabled ? 'bg-[#F59E0B]' : 'bg-slate-300'
             }`}
           >
             <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -71,7 +71,7 @@ export default function AccountSettingsCard({
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full p-2 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-xs font-bold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white cursor-pointer"
+              className="w-full p-2 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-bold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white cursor-pointer"
             >
               <option value="English">English</option>
               <option value="Hindi">Hindi (हिंदी)</option>

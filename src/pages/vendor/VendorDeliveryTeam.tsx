@@ -171,8 +171,8 @@ export default function VendorDeliveryTeam() {
       {/* Simulation preview panel */}
       <div className="mb-6 p-4 bg-slate-900 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-md text-white border border-slate-800">
         <div className="space-y-1">
-          <p className="text-[#FFD200] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
-            <Sparkles size={12} className="text-[#FFD200]" />
+          <p className="text-[#C2410C] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
+            <Sparkles size={12} className="text-[#C2410C]" />
             <span>Operational Sandbox Toggles</span>
           </p>
           <h3 className="font-bold text-xs text-slate-100">Simulate team states for review</h3>
@@ -187,7 +187,7 @@ export default function VendorDeliveryTeam() {
             <button
               onClick={() => setIsLoading(!isLoading)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isLoading ? 'bg-[#00B074]' : 'bg-slate-600'
+                isLoading ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -203,7 +203,7 @@ export default function VendorDeliveryTeam() {
             <button
               onClick={() => setIsEmpty(!isEmpty)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isEmpty ? 'bg-[#00B074]' : 'bg-slate-600'
+                isEmpty ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -223,7 +223,7 @@ export default function VendorDeliveryTeam() {
         
         <button
           onClick={handleOpenAddModal}
-          className="py-3 px-5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-[#00B074]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+          className="py-3 px-5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-[#F59E0B]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
         >
           <Plus size={14} />
           <span>Add Delivery Partner</span>
@@ -305,7 +305,7 @@ export default function VendorDeliveryTeam() {
               </h3>
               <button 
                 onClick={() => setIsFormModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all cursor-pointer"
+                className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -321,7 +321,7 @@ export default function VendorDeliveryTeam() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                  className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                   placeholder="e.g. Rahul Patel"
                 />
               </div>
@@ -334,7 +334,7 @@ export default function VendorDeliveryTeam() {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                    className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                     placeholder="e.g. +91 98250 12345"
                   />
                 </div>
@@ -346,7 +346,7 @@ export default function VendorDeliveryTeam() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                    className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                     placeholder="e.g. rahul.patel@tiffintrack.com"
                   />
                 </div>
@@ -358,7 +358,7 @@ export default function VendorDeliveryTeam() {
                   <select
                     value={vehicleType}
                     onChange={(e) => setVehicleType(e.target.value as DeliveryPartner['vehicleType'])}
-                    className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                    className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                   >
                     <option value="Bike">Bike</option>
                     <option value="Scooter">Scooter</option>
@@ -372,7 +372,7 @@ export default function VendorDeliveryTeam() {
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as DeliveryPartner['status'])}
-                    className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                    className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -383,7 +383,7 @@ export default function VendorDeliveryTeam() {
               {/* Delivery Zone checkboxes */}
               <div className="space-y-2">
                 <label className="uppercase tracking-wider block">Assigned Delivery Zones * (Select at least one)</label>
-                <div className="grid grid-cols-2 gap-2 bg-[#F4F9F6] p-4.5 rounded-xl border border-[#E5E7EB] max-h-[140px] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-2 bg-[#FFF8E7] p-4.5 rounded-xl border border-[#E5E7EB] max-h-[140px] overflow-y-auto">
                   {RAJKOT_ZONES.map((zone) => {
                     const isChecked = selectedZones.includes(zone);
                     return (
@@ -393,7 +393,7 @@ export default function VendorDeliveryTeam() {
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleZoneToggle(zone)}
-                          className="h-3.5 w-3.5 text-[#00B074] border-slate-300 rounded focus:ring-[#00B074] cursor-pointer"
+                          className="h-3.5 w-3.5 text-[#F59E0B] border-slate-300 rounded focus:ring-[#F59E0B] cursor-pointer"
                         />
                         <label 
                           htmlFor={`zone-${zone}`}
@@ -417,7 +417,7 @@ export default function VendorDeliveryTeam() {
                 </button>
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs transition-colors cursor-pointer shadow-md text-center"
+                  className="w-full py-3 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs transition-colors cursor-pointer shadow-md text-center"
                 >
                   {editingPartner ? 'Save Changes' : 'Register Partner'}
                 </button>

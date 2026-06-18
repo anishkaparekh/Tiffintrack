@@ -33,7 +33,7 @@ export default function DeliveryAddressCard({
     <div className="bg-white border border-slate-200/60 p-6 rounded-3xl shadow-card space-y-4">
       {/* Customer Header */}
       <div className="flex items-center space-x-3 border-b border-slate-100 pb-3">
-        <div className="w-10 h-10 rounded-full bg-[#e6f7f1] text-[#00B074] flex items-center justify-center font-bold">
+        <div className="w-10 h-10 rounded-full bg-[#FEF3C7] text-[#F59E0B] flex items-center justify-center font-bold">
           {customerName ? customerName.charAt(0).toUpperCase() : 'C'}
         </div>
         <div>
@@ -46,7 +46,7 @@ export default function DeliveryAddressCard({
       <div className="space-y-3.5 text-xs text-slate-650 font-semibold leading-relaxed">
         {/* Full Delivery Address */}
         <div className="flex items-start gap-2.5">
-          <MapPin size={15} className="text-[#00B074] mt-0.5 shrink-0" />
+          <MapPin size={15} className="text-[#F59E0B] mt-0.5 shrink-0" />
           <div>
             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider mb-0.5">Delivery Address</span>
             <span className="text-[#1F2937] leading-normal block">{deliveryAddress}</span>
@@ -55,7 +55,7 @@ export default function DeliveryAddressCard({
 
         {/* Landmark */}
         <div className="flex items-start gap-2.5">
-          <Compass size={15} className="text-[#FFD200] mt-0.5 shrink-0" />
+          <Compass size={15} className="text-[#C2410C] mt-0.5 shrink-0" />
           <div>
             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider mb-0.5">Nearby Landmark</span>
             <span className="text-[#1F2937] leading-normal block">
@@ -77,11 +77,11 @@ export default function DeliveryAddressCard({
 
         {/* Assigned Partner */}
         <div className="flex items-start gap-2.5 border-t border-slate-100 pt-3">
-          <UserCheck size={15} className="text-[#00B074] mt-0.5 shrink-0" />
+          <UserCheck size={15} className="text-[#F59E0B] mt-0.5 shrink-0" />
           <div>
             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider mb-0.5">Assigned Rider Partner</span>
             {assignedPartnerName ? (
-              <span className="text-[#00B074] font-extrabold">{assignedPartnerName}</span>
+              <span className="text-[#F59E0B] font-extrabold">{assignedPartnerName}</span>
             ) : (
               <span className="text-slate-400 font-bold italic">Awaiting Partner Assignment</span>
             )}

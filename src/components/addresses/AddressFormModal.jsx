@@ -105,7 +105,7 @@ export default function AddressFormModal({
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. John Doe"
                 required
-                className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+                className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
               />
             </div>
             <div className="space-y-1">
@@ -118,7 +118,7 @@ export default function AddressFormModal({
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="e.g. 9876543210"
                 required
-                className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+                className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
               />
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function AddressFormModal({
               onChange={(e) => setAddressLine1(e.target.value)}
               placeholder="e.g. Flat 402, Green Meadows"
               required
-              className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+              className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
             />
           </div>
 
@@ -148,7 +148,7 @@ export default function AddressFormModal({
               value={addressLine2}
               onChange={(e) => setAddressLine2(e.target.value)}
               placeholder="e.g. Shastri Marg, Vallabh Vidyanagar"
-              className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+              className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
             />
           </div>
 
@@ -162,7 +162,7 @@ export default function AddressFormModal({
               value={landmark}
               onChange={(e) => setLandmark(e.target.value)}
               placeholder="e.g. Near Shastri Statue"
-              className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+              className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
             />
           </div>
 
@@ -178,7 +178,7 @@ export default function AddressFormModal({
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="e.g. Anand"
                 required
-                className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+                className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
               />
             </div>
             <div className="space-y-1">
@@ -191,7 +191,7 @@ export default function AddressFormModal({
                 onChange={(e) => setState(e.target.value)}
                 placeholder="e.g. Gujarat"
                 required
-                className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+                className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
               />
             </div>
             <div className="space-y-1">
@@ -204,7 +204,7 @@ export default function AddressFormModal({
                 onChange={(e) => setPincode(e.target.value)}
                 placeholder="e.g. 388120"
                 required
-                className="w-full bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] transition-all"
+                className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
               />
             </div>
           </div>
@@ -217,7 +217,7 @@ export default function AddressFormModal({
               checked={isDefault}
               disabled={initialData?.isDefault} // Disable if it's already default to prevent unsetting default
               onChange={(e) => setIsDefault(e.target.checked)}
-              className="rounded border-slate-350 text-[#00B074] focus:ring-[#00B074] w-4.5 h-4.5 cursor-pointer"
+              className="rounded border-slate-350 text-[#F59E0B] focus:ring-[#F59E0B] w-4.5 h-4.5 cursor-pointer"
             />
             <label htmlFor="isDefault" className="text-xs font-bold text-slate-650 cursor-pointer select-none">
               Set as primary/default delivery address
@@ -237,7 +237,7 @@ export default function AddressFormModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center space-x-2 px-6 py-2.5 bg-[#00B074] text-white text-xs font-bold rounded-xl shadow-md shadow-[#00B074]/15 hover:bg-[#009b65] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex items-center space-x-2 px-6 py-2.5 bg-[#F59E0B] text-white text-xs font-bold rounded-xl shadow-md shadow-[#F59E0B]/15 hover:bg-[#D97706] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting && <Loader2 size={13} className="animate-spin" />}
               <span>{initialData ? 'Update Address' : 'Add Address'}</span>

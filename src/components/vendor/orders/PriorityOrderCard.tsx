@@ -61,7 +61,7 @@ export default function PriorityOrderCard({ priorityOrders, onViewDetails }: Pri
             <div 
               key={order.id}
               onClick={() => onViewDetails(order)}
-              className="group flex items-center justify-between p-3.5 bg-slate-50/50 hover:bg-[#F4F9F6] border border-[#E5E7EB]/50 hover:border-[#00B074]/30 rounded-xl transition-all cursor-pointer"
+              className="group flex items-center justify-between p-3.5 bg-slate-50/50 hover:bg-[#FFF8E7] border border-[#E5E7EB]/50 hover:border-[#F59E0B]/30 rounded-xl transition-all cursor-pointer"
             >
               <div className="flex flex-col space-y-1.5 overflow-hidden pr-2">
                 <div className="flex items-center space-x-2.5">
@@ -83,7 +83,7 @@ export default function PriorityOrderCard({ priorityOrders, onViewDetails }: Pri
 
               <div className="flex items-center space-x-3 shrink-0">
                 {getPriorityBadge(order.priority)}
-                <button className="p-1 rounded-lg text-slate-400 group-hover:text-[#00B074] group-hover:bg-white border border-transparent group-hover:border-[#E5E7EB] transition-all">
+                <button className="p-1 rounded-lg text-slate-400 group-hover:text-[#F59E0B] group-hover:bg-white border border-transparent group-hover:border-[#E5E7EB] transition-all">
                   <ArrowRight size={14} />
                 </button>
               </div>

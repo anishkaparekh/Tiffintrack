@@ -45,8 +45,8 @@ export default function NotificationCard({
       case 'order':
         return {
           icon: ShoppingBag,
-          color: 'text-[#00B074]',
-          bg: 'bg-[#00B074]/10',
+          color: 'text-[#F59E0B]',
+          bg: 'bg-[#F59E0B]/10',
           label: 'Order'
         };
       case 'subscription':
@@ -120,12 +120,12 @@ export default function NotificationCard({
         className={`relative p-4 md:p-5 rounded-2xl border transition-all ${
           read 
             ? 'bg-white border-[#E5E7EB] hover:shadow-sm' 
-            : 'bg-[#F4F9F6] border-[#00B074]/20 shadow-sm hover:border-[#00B074]/30'
-        } ${pinned ? 'ring-1 ring-[#FFD200]/40' : ''}`}
+            : 'bg-[#FFF8E7] border-[#F59E0B]/20 shadow-sm hover:border-[#F59E0B]/30'
+        } ${pinned ? 'ring-1 ring-[#C2410C]/40' : ''}`}
       >
         {/* Pinned Icon */}
         {pinned && (
-          <div className="absolute top-3 right-10 flex items-center space-x-1 text-[#F59E0B] bg-[#FFD200]/10 px-2 py-0.5 rounded-full">
+          <div className="absolute top-3 right-10 flex items-center space-x-1 text-[#F59E0B] bg-[#C2410C]/10 px-2 py-0.5 rounded-full">
             <Pin size={10} className="fill-[#F59E0B]" />
             <span className="text-[8px] font-black uppercase tracking-wider">Pinned</span>
           </div>
@@ -134,7 +134,7 @@ export default function NotificationCard({
         <div className="flex items-start space-x-3.5">
           {/* Unread indicator dot */}
           {!read && (
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#00B074]" />
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#F59E0B]" />
           )}
 
           {/* Category Icon */}
@@ -168,7 +168,7 @@ export default function NotificationCard({
             <div className="hidden md:flex items-center space-x-3 mt-3.5 pt-3 border-t border-slate-100">
               <button
                 onClick={() => onViewDetails(notification)}
-                className="flex items-center space-x-1 text-[11px] font-bold text-[#00B074] hover:text-[#00B074]/85 transition-colors"
+                className="flex items-center space-x-1 text-[11px] font-bold text-[#F59E0B] hover:text-[#F59E0B]/85 transition-colors"
               >
                 <Eye size={12} />
                 <span>View Details</span>
@@ -209,21 +209,21 @@ export default function NotificationCard({
               <div className="absolute right-0 mt-1.5 w-48 bg-white border border-[#E5E7EB] rounded-xl shadow-lg py-1.5 z-20 text-xs font-semibold text-slate-600 animate-fadeIn">
                 <button
                   onClick={() => handleDropdownAction(() => onViewDetails(notification))}
-                  className="w-full px-4 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] text-left flex items-center space-x-2"
+                  className="w-full px-4 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] text-left flex items-center space-x-2"
                 >
                   <Eye size={13} />
                   <span>View Details</span>
                 </button>
                 <button
                   onClick={() => handleDropdownAction(() => read ? onMarkUnread(id) : onMarkRead(id))}
-                  className="w-full px-4 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] text-left flex items-center space-x-2"
+                  className="w-full px-4 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] text-left flex items-center space-x-2"
                 >
                   <Check size={13} />
                   <span>Mark as {read ? 'Unread' : 'Read'}</span>
                 </button>
                 <button
                   onClick={() => handleDropdownAction(() => onArchive(id))}
-                  className="w-full px-4 py-2 hover:bg-[#F4F9F6] hover:text-[#00B074] text-left flex items-center space-x-2"
+                  className="w-full px-4 py-2 hover:bg-[#FFF8E7] hover:text-[#F59E0B] text-left flex items-center space-x-2"
                 >
                   <Archive size={13} />
                   <span>Archive Notification</span>
@@ -268,23 +268,23 @@ export default function NotificationCard({
             <div className="space-y-1.5 py-1">
               <button
                 onClick={() => handleBottomSheetAction(() => onViewDetails(notification))}
-                className="w-full p-3.5 bg-slate-50 hover:bg-[#F4F9F6] rounded-xl flex items-center space-x-3 text-xs font-bold text-[#1F2937] transition-all"
+                className="w-full p-3.5 bg-slate-50 hover:bg-[#FFF8E7] rounded-xl flex items-center space-x-3 text-xs font-bold text-[#1F2937] transition-all"
               >
-                <Eye size={16} className="text-[#00B074]" />
+                <Eye size={16} className="text-[#F59E0B]" />
                 <span>View Full Details</span>
               </button>
 
               <button
                 onClick={() => handleBottomSheetAction(() => read ? onMarkUnread(id) : onMarkRead(id))}
-                className="w-full p-3.5 bg-slate-50 hover:bg-[#F4F9F6] rounded-xl flex items-center space-x-3 text-xs font-bold text-[#1F2937] transition-all"
+                className="w-full p-3.5 bg-slate-50 hover:bg-[#FFF8E7] rounded-xl flex items-center space-x-3 text-xs font-bold text-[#1F2937] transition-all"
               >
-                <Check size={16} className="text-[#00B074]" />
+                <Check size={16} className="text-[#F59E0B]" />
                 <span>Mark as {read ? 'Unread' : 'Read'}</span>
               </button>
 
               <button
                 onClick={() => handleBottomSheetAction(() => onArchive(id))}
-                className="w-full p-3.5 bg-slate-50 hover:bg-[#F4F9F6] rounded-xl flex items-center space-x-3 text-xs font-bold text-[#1F2937] transition-all"
+                className="w-full p-3.5 bg-slate-50 hover:bg-[#FFF8E7] rounded-xl flex items-center space-x-3 text-xs font-bold text-[#1F2937] transition-all"
               >
                 <Archive size={16} className="text-[#2563EB]" />
                 <span>Archive Notification</span>

@@ -12,7 +12,7 @@ export default function EmptyState({ type, onActionClick }: EmptyStateProps) {
   return (
     <div className="bg-white border border-[#E5E7EB] rounded-2xl p-10 shadow-sm text-center flex flex-col items-center justify-center space-y-5 max-w-md mx-auto my-10 animate-scaleUp">
       {/* Icon circle */}
-      <div className="w-16 h-16 rounded-2xl bg-[#F4F9F6] border border-[#E5E7EB] text-[#00B074] flex items-center justify-center shadow-inner">
+      <div className="w-16 h-16 rounded-2xl bg-[#FFF8E7] border border-[#E5E7EB] text-[#F59E0B] flex items-center justify-center shadow-inner">
         {isNoOrders ? <ClipboardList size={28} /> : <SearchX size={28} />}
       </div>
 
@@ -30,7 +30,7 @@ export default function EmptyState({ type, onActionClick }: EmptyStateProps) {
 
       <button
         onClick={onActionClick}
-        className="px-6 py-3 rounded-xl bg-[#00B074] hover:bg-[#00B074]/90 text-white font-bold text-xs shadow-md shadow-[#00B074]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+        className="px-6 py-3 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-white font-bold text-xs shadow-md shadow-[#F59E0B]/15 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
       >
         {isNoOrders ? "Explore Subscription Plans" : "Clear Filters"}
       </button>

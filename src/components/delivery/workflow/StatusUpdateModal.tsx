@@ -29,17 +29,17 @@ export default function StatusUpdateModal({
         return {
           title: 'Mark Out for Delivery?',
           desc: `Confirm that you are leaving the kitchen and heading to ${customerName}'s delivery address.`,
-          btnClass: 'bg-[#00B074] hover:bg-[#00B074]/95',
-          icon: <Bike size={24} className="text-[#00B074]" />,
-          iconBg: 'bg-[#00B074]/10 border-[#00B074]/20'
+          btnClass: 'bg-[#F59E0B] hover:bg-[#F59E0B]/95',
+          icon: <Bike size={24} className="text-[#F59E0B]" />,
+          iconBg: 'bg-[#F59E0B]/10 border-[#F59E0B]/20'
         };
       case 'Delivered':
         return {
           title: 'Confirm Delivery Complete?',
           desc: `Have you successfully handed over the thali to ${customerName} or left it as per instructions?`,
-          btnClass: 'bg-[#00B074] hover:bg-[#00B074]/95',
-          icon: <CheckCircle2 size={24} className="text-[#00B074]" />,
-          iconBg: 'bg-[#00B074]/10 border-[#00B074]/20'
+          btnClass: 'bg-[#F59E0B] hover:bg-[#F59E0B]/95',
+          icon: <CheckCircle2 size={24} className="text-[#F59E0B]" />,
+          iconBg: 'bg-[#F59E0B]/10 border-[#F59E0B]/20'
         };
       case 'Failed':
         return {

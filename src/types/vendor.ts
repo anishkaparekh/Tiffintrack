@@ -2,6 +2,8 @@ export interface VendorProfile {
   name: string;
   role: string;
   initials: string;
+  businessLatitude?: number;
+  businessLongitude?: number;
 }
 
 export type TrendType = 'up' | 'down' | 'neutral';

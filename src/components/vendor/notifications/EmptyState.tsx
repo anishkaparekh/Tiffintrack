@@ -19,7 +19,7 @@ export default function EmptyState({ type, onClearFilters }: EmptyStateProps) {
       {/* Icon Graphic */}
       <div className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 shadow-inner ${
         isNoNotifications 
-          ? 'bg-[#00B074]/10 text-[#00B074]' 
+          ? 'bg-[#F59E0B]/10 text-[#F59E0B]' 
           : 'bg-[#F59E0B]/10 text-[#F59E0B]'
       }`}>
         {isNoNotifications ? (
@@ -45,7 +45,7 @@ export default function EmptyState({ type, onClearFilters }: EmptyStateProps) {
       {isNoNotifications ? (
         <button
           onClick={() => navigate('/vendor-dashboard')}
-          className="flex items-center space-x-2 px-5 py-2.5 bg-[#00B074] hover:bg-[#00B074]/90 text-white text-xs font-black rounded-xl shadow-md shadow-[#00B074]/15 hover:shadow-lg transition-all"
+          className="flex items-center space-x-2 px-5 py-2.5 bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-white text-xs font-black rounded-xl shadow-md shadow-[#F59E0B]/15 hover:shadow-lg transition-all"
         >
           <Home size={14} />
           <span>Go to Dashboard</span>
@@ -53,7 +53,7 @@ export default function EmptyState({ type, onClearFilters }: EmptyStateProps) {
       ) : (
         <button
           onClick={onClearFilters}
-          className="flex items-center space-x-2 px-5 py-2.5 border border-[#00B074] hover:bg-[#F4F9F6] text-[#00B074] text-xs font-black rounded-xl transition-all"
+          className="flex items-center space-x-2 px-5 py-2.5 border border-[#F59E0B] hover:bg-[#FFF8E7] text-[#F59E0B] text-xs font-black rounded-xl transition-all"
         >
           <XCircle size={14} />
           <span>Clear Filters</span>

@@ -57,12 +57,12 @@ export default function RevenueCard({ data }: RevenueCardProps) {
         </div>
 
         {/* Tab Selector */}
-        <div className="inline-flex bg-[#F4F9F6] border border-[#E5E7EB] p-1 rounded-xl shrink-0 self-start sm:self-auto">
+        <div className="inline-flex bg-[#FFF8E7] border border-[#E5E7EB] p-1 rounded-xl shrink-0 self-start sm:self-auto">
           <button
             onClick={() => handleTimeframeChange('daily')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               timeframe === 'daily' 
-                ? 'bg-[#00B074] text-white shadow-sm shadow-[#00B074]/10' 
+                ? 'bg-[#F59E0B] text-white shadow-sm shadow-[#F59E0B]/10' 
                 : 'text-[#1F2937]/60 hover:text-[#1F2937]'
             }`}
           >
@@ -72,7 +72,7 @@ export default function RevenueCard({ data }: RevenueCardProps) {
             onClick={() => handleTimeframeChange('weekly')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               timeframe === 'weekly' 
-                ? 'bg-[#00B074] text-white shadow-sm shadow-[#00B074]/10' 
+                ? 'bg-[#F59E0B] text-white shadow-sm shadow-[#F59E0B]/10' 
                 : 'text-[#1F2937]/60 hover:text-[#1F2937]'
             }`}
           >
@@ -82,7 +82,7 @@ export default function RevenueCard({ data }: RevenueCardProps) {
             onClick={() => handleTimeframeChange('monthly')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               timeframe === 'monthly' 
-                ? 'bg-[#00B074] text-white shadow-sm shadow-[#00B074]/10' 
+                ? 'bg-[#F59E0B] text-white shadow-sm shadow-[#F59E0B]/10' 
                 : 'text-[#1F2937]/60 hover:text-[#1F2937]'
             }`}
           >
@@ -126,10 +126,10 @@ export default function RevenueCard({ data }: RevenueCardProps) {
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="#00B074" 
+                stroke="#F59E0B" 
                 strokeWidth={3} 
                 dot={{ r: 4, strokeWidth: 2, fill: 'white' }}
-                activeDot={{ r: 6, strokeWidth: 0, fill: '#00B074' }} 
+                activeDot={{ r: 6, strokeWidth: 0, fill: '#F59E0B' }} 
               />
             </LineChart>
           ) : (
@@ -163,7 +163,7 @@ export default function RevenueCard({ data }: RevenueCardProps) {
               />
               <Bar 
                 dataKey="value" 
-                fill="#00B074" 
+                fill="#F59E0B" 
                 radius={[8, 8, 0, 0]} 
                 maxBarSize={50}
               />

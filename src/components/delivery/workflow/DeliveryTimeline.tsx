@@ -22,7 +22,7 @@ export default function DeliveryTimeline({ status, timeSlot, failReason }: Deliv
   return (
     <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm space-y-4 hover:shadow-md transition-all">
       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-3 flex items-center space-x-1.5">
-        <Clock size={14} className="text-[#00B074]" />
+        <Clock size={14} className="text-[#F59E0B]" />
         <span>Delivery Status Timeline</span>
       </h3>
 
@@ -30,7 +30,7 @@ export default function DeliveryTimeline({ status, timeSlot, failReason }: Deliv
         
         {/* Step 0: Confirmed (Implicit Start) */}
         <div className="relative text-xs">
-          <span className="absolute -left-[22px] top-0.5 w-3.5 h-3.5 rounded-full bg-[#00B074] flex items-center justify-center ring-4 ring-[#00B074]/15 text-white font-bold text-[8px]">
+          <span className="absolute -left-[22px] top-0.5 w-3.5 h-3.5 rounded-full bg-[#F59E0B] flex items-center justify-center ring-4 ring-[#F59E0B]/15 text-white font-bold text-[8px]">
             ✓
           </span>
           <h4 className="font-extrabold text-[#1F2937]">Order Confirmed</h4>
@@ -45,11 +45,11 @@ export default function DeliveryTimeline({ status, timeSlot, failReason }: Deliv
           return (
             <div key={idx} className="relative text-xs">
               {isComplete ? (
-                <span className="absolute -left-[22px] top-0.5 w-3.5 h-3.5 rounded-full bg-[#00B074] flex items-center justify-center ring-4 ring-[#00B074]/15 text-white font-bold text-[8px]">
+                <span className="absolute -left-[22px] top-0.5 w-3.5 h-3.5 rounded-full bg-[#F59E0B] flex items-center justify-center ring-4 ring-[#F59E0B]/15 text-white font-bold text-[8px]">
                   ✓
                 </span>
               ) : isActive ? (
-                <span className="absolute -left-[22px] top-0.5 w-3.5 h-3.5 rounded-full bg-[#FFD200] flex items-center justify-center ring-4 ring-[#FFD200]/20 text-[#1F2937] font-black text-[9px] animate-pulse">
+                <span className="absolute -left-[22px] top-0.5 w-3.5 h-3.5 rounded-full bg-[#C2410C] flex items-center justify-center ring-4 ring-[#C2410C]/20 text-[#1F2937] font-black text-[9px] animate-pulse">
                   ●
                 </span>
               ) : isFailedStep ? (

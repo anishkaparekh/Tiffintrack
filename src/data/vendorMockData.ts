@@ -12,7 +12,9 @@ import {
 export const mockProfile: VendorProfile = {
   name: 'Priya Shah',
   role: 'Home Kitchen Owner',
-  initials: 'PS'
+  initials: 'PS',
+  businessLatitude: 22.3155,
+  businessLongitude: 72.8625,
 };
 
 export const mockStats: StatsCardData[] = [
@@ -235,11 +237,11 @@ export const mockNotifications: SystemNotification[] = [
   }
 ];
 export const mockCustomers = [
-  { id: 1, name: "Rahul Mehta", email: "rahul@gmail.com", activePlan: "Lunch Only", address: "HSR Layout Sector 3", status: "Active" },
-  { id: 2, name: "Sneha Patel", email: "sneha@gmail.com", activePlan: "Family Plan", address: "Koramangala 4th Block", status: "Active" },
-  { id: 3, name: "Karan Shah", email: "karan@gmail.com", activePlan: "Lunch + Dinner", address: "Indiranagar 100ft Rd", status: "Active" },
-  { id: 4, name: "Neha Joshi", email: "neha@gmail.com", activePlan: "Custom Plan", address: "Whitefield Inner Circle", status: "Active" },
-  { id: 5, name: "Dhruv Desai", email: "dhruv@gmail.com", activePlan: "Lunch Only", address: "Jayanagar 5th Block", status: "Active" },
-  { id: 6, name: "Riya Patel", email: "riya@gmail.com", activePlan: "Lunch Only", address: "Bellandur Outer Ring Rd", status: "Active" },
-  { id: 7, name: "Amit Shah", email: "amit@gmail.com", activePlan: "Family Plan", address: "BTM Layout 2nd Stage", status: "Active" }
+  { id: 1, name: "Rahul Mehta", email: "rahul@gmail.com", activePlan: "Lunch Only", address: "HSR Layout Sector 3", status: "Active", latitude: 12.9716, longitude: 77.5946 },
+  { id: 2, name: "Sneha Patel", email: "sneha@gmail.com", activePlan: "Family Plan", address: "Koramangala 4th Block", status: "Active", latitude: 12.9352, longitude: 77.6245 },
+  { id: 3, name: "Karan Shah", email: "karan@gmail.com", activePlan: "Lunch + Dinner", address: "Indiranagar 100ft Rd", status: "Active", latitude: 12.9780, longitude: 77.6410 },
+  { id: 4, name: "Neha Joshi", email: "neha@gmail.com", activePlan: "Custom Plan", address: "Whitefield Inner Circle", status: "Active", latitude: 12.9833, longitude: 77.7352 },
+  { id: 5, name: "Dhruv Desai", email: "dhruv@gmail.com", activePlan: "Lunch Only", address: "Jayanagar 5th Block", status: "Active", latitude: 12.9260, longitude: 77.5938 },
+  { id: 6, name: "Riya Patel", email: "riya@gmail.com", activePlan: "Lunch Only", address: "Bellandur Outer Ring Rd", status: "Active", latitude: 12.9235, longitude: 77.6885 },
+  { id: 7, name: "Amit Shah", email: "amit@gmail.com", activePlan: "Family Plan", address: "BTM Layout 2nd Stage", status: "Active", latitude: 12.9170, longitude: 77.6075 }
 ];

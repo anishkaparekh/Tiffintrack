@@ -63,7 +63,7 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -73,8 +73,8 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
         <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs font-bold text-slate-500">
           
           {/* Order Details & Quantity */}
-          <div className="p-4 bg-[#F4F9F6]/50 border border-[#00B074]/15 rounded-xl space-y-3.5">
-            <div className="flex items-center space-x-3 text-[#00B074]">
+          <div className="p-4 bg-[#FFF8E7]/50 border border-[#F59E0B]/15 rounded-xl space-y-3.5">
+            <div className="flex items-center space-x-3 text-[#F59E0B]">
               <ClipboardList size={18} />
               <span className="text-sm font-black text-[#1F2937]">Meal & Plan Information</span>
             </div>
@@ -90,7 +90,7 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
               </div>
               <div className="col-span-2">
                 <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Subscription Membership</span>
-                <span className="text-[#00B074] font-black">{order.plan}</span>
+                <span className="text-[#F59E0B] font-black">{order.plan}</span>
               </div>
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
               <div>
                 <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Target Delivery Window</span>
                 <span className="text-[#1F2937] font-extrabold flex items-center mt-0.5">
-                  <Clock size={12} className="text-[#00B074] mr-1.5" />
+                  <Clock size={12} className="text-[#F59E0B] mr-1.5" />
                   {order.deliveryTime}
                 </span>
               </div>
@@ -187,7 +187,7 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
                       {/* Node Indicator */}
                       <div className={`absolute -left-[27px] w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 z-10 transition-colors ${
                         isCompleted
-                          ? 'bg-[#00B074] border-[#00B074] text-white'
+                          ? 'bg-[#F59E0B] border-[#F59E0B] text-white'
                           : 'bg-white border-slate-300 text-slate-300'
                       }`}>
                         {isCompleted ? (
@@ -199,7 +199,7 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
 
                       {/* Details text */}
                       <div className="space-y-0.5">
-                        <p className={`font-black text-xs transition-colors ${isCurrent ? 'text-[#00B074]' : isCompleted ? 'text-[#1F2937]' : 'text-slate-400'}`}>
+                        <p className={`font-black text-xs transition-colors ${isCurrent ? 'text-[#F59E0B]' : isCompleted ? 'text-[#1F2937]' : 'text-slate-400'}`}>
                           {step.title}
                         </p>
                         <p className="text-[10px] text-slate-400 font-semibold">{step.desc}</p>
@@ -216,7 +216,7 @@ export default function OrderDetailsDrawer({ isOpen, onClose, order }: OrderDeta
         <div className="px-6 py-4 bg-slate-50 border-t border-[#E5E7EB] flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-6 py-3 w-full bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#00B074]/15 transition-all cursor-pointer text-center"
+            className="px-6 py-3 w-full bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer text-center"
           >
             Dismiss Details
           </button>

@@ -89,7 +89,7 @@ export default function EditProfileModal({
           <h3 className="font-extrabold text-base text-[#1F2937]">Update Business Profile</h3>
           <button 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all cursor-pointer"
+            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -105,7 +105,7 @@ export default function EditProfileModal({
               required
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+              className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
             />
           </div>
 
@@ -117,7 +117,7 @@ export default function EditProfileModal({
               required
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
-              className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+              className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
             />
           </div>
 
@@ -131,7 +131,7 @@ export default function EditProfileModal({
                 min="0"
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
               />
             </div>
 
@@ -143,7 +143,7 @@ export default function EditProfileModal({
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
               />
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function EditProfileModal({
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+              className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
             />
           </div>
 
@@ -167,7 +167,7 @@ export default function EditProfileModal({
               required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white min-h-[70px] resize-none"
+              className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white min-h-[70px] resize-none"
             />
           </div>
 
@@ -176,13 +176,13 @@ export default function EditProfileModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#F4F9F6] text-slate-700 font-bold text-xs transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#FFF8E7] text-slate-700 font-bold text-xs transition-all cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs shadow-md shadow-[#00B074]/15 transition-all cursor-pointer"
+              className="px-6 py-2.5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer"
             >
               Save Changes
             </button>

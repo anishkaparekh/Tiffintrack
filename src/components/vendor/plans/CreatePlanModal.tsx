@@ -84,7 +84,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
           </h3>
           <button 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all"
+            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all"
           >
             <X size={18} />
           </button>
@@ -101,7 +101,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                 placeholder="e.g. Lunch Only Plan"
               />
             </div>
@@ -114,7 +114,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
                 required
                 value={mealsPerWeek}
                 onChange={(e) => setMealsPerWeek(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                 placeholder="e.g. 6 Meals"
               />
             </div>
@@ -127,7 +127,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
                 required
                 value={monthlyPrice}
                 onChange={(e) => setMonthlyPrice(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                 placeholder="Billed monthly rate"
               />
             </div>
@@ -138,7 +138,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
               <select
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white cursor-pointer"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white cursor-pointer"
               >
                 <option value="Monthly">Monthly</option>
                 <option value="Weekly">Weekly</option>
@@ -154,7 +154,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
                 required
                 value={maxSubscribers}
                 onChange={(e) => setMaxSubscribers(e.target.value)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
               />
             </div>
 
@@ -164,7 +164,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as PlanStatus)}
-                className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white cursor-pointer"
+                className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white cursor-pointer"
               >
                 <option value="Active">Active</option>
                 <option value="Paused">Paused</option>
@@ -181,7 +181,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
               required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white min-h-[60px] resize-none"
+              className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white min-h-[60px] resize-none"
               placeholder="Provide a brief explanation of subscription inclusions..."
             />
           </div>
@@ -189,7 +189,7 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
           {/* Multi-select Meals List */}
           <div className="space-y-2">
             <label className="uppercase tracking-wider block">Select Included Menu Meals</label>
-            <div className="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl">
+            <div className="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl">
               {mockAvailableMeals.map((meal) => {
                 const isSelected = selectedMeals.includes(meal);
                 return (
@@ -199,12 +199,12 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
                     onClick={() => handleMealToggle(meal)}
                     className={`p-2 rounded-lg border text-left text-[11px] font-semibold flex items-center justify-between transition-all ${
                       isSelected 
-                        ? 'border-[#00B074] bg-white text-[#00B074]' 
+                        ? 'border-[#F59E0B] bg-white text-[#F59E0B]' 
                         : 'border-[#E5E7EB] bg-white text-slate-600 hover:bg-stone-50'
                     }`}
                   >
                     <span className="truncate">{meal}</span>
-                    {isSelected && <Check size={12} className="text-[#00B074] shrink-0 ml-1" />}
+                    {isSelected && <Check size={12} className="text-[#F59E0B] shrink-0 ml-1" />}
                   </button>
                 );
               })}
@@ -216,13 +216,13 @@ export default function CreatePlanModal({ isOpen, onClose, onSave, editPlan }: C
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#F4F9F6] text-slate-700 font-bold text-xs transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#FFF8E7] text-slate-700 font-bold text-xs transition-all cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs shadow-md shadow-[#00B074]/15 transition-all cursor-pointer"
+              className="px-6 py-2.5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer"
             >
               {editPlan ? 'Save Plan' : 'Create Plan'}
             </button>

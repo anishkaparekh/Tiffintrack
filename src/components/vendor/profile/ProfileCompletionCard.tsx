@@ -22,13 +22,13 @@ export default function ProfileCompletionCard({ completionPercentage }: ProfileC
           <h3 className="font-extrabold text-sm text-[#1F2937] uppercase tracking-wider">Profile Setup Progress</h3>
           <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Complete tasks to publish your kitchen</p>
         </div>
-        <span className="text-base font-black text-[#00B074]">{completionPercentage}%</span>
+        <span className="text-base font-black text-[#F59E0B]">{completionPercentage}%</span>
       </div>
 
       {/* Progress Bar */}
       <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
         <div 
-          className="bg-[#00B074] h-full rounded-full transition-all duration-500"
+          className="bg-[#F59E0B] h-full rounded-full transition-all duration-500"
           style={{ width: `${completionPercentage}%` }}
         />
       </div>

@@ -810,7 +810,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                   { title: "Reported Customers", count: customers.filter(c => c.status === "Warned").length, desc: "Warned users", icon: Users, color: "text-slate-600 bg-slate-50 border-slate-100" },
                   { title: "Active Vendors", count: vendors.filter(v => v.status === "Active").length, desc: "Onboarded kitchens", icon: ChefHat, color: "text-mint bg-mint-light border-mint/20" },
                   { title: "Active Subscriptions", count: activeSubCount, desc: "Live MongoDB count", icon: Users, color: "text-blue-500 bg-blue-50 border-blue-100" },
-                  { title: "Total Orders", count: orderStats.totalOrders, desc: "Cumulative orders", icon: Activity, color: "text-[#FFD200] bg-[#FFD200]/10 border-[#FFD200]/20" },
+                  { title: "Total Orders", count: orderStats.totalOrders, desc: "Cumulative orders", icon: Activity, color: "text-[#C2410C] bg-[#C2410C]/10 border-[#C2410C]/20" },
                   { title: "Pending Orders", count: orderStats.pendingOrders, desc: "Awaiting preparation", icon: RefreshCw, color: "text-orange-500 bg-orange-50 border-orange-100" },
                   { title: "Delivered Orders", count: orderStats.deliveredOrders, desc: "Successful runs", icon: CheckCircle, color: "text-emerald-500 bg-emerald-50 border-emerald-100" }
                 ].map((stat, idx) => (
@@ -1417,7 +1417,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                     <path 
                       d="M 0 140 Q 150 110, 300 130 T 600 60 T 900 30" 
                       fill="none" 
-                      stroke="#00B074" 
+                      stroke="#F59E0B" 
                       strokeWidth="4" 
                       strokeLinecap="round"
                     />
@@ -1428,8 +1428,8 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                     />
                     <defs>
                       <linearGradient id="mint-grad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#00B074"/>
-                        <stop offset="100%" stopColor="#00B074" stopOpacity="0"/>
+                        <stop offset="0%" stopColor="#F59E0B"/>
+                        <stop offset="100%" stopColor="#F59E0B" stopOpacity="0"/>
                       </linearGradient>
                     </defs>
                   </svg>

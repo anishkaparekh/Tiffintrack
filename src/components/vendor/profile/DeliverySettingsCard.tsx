@@ -23,7 +23,7 @@ export default function DeliverySettingsCard({
       <div className="grid grid-cols-3 gap-3 text-center">
         {/* Radius */}
         <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col items-center justify-between">
-          <Navigation size={14} className="text-[#00B074] mx-auto mb-1" />
+          <Navigation size={14} className="text-[#F59E0B] mx-auto mb-1" />
           <span className="text-xs font-black text-[#1F2937] block leading-none">{details.radiusKm} km</span>
           <span className="text-[8px] text-slate-400 font-bold uppercase block mt-1 tracking-wider">Service Radius</span>
         </div>
@@ -50,7 +50,7 @@ export default function DeliverySettingsCard({
           {details.areas.map((area, idx) => (
             <span 
               key={idx}
-              className="bg-[#F4F9F6] text-[#00B074] border border-[#00B074]/15 px-2.5 py-1 rounded-xl text-[10px] font-bold flex items-center space-x-1"
+              className="bg-[#FFF8E7] text-[#F59E0B] border border-[#F59E0B]/15 px-2.5 py-1 rounded-xl text-[10px] font-bold flex items-center space-x-1"
             >
               <Map size={10} className="mr-0.5" />
               <span>{area}</span>
@@ -63,14 +63,14 @@ export default function DeliverySettingsCard({
       <div className="grid grid-cols-2 gap-3 pt-2">
         <button
           onClick={onManageAreasClick}
-          className="py-2.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-xs font-bold text-slate-600 hover:text-[#00B074] transition-all cursor-pointer text-center"
+          className="py-2.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-xs font-bold text-slate-600 hover:text-[#F59E0B] transition-all cursor-pointer text-center"
         >
           Manage Areas
         </button>
 
         <button
           onClick={onEditClick}
-          className="py-2.5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs shadow-md shadow-[#00B074]/15 transition-all cursor-pointer text-center"
+          className="py-2.5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer text-center"
         >
           Edit Settings
         </button>

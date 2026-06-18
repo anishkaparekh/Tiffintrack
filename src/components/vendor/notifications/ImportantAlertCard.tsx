@@ -30,8 +30,8 @@ export default function ImportantAlertCard({ alerts, onSelectAlert }: ImportantA
       case 'order':
         return {
           icon: ShoppingBag,
-          color: 'text-[#00B074]',
-          bg: 'bg-[#00B074]/10'
+          color: 'text-[#F59E0B]',
+          bg: 'bg-[#F59E0B]/10'
         };
       case 'subscription':
         return {
@@ -83,7 +83,7 @@ export default function ImportantAlertCard({ alerts, onSelectAlert }: ImportantA
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black text-[#1F2937] leading-snug group-hover:text-[#00B074] transition-colors">
+                  <h4 className="text-xs font-black text-[#1F2937] leading-snug group-hover:text-[#F59E0B] transition-colors">
                     {alert.title}
                   </h4>
                   <ChevronRight size={12} className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity ml-1.5 shrink-0" />

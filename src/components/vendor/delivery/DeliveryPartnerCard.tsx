@@ -17,7 +17,7 @@ export default function DeliveryPartnerCard({ partner, onClose }: DeliveryPartne
           <h3 className="font-extrabold text-base text-[#1F2937]">Delivery Partner Profile</h3>
           <button 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all cursor-pointer"
+            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -28,7 +28,7 @@ export default function DeliveryPartnerCard({ partner, onClose }: DeliveryPartne
           
           {/* Avatar and Name */}
           <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#00B074]/10 border border-[#00B074]/20 text-[#00B074] flex items-center justify-center font-black text-lg">
+            <div className="w-14 h-14 rounded-2xl bg-[#F59E0B]/10 border border-[#F59E0B]/20 text-[#F59E0B] flex items-center justify-center font-black text-lg">
               {partner.name.split(' ').map(n => n[0]).join('').toUpperCase()}
             </div>
             <div>
@@ -87,7 +87,7 @@ export default function DeliveryPartnerCard({ partner, onClose }: DeliveryPartne
 
             <div className="flex items-center space-x-3">
               <Calendar size={14} className="text-slate-400" />
-              <span>Today's Workload: <strong className="text-[#00B074]">{partner.todayDeliveriesCount} deliveries</strong></span>
+              <span>Today's Workload: <strong className="text-[#F59E0B]">{partner.todayDeliveriesCount} deliveries</strong></span>
             </div>
           </div>
 

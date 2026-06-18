@@ -52,7 +52,7 @@ export default function AssignmentTable({
           </thead>
           <tbody className="divide-y divide-[#E5E7EB]">
             {deliveries.map((delivery) => (
-              <tr key={delivery.id} className="hover:bg-[#F4F9F6]/30 transition-colors">
+              <tr key={delivery.id} className="hover:bg-[#FFF8E7]/30 transition-colors">
                 <td className="py-4 px-6 font-bold text-slate-500">{delivery.id}</td>
                 <td className="py-4 px-6 font-black text-[#1F2937]">{delivery.customerName}</td>
                 <td className="py-4 px-6">
@@ -72,7 +72,7 @@ export default function AssignmentTable({
                 <td className="py-4 px-6">
                   {delivery.assignedPartnerName ? (
                     <div className="flex items-center space-x-1">
-                      <span className="font-bold text-[#00B074]">{delivery.assignedPartnerName}</span>
+                      <span className="font-bold text-[#F59E0B]">{delivery.assignedPartnerName}</span>
                     </div>
                   ) : (
                     <span className="text-slate-400 font-bold italic">Unassigned</span>
@@ -91,7 +91,7 @@ export default function AssignmentTable({
                     {delivery.status === 'Pending Assignment' ? (
                       <button
                         onClick={() => onAssign(delivery)}
-                        className="py-1 px-2.5 bg-[#00B074] hover:bg-[#00B074]/95 text-white rounded-lg text-[10px] font-bold flex items-center space-x-1 cursor-pointer shadow-sm"
+                        className="py-1 px-2.5 bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white rounded-lg text-[10px] font-bold flex items-center space-x-1 cursor-pointer shadow-sm"
                         title="Assign Partner"
                       >
                         <UserCheck size={12} />

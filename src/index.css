@@ -1,22 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Nunito:wght@300;400;600;700;800&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Poppins', 'Nunito', system-ui, -apple-system, sans-serif;
   
-  --color-mint: #00B074;
-  --color-mint-hover: #009662;
-  --color-mint-light: #e6f7f1;
+  --color-mint: #F59E0B; /* Warm Saffron Orange */
+  --color-mint-hover: #D97706; /* Saffron Hover */
+  --color-mint-light: #FEF3C7; /* Saffron Light Tint */
   
-  --color-lemon: #FFD200;
-  --color-lemon-hover: #e6bd00;
-  --color-lemon-light: #FFFDF0;
+  --color-lemon: #C2410C; /* Terracotta */
+  --color-lemon-hover: #9A3412; /* Terracotta Hover */
+  --color-lemon-light: #FFEDD5; /* Terracotta Light */
   
-  --color-snow: #F4F9F6;
+  --color-snow: #FFF8E7; /* Cream / Warm Ivory */
   
-  --color-primary-text: #1F2937;
-  --color-secondary-text: #6B7280;
+  --color-primary-text: #3E2723; /* Dark Brown */
+  --color-secondary-text: #5D4037; /* Medium Warm Brown */
+  
+  --color-card-bg: #FFFCF5; /* Soft White */
+  --color-beige-border: #E7DCC7; /* Light Beige */
 }
 
 :root {
@@ -25,17 +28,103 @@
 }
 
 body {
-  background-color: #F4F9F6; /* Snow White */
-  color: #1F2937; /* Primary Text */
+  background-color: #FFF8E7 !important; /* Cream / Warm Ivory */
+  color: #3E2723 !important; /* Dark Brown */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Professional clean layout shadows */
+/* Hardcoded hex overrides for original colors */
+.bg-\[\#F59E0B\] {
+  background-color: var(--color-mint) !important;
+}
+.bg-\[\#F59E0B\]\/10 {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+.bg-\[\#F59E0B\]\/15 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+}
+.bg-\[\#F59E0B\]\/5 {
+  background-color: rgba(245, 158, 11, 0.05) !important;
+}
+.hover\:bg-\[\#D97706\]:hover {
+  background-color: var(--color-mint-hover) !important;
+}
+.text-\[\#F59E0B\] {
+  color: var(--color-mint) !important;
+}
+.border-\[\#F59E0B\] {
+  border-color: var(--color-mint) !important;
+}
+.border-\[\#F59E0B\]\/20 {
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+.border-\[\#F59E0B\]\/15 {
+  border-color: rgba(245, 158, 11, 0.15) !important;
+}
+.shadow-\[\#F59E0B\]\/15 {
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.15), 0 4px 6px -4px rgba(245, 158, 11, 0.15) !important;
+}
+.focus\:border-\[\#F59E0B\]:focus {
+  border-color: var(--color-mint) !important;
+}
+.focus\:ring-\[\#F59E0B\]:focus {
+  --tw-ring-color: var(--color-mint) !important;
+}
+
+/* Light background overrides */
+.bg-\[\#FEF3C7\] {
+  background-color: var(--color-mint-light) !important;
+}
+.text-\[\#FEF3C7\] {
+  color: var(--color-mint) !important;
+}
+.border-\[\#FEF3C7\] {
+  border-color: var(--color-mint-light) !important;
+}
+
+/* Body / Snow background overrides */
+.bg-\[\#FFF8E7\] {
+  background-color: var(--color-snow) !important;
+}
+
+/* Dark text color overrides */
+.text-\[\#1F2937\] {
+  color: var(--color-primary-text) !important;
+}
+.hover\:text-\[\#1F2937\]:hover {
+  color: var(--color-primary-text) !important;
+}
+
+/* Yellow accent overrides to Terracotta */
+.text-\[\#C2410C\] {
+  color: var(--color-lemon) !important;
+}
+.bg-\[\#FFEDD5\] {
+  background-color: var(--color-lemon-light) !important;
+}
+
+/* Custom Card style overrides */
+.bg-white {
+  background-color: var(--color-card-bg) !important; /* Soft White */
+}
+
+/* Custom Border style overrides */
+.border-slate-100, .border-slate-200, .border-slate-200\/60, .border-slate-300 {
+  border-color: var(--color-beige-border) !important; /* Light Beige */
+}
+
+/* Override standard button/card shadow with warm tones */
 .shadow-card {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(62, 39, 35, 0.04), 0 2px 4px -1px rgba(62, 39, 35, 0.02) !important;
 }
 
 .shadow-card-hover {
-  box-shadow: 0 10px 15px -3px rgba(31, 41, 55, 0.05), 0 4px 6px -4px rgba(31, 41, 55, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(62, 39, 35, 0.04), 0 2px 4px -1px rgba(62, 39, 35, 0.02) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.shadow-card-hover:hover {
+  box-shadow: 0 12px 20px -3px rgba(62, 39, 35, 0.08), 0 4px 8px -2px rgba(62, 39, 35, 0.04) !important;
+  transform: translateY(-2px) !important;
 }

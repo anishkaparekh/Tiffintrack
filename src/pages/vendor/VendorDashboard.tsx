@@ -478,7 +478,7 @@ export default function VendorDashboard() {
           </div>
           <button
             onClick={() => setShowAddMealModal(true)}
-            className="py-2.5 px-4 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-[#00B074]/15 transition-all cursor-pointer"
+            className="py-2.5 px-4 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer"
           >
             <Plus size={14} />
             <span>Add New Meal</span>
@@ -519,7 +519,7 @@ export default function VendorDashboard() {
           </div>
           <button
             onClick={() => setShowCreatePlanModal(true)}
-            className="py-2.5 px-4 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-[#00B074]/15 transition-all cursor-pointer"
+            className="py-2.5 px-4 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer"
           >
             <Plus size={14} />
             <span>Create New Plan</span>
@@ -590,10 +590,10 @@ export default function VendorDashboard() {
             </thead>
             <tbody className="divide-y divide-[#E5E7EB]">
               {customersToRender.map((cust) => (
-                <tr key={cust.id} className="hover:bg-[#F4F9F6]/30 transition-colors">
+                <tr key={cust.id} className="hover:bg-[#FFF8E7]/30 transition-colors">
                   <td className="py-4 px-6 font-bold text-[#1F2937]">{cust.name}</td>
                   <td className="py-4 px-6 text-slate-500 font-semibold">{cust.email}</td>
-                  <td className="py-4 px-6 text-[#00B074] font-extrabold">{cust.activePlan}</td>
+                  <td className="py-4 px-6 text-[#F59E0B] font-extrabold">{cust.activePlan}</td>
                   <td className="py-4 px-6 text-slate-500 font-semibold max-w-[200px] truncate">{cust.address}</td>
                   <td className="py-4 px-6">
                     <span className={`border px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
@@ -639,7 +639,7 @@ export default function VendorDashboard() {
           </div>
           <div className="bg-white p-5 rounded-2xl border border-[#E5E7EB] shadow-sm space-y-1.5">
             <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">Est. Next Month Profit</span>
-            <p className="text-xl font-black text-[#00B074]">₹{nextMonthProfit.toLocaleString('en-IN')}</p>
+            <p className="text-xl font-black text-[#F59E0B]">₹{nextMonthProfit.toLocaleString('en-IN')}</p>
             <p className="text-[10px] text-[#16A34A] font-bold">↑ 14% growth projection</p>
           </div>
         </div>
@@ -668,12 +668,12 @@ export default function VendorDashboard() {
     return (
       <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-6 md:p-8 space-y-6 max-w-2xl">
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#00B074] text-white flex items-center justify-center font-extrabold text-xl shadow-md">
+          <div className="w-16 h-16 rounded-2xl bg-[#F59E0B] text-white flex items-center justify-center font-extrabold text-xl shadow-md">
             {vendorUser.initials}
           </div>
           <div>
             <h3 className="text-lg font-black text-[#1F2937]">{vendorUser.name}</h3>
-            <p className="text-xs text-[#00B074] font-bold">{vendorUser.role}</p>
+            <p className="text-xs text-[#F59E0B] font-bold">{vendorUser.role}</p>
           </div>
         </div>
 
@@ -718,8 +718,8 @@ export default function VendorDashboard() {
       {/* Simulation preview bar for grading / review */}
       <div className="mb-6 p-4 bg-slate-900 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-md text-white border border-slate-800">
         <div className="space-y-1">
-          <p className="text-[#FFD200] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
-            <Sparkles size={12} className="text-[#FFD200]" />
+          <p className="text-[#C2410C] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
+            <Sparkles size={12} className="text-[#C2410C]" />
             <span>Interactive UI Sandbox Toggles</span>
           </p>
           <h3 className="font-bold text-xs text-slate-100">Simulate states for review</h3>
@@ -735,7 +735,7 @@ export default function VendorDashboard() {
             <button
               onClick={() => setIsLoading(!isLoading)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isLoading ? 'bg-[#00B074]' : 'bg-slate-600'
+                isLoading ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -752,7 +752,7 @@ export default function VendorDashboard() {
             <button
               onClick={() => setIsEmpty(!isEmpty)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isEmpty ? 'bg-[#00B074]' : 'bg-slate-600'
+                isEmpty ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -783,7 +783,7 @@ export default function VendorDashboard() {
               <h3 className="font-extrabold text-base text-[#1F2937]">List New Specialty Meal</h3>
               <button 
                 onClick={() => setShowAddMealModal(false)}
-                className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all"
+                className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all"
               >
                 <X size={18} />
               </button>
@@ -797,7 +797,7 @@ export default function VendorDashboard() {
                   required
                   value={newMealName}
                   onChange={(e) => setNewMealName(e.target.value)}
-                  className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                  className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                   placeholder="e.g. Special Paneer Thali"
                 />
               </div>
@@ -808,7 +808,7 @@ export default function VendorDashboard() {
                   <select
                     value={newMealCategory}
                     onChange={(e) => setNewMealCategory(e.target.value)}
-                    className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                    className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                   >
                     <option>Traditional</option>
                     <option>Jain Special</option>
@@ -825,14 +825,14 @@ export default function VendorDashboard() {
                     min={10}
                     value={newMealPrice}
                     onChange={(e) => setNewMealPrice(parseInt(e.target.value))}
-                    className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                    className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-sm shadow-md transition-all mt-4 cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-sm shadow-md transition-all mt-4 cursor-pointer"
               >
                 List Specialty Meal
               </button>
@@ -849,7 +849,7 @@ export default function VendorDashboard() {
               <h3 className="font-extrabold text-base text-[#1F2937]">Configure Subscription Plan</h3>
               <button 
                 onClick={() => setShowCreatePlanModal(false)}
-                className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all"
+                className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all"
               >
                 <X size={18} />
               </button>
@@ -863,7 +863,7 @@ export default function VendorDashboard() {
                   required
                   value={newPlanName}
                   onChange={(e) => setNewPlanName(e.target.value)}
-                  className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                  className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                   placeholder="e.g. Lunch + Dinner High Protein"
                 />
               </div>
@@ -876,13 +876,13 @@ export default function VendorDashboard() {
                   min={100}
                   value={newPlanPrice}
                   onChange={(e) => setNewPlanPrice(parseInt(e.target.value))}
-                  className="w-full p-3 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white"
+                  className="w-full p-3 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-sm shadow-md transition-all mt-4 cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-sm shadow-md transition-all mt-4 cursor-pointer"
               >
                 Configure Subscription Plan
               </button>

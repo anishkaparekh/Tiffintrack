@@ -24,7 +24,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault })
     <div
       className={`bg-white border-2 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col justify-between relative group ${
         isDefault
-          ? 'border-[#00B074] bg-[#00B074]/5'
+          ? 'border-[#F59E0B] bg-[#F59E0B]/5'
           : 'border-slate-200/80 hover:border-slate-350'
       }`}
     >
@@ -34,7 +34,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault })
           <div className="flex items-center space-x-2">
             <div
               className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                isDefault ? 'bg-[#00B074]/15 text-[#00B074]' : 'bg-slate-100 text-slate-500'
+                isDefault ? 'bg-[#F59E0B]/15 text-[#F59E0B]' : 'bg-slate-100 text-slate-500'
               }`}
             >
               <MapPin size={14} />
@@ -45,7 +45,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault })
           </div>
 
           {isDefault && (
-            <span className="flex items-center text-[9px] font-black text-[#00B074] bg-[#00B074]/10 px-2.5 py-1 rounded-md uppercase border border-[#00B074]/20 tracking-wider">
+            <span className="flex items-center text-[9px] font-black text-[#F59E0B] bg-[#F59E0B]/10 px-2.5 py-1 rounded-md uppercase border border-[#F59E0B]/20 tracking-wider">
               <CheckCircle2 size={10} className="mr-1" />
               Default
             </span>
@@ -75,7 +75,7 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault })
         {onSetDefault && !isDefault ? (
           <button
             onClick={() => onSetDefault(_id)}
-            className="text-[10px] font-bold text-[#00B074] hover:text-[#009b65] transition-colors cursor-pointer bg-transparent border-0"
+            className="text-[10px] font-bold text-[#F59E0B] hover:text-[#D97706] transition-colors cursor-pointer bg-transparent border-0"
           >
             Use as Default
           </button>

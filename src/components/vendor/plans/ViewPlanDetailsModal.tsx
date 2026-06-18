@@ -55,12 +55,12 @@ export default function ViewPlanDetailsModal({ isOpen, onClose, plan }: ViewPlan
         {/* Header */}
         <div className="px-6 py-5 border-b border-[#E5E7EB] flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <CalendarRange className="text-[#00B074]" size={20} />
+            <CalendarRange className="text-[#F59E0B]" size={20} />
             <h3 className="font-extrabold text-base text-[#1F2937]">Plan Configuration Details</h3>
           </div>
           <button 
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#F4F9F6] rounded-lg transition-all"
+            className="p-1 text-slate-400 hover:text-[#1F2937] hover:bg-[#FFF8E7] rounded-lg transition-all"
           >
             <X size={18} />
           </button>
@@ -69,7 +69,7 @@ export default function ViewPlanDetailsModal({ isOpen, onClose, plan }: ViewPlan
         {/* Content */}
         <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
           {/* Plan Name & Status */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F4F9F6]/50 p-4 rounded-xl border border-[#E5E7EB]/40">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFF8E7]/50 p-4 rounded-xl border border-[#E5E7EB]/40">
             <div>
               <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider block">{plan.mealsPerWeek} / week</span>
               <h2 className="text-lg font-black text-[#1F2937] leading-tight">{plan.name}</h2>
@@ -88,7 +88,7 @@ export default function ViewPlanDetailsModal({ isOpen, onClose, plan }: ViewPlan
           {/* Metrics Overview */}
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-white border border-[#E5E7EB] rounded-2xl flex items-center space-x-3.5 shadow-sm">
-              <div className="p-2.5 rounded-xl bg-[#00B074]/10 text-[#00B074]">
+              <div className="p-2.5 rounded-xl bg-[#F59E0B]/10 text-[#F59E0B]">
                 <Users size={18} />
               </div>
               <div>
@@ -98,7 +98,7 @@ export default function ViewPlanDetailsModal({ isOpen, onClose, plan }: ViewPlan
             </div>
 
             <div className="p-4 bg-white border border-[#E5E7EB] rounded-2xl flex items-center space-x-3.5 shadow-sm">
-              <div className="p-2.5 rounded-xl bg-[#00B074]/10 text-[#00B074]">
+              <div className="p-2.5 rounded-xl bg-[#F59E0B]/10 text-[#F59E0B]">
                 <IndianRupee size={18} />
               </div>
               <div>
@@ -116,7 +116,7 @@ export default function ViewPlanDetailsModal({ isOpen, onClose, plan }: ViewPlan
                 {plan.includedMeals.map((meal, idx) => (
                   <span 
                     key={idx}
-                    className="bg-[#F4F9F6] text-[#00B074] border border-[#00B074]/15 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5"
+                    className="bg-[#FFF8E7] text-[#F59E0B] border border-[#F59E0B]/15 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5"
                   >
                     <CheckCircle2 size={12} />
                     <span>{meal}</span>
@@ -136,13 +136,13 @@ export default function ViewPlanDetailsModal({ isOpen, onClose, plan }: ViewPlan
             {/* Progress bar */}
             <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
               <div 
-                className="bg-[#00B074] h-full rounded-full transition-all duration-500" 
+                className="bg-[#F59E0B] h-full rounded-full transition-all duration-500" 
                 style={{ width: `${fillPercentage}%` }}
               />
             </div>
             
             <p className="text-[10px] text-slate-400 font-semibold flex items-center space-x-1">
-              <Award size={12} className="text-[#00B074]" />
+              <Award size={12} className="text-[#F59E0B]" />
               <span>Recommended limit based on home chef tiffin delivery kitchen capacity.</span>
             </p>
           </div>
@@ -164,7 +164,7 @@ export default function ViewPlanDetailsModal({ isOpen, onClose, plan }: ViewPlan
         <div className="px-6 py-4 bg-slate-50 border-t border-[#E5E7EB] flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#00B074]/15 transition-all cursor-pointer"
+            className="px-6 py-2.5 bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#F59E0B]/15 transition-all cursor-pointer"
           >
             Close Window
           </button>

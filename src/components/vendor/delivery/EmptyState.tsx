@@ -65,7 +65,7 @@ export default function EmptyState({ type, message, onActionClick, actionText }:
       {onActionClick && actionText && (
         <button
           onClick={onActionClick}
-          className="px-4 py-2 bg-[#00B074] hover:bg-[#00B074]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#00B074]/10 transition-all cursor-pointer"
+          className="px-4 py-2 bg-[#F59E0B] hover:bg-[#F59E0B]/95 text-white font-bold text-xs rounded-xl shadow-md shadow-[#F59E0B]/10 transition-all cursor-pointer"
         >
           {actionText}
         </button>

@@ -24,7 +24,7 @@ export default function QuickActions({
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={onAddMealClick}
-          className="py-3 px-3 rounded-xl bg-[#00B074] hover:bg-[#00B074]/90 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-[#00B074]/10 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className="py-3 px-3 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-[#F59E0B]/10 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
           <Plus size={14} />
           <span className="truncate">Add New Meal</span>
@@ -32,7 +32,7 @@ export default function QuickActions({
 
         <button
           onClick={onCreatePlanClick}
-          className="py-3 px-3 rounded-xl bg-[#00B074] hover:bg-[#00B074]/90 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-[#00B074]/10 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className="py-3 px-3 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-[#F59E0B]/10 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
           <CalendarPlus size={14} />
           <span className="truncate">Create Plan</span>
@@ -40,17 +40,17 @@ export default function QuickActions({
 
         <button
           onClick={onViewOrdersClick}
-          className="py-3 px-3 rounded-xl bg-white border border-[#E5E7EB] hover:bg-[#F4F9F6] text-[#1F2937] font-bold text-xs flex items-center justify-center space-x-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className="py-3 px-3 rounded-xl bg-white border border-[#E5E7EB] hover:bg-[#FFF8E7] text-[#1F2937] font-bold text-xs flex items-center justify-center space-x-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
-          <FileText size={14} className="text-[#00B074]" />
+          <FileText size={14} className="text-[#F59E0B]" />
           <span className="truncate">View Orders</span>
         </button>
 
         <button
           onClick={onManageCustomersClick}
-          className="py-3 px-3 rounded-xl bg-white border border-[#E5E7EB] hover:bg-[#F4F9F6] text-[#1F2937] font-bold text-xs flex items-center justify-center space-x-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className="py-3 px-3 rounded-xl bg-white border border-[#E5E7EB] hover:bg-[#FFF8E7] text-[#1F2937] font-bold text-xs flex items-center justify-center space-x-1.5 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
-          <Users size={14} className="text-[#00B074]" />
+          <Users size={14} className="text-[#F59E0B]" />
           <span className="truncate">Customers</span>
         </button>
       </div>

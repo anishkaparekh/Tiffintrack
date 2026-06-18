@@ -33,9 +33,9 @@ export default function EmptyState({ type, message }: EmptyStateProps) {
           icon: MapPin,
           title: "No Saved Addresses Yet",
           desc: message || "You haven't added any delivery addresses. Add a home, office, or parents' address to get your hot meals delivered seamlessly.",
-          bgColor: "bg-[#F4F9F6]",
-          iconColor: "text-[#00B074]",
-          borderColor: "border-[#00B074]/10"
+          bgColor: "bg-[#FFF8E7]",
+          iconColor: "text-[#F59E0B]",
+          borderColor: "border-[#F59E0B]/10"
         };
     }
   };

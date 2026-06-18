@@ -23,7 +23,7 @@ export default function NotificationPreferencesCard({ preferences }: Notificatio
     <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 space-y-4">
       {/* Card Header */}
       <div className="flex items-center space-x-2.5 pb-3 border-b border-slate-100">
-        <div className="p-2 rounded-xl bg-[#F4F9F6] text-[#00B074]">
+        <div className="p-2 rounded-xl bg-[#FFF8E7] text-[#F59E0B]">
           <Settings size={16} />
         </div>
         <div>
@@ -41,7 +41,7 @@ export default function NotificationPreferencesCard({ preferences }: Notificatio
         {settingsList.map((setting, idx) => (
           <div 
             key={idx} 
-            className="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-[#F4F9F6]/30 text-xs font-semibold text-[#1F2937]"
+            className="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-[#FFF8E7]/30 text-xs font-semibold text-[#1F2937]"
           >
             <span>{setting.label}</span>
             <div className="flex items-center space-x-1.5 shrink-0">
@@ -64,7 +64,7 @@ export default function NotificationPreferencesCard({ preferences }: Notificatio
       {/* Navigation CTA */}
       <button
         onClick={() => navigate('/vendor/profile')}
-        className="w-full mt-2.5 flex items-center justify-center space-x-1.5 py-3 rounded-xl border border-[#00B074] hover:bg-[#00B074] hover:text-white text-[11px] font-extrabold text-[#00B074] transition-all group"
+        className="w-full mt-2.5 flex items-center justify-center space-x-1.5 py-3 rounded-xl border border-[#F59E0B] hover:bg-[#F59E0B] hover:text-white text-[11px] font-extrabold text-[#F59E0B] transition-all group"
       >
         <span>Manage Preferences</span>
         <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />

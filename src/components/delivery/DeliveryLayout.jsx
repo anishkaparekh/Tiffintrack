@@ -23,7 +23,7 @@ export default function DeliveryLayout({ children, currentTab, onTabChange }) {
   const initials = partnerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'D';
 
   return (
-    <div className="flex h-screen bg-[#F4F9F6] font-sans overflow-hidden">
+    <div className="flex h-screen bg-[#FFF8E7] font-sans overflow-hidden">
       {/* Sidebar navigation */}
       <DeliverySidebar 
         currentTab={currentTab} 

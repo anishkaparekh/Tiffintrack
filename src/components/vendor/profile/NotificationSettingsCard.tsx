@@ -34,7 +34,7 @@ export default function NotificationSettingsCard({
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E5E7EB] space-y-4">
       <div className="flex items-center space-x-2">
-        <div className="p-1.5 rounded-lg bg-[#00B074]/10 text-[#00B074]">
+        <div className="p-1.5 rounded-lg bg-[#F59E0B]/10 text-[#F59E0B]">
           <Bell size={18} />
         </div>
         <div>
@@ -57,7 +57,7 @@ export default function NotificationSettingsCard({
               <button
                 onClick={() => handleToggle(opt.key)}
                 className={`w-10 h-5 rounded-full transition-all relative shrink-0 cursor-pointer ${
-                  isActive ? 'bg-[#00B074]' : 'bg-slate-300'
+                  isActive ? 'bg-[#F59E0B]' : 'bg-slate-300'
                 }`}
               >
                 <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${

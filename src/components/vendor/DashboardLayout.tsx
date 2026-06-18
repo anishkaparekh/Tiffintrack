@@ -12,7 +12,7 @@ export default function DashboardLayout({ children, activeTab, onTabSelect }: Da
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F4F9F6] text-[#1F2937] flex flex-col">
+    <div className="min-h-screen bg-[#FFF8E7] text-[#1F2937] flex flex-col">
       {/* Top Navigation */}
       <TopNavbar 
         onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} 

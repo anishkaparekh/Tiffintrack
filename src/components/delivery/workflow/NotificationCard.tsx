@@ -34,7 +34,7 @@ export default function NotificationCard({ notification, onRead }: NotificationC
 
   return (
     <div className={`p-4 border border-[#E5E7EB] rounded-2xl transition-all shadow-sm flex items-start space-x-3.5 relative bg-white hover:border-slate-300 hover:shadow-md group ${
-      !notification.isRead ? "border-l-4 border-l-[#00B074]" : ""
+      !notification.isRead ? "border-l-4 border-l-[#F59E0B]" : ""
     }`}>
       
       {/* Icon Badge */}
@@ -49,7 +49,7 @@ export default function NotificationCard({ notification, onRead }: NotificationC
             {notification.title}
           </h4>
           {!notification.isRead && (
-            <span className="w-1.5 h-1.5 bg-[#00B074] rounded-full inline-block flex-shrink-0" title="Unread"></span>
+            <span className="w-1.5 h-1.5 bg-[#F59E0B] rounded-full inline-block flex-shrink-0" title="Unread"></span>
           )}
         </div>
         <p className="text-[11px] text-slate-600 leading-relaxed font-semibold">
@@ -62,7 +62,7 @@ export default function NotificationCard({ notification, onRead }: NotificationC
       {!notification.isRead && onRead && (
         <button
           onClick={() => onRead(notification.id)}
-          className="text-[9px] font-bold text-[#00B074] hover:underline absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          className="text-[9px] font-bold text-[#F59E0B] hover:underline absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
         >
           Mark Read
         </button>

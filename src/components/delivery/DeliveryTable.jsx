@@ -26,8 +26,10 @@ export default function DeliveryTable({ deliveries, onNavigate, onViewDetails, o
               <th className="px-6 py-4">Customer</th>
               <th className="px-6 py-4">Meal Type</th>
               <th className="px-6 py-4">Address</th>
+              <th className="px-6 py-4">Phone</th>
               <th className="px-6 py-4">Delivery Time</th>
               <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Distance</th>
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -44,6 +46,7 @@ export default function DeliveryTable({ deliveries, onNavigate, onViewDetails, o
                 <td className="px-6 py-4.5 text-slate-600 max-w-[200px] truncate" title={delivery.address}>
                   {delivery.address}
                 </td>
+                <td className="px-6 py-4.5 text-slate-700">{delivery.customerPhone || 'N/A'}</td>
                 <td className="px-6 py-4.5 text-slate-500">{delivery.timeSlot}</td>
                 <td className="px-6 py-4.5">
                   <span className={`px-2.5 py-0.5 text-[9px] font-black rounded-md uppercase tracking-wider border ${getStatusBadge(delivery.status)}`}>
@@ -53,6 +56,7 @@ export default function DeliveryTable({ deliveries, onNavigate, onViewDetails, o
                     <span className="block text-[8px] text-red-500 mt-0.5 font-semibold">({delivery.failReason})</span>
                   )}
                 </td>
+                <td className="px-6 py-4.5 text-slate-700">-</td>
                 <td className="px-6 py-4.5 text-right">
                   <div className="flex items-center justify-end space-x-1.5">
                     {/* View Details */}
@@ -66,7 +70,10 @@ export default function DeliveryTable({ deliveries, onNavigate, onViewDetails, o
 
                     {/* Navigate */}
                     <button
-                      onClick={() => onNavigate(delivery)}
+                      onClick={() => {
+                        const destination = encodeURIComponent(delivery.address);
+                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank');
+                      }}
                       className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg border border-slate-200 cursor-pointer transition-colors"
                       title="Navigate using Maps"
                     >

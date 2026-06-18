@@ -39,8 +39,8 @@ export default function CustomerAnalyticsCard() {
               <AreaChart data={mockCustomerGrowth} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorCustomers" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00B074" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#00B074" stopOpacity={0.01}/>
+                    <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.01}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -72,7 +72,7 @@ export default function CustomerAnalyticsCard() {
                 <Area 
                   type="monotone" 
                   dataKey="customers" 
-                  stroke="#00B074" 
+                  stroke="#F59E0B" 
                   strokeWidth={3} 
                   fillOpacity={1} 
                   fill="url(#colorCustomers)" 
@@ -172,7 +172,7 @@ export default function CustomerAnalyticsCard() {
               />
               <Bar 
                 dataKey="subscribers" 
-                fill="#00B074" 
+                fill="#F59E0B" 
                 radius={[6, 6, 0, 0]} 
                 maxBarSize={35}
               />

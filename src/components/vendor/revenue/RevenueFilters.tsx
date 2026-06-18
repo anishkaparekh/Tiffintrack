@@ -41,7 +41,7 @@ export default function RevenueFilters({
           <select
             value={selectedRange}
             onChange={(e) => onRangeChange(e.target.value)}
-            className="w-full p-2.5 bg-[#F4F9F6] border border-[#E5E7EB] rounded-xl text-xs font-bold text-[#1F2937] focus:outline-none focus:border-[#00B074] focus:bg-white cursor-pointer"
+            className="w-full p-2.5 bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl text-xs font-bold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] focus:bg-white cursor-pointer"
           >
             {dateRanges.map((range) => (
               <option key={range} value={range}>
@@ -54,7 +54,7 @@ export default function RevenueFilters({
         {/* Export Button */}
         <button
           onClick={onExport}
-          className="py-2.5 px-4 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] text-xs font-bold text-slate-600 hover:text-[#00B074] flex items-center justify-center space-x-2 transition-all cursor-pointer shrink-0"
+          className="py-2.5 px-4 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] text-xs font-bold text-slate-600 hover:text-[#F59E0B] flex items-center justify-center space-x-2 transition-all cursor-pointer shrink-0"
         >
           <Download size={14} />
           <span>Export Revenue Report</span>
@@ -73,8 +73,8 @@ export default function RevenueFilters({
                 onClick={() => onSourceChange(source)}
                 className={`px-4 py-2 rounded-lg font-bold text-xs transition-all shrink-0 cursor-pointer ${
                   isActive 
-                    ? 'bg-[#00B074] text-white shadow-sm shadow-[#00B074]/10' 
-                    : 'bg-[#F4F9F6] border border-[#E5E7EB] text-slate-500 hover:text-[#00B074] hover:bg-[#00B074]/5'
+                    ? 'bg-[#F59E0B] text-white shadow-sm shadow-[#F59E0B]/10' 
+                    : 'bg-[#FFF8E7] border border-[#E5E7EB] text-slate-500 hover:text-[#F59E0B] hover:bg-[#F59E0B]/5'
                 }`}
               >
                 {source}

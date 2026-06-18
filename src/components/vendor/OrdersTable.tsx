@@ -64,8 +64,8 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
           </thead>
           <tbody className="divide-y divide-[#E5E7EB]">
             {orders.map((order) => (
-              <tr key={order.id} className="hover:bg-[#F4F9F6]/30 transition-colors">
-                <td className="py-4.5 px-6 font-bold text-[#00B074]">
+              <tr key={order.id} className="hover:bg-[#FFF8E7]/30 transition-colors">
+                <td className="py-4.5 px-6 font-bold text-[#F59E0B]">
                   {order.id}
                 </td>
                 <td className="py-4.5 px-6 font-bold text-[#1F2937]">

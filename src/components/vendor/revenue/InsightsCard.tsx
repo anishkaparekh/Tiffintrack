@@ -33,7 +33,7 @@ export default function InsightsCard({ insights }: InsightsCardProps) {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E5E7EB] space-y-4">
       <div className="flex items-center space-x-2">
-        <div className="p-1.5 rounded-lg bg-[#FFD200]/10 text-amber-500">
+        <div className="p-1.5 rounded-lg bg-[#C2410C]/10 text-amber-500">
           <Lightbulb size={18} />
         </div>
         <div>

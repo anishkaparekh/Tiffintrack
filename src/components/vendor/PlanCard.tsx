@@ -19,7 +19,7 @@ export default function PlanCard({ plan, onEditClick }: PlanCardProps) {
         );
       case 'Flexible':
         return (
-          <span className="bg-[#00B074]/10 text-[#00B074] border border-[#00B074]/20 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider">
+          <span className="bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider">
             Flexible
           </span>
         );
@@ -50,8 +50,8 @@ export default function PlanCard({ plan, onEditClick }: PlanCardProps) {
         </div>
 
         {/* Stats segment */}
-        <div className="flex items-center space-x-3 p-3 bg-[#F4F9F6] rounded-xl border border-[#E5E7EB]/50">
-          <div className="w-8 h-8 rounded-lg bg-white border border-[#E5E7EB]/40 flex items-center justify-center text-[#00B074] shrink-0 shadow-sm">
+        <div className="flex items-center space-x-3 p-3 bg-[#FFF8E7] rounded-xl border border-[#E5E7EB]/50">
+          <div className="w-8 h-8 rounded-lg bg-white border border-[#E5E7EB]/40 flex items-center justify-center text-[#F59E0B] shrink-0 shadow-sm">
             <Users size={14} />
           </div>
           <div>
@@ -64,12 +64,12 @@ export default function PlanCard({ plan, onEditClick }: PlanCardProps) {
       {/* Footer controls */}
       <div className="px-6 py-4 border-t border-[#E5E7EB] bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center space-x-1 text-[10px] text-slate-400 font-bold uppercase">
-          <Shield size={12} className="text-[#00B074]" />
+          <Shield size={12} className="text-[#F59E0B]" />
           <span>FSSAI Vetted</span>
         </div>
         <button
           onClick={() => onEditClick?.(plan)}
-          className="px-3.5 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#F4F9F6] hover:text-[#00B074] text-xs font-bold text-[#1F2937] transition-all flex items-center space-x-1 cursor-pointer"
+          className="px-3.5 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-[#FFF8E7] hover:text-[#F59E0B] text-xs font-bold text-[#1F2937] transition-all flex items-center space-x-1 cursor-pointer"
         >
           <Settings size={12} />
           <span>Configure</span>

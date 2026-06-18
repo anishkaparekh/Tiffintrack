@@ -295,8 +295,8 @@ export default function VendorNotifications() {
       {/* 1. Operational Sandbox Toggles */}
       <div className="mb-6 p-4 bg-slate-900 rounded-2xl flex flex-col lg:flex-row items-center justify-between gap-4 shadow-md text-white border border-slate-800">
         <div className="space-y-1">
-          <p className="text-[#FFD200] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
-            <Sparkles size={12} className="text-[#FFD200]" />
+          <p className="text-[#C2410C] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1.5">
+            <Sparkles size={12} className="text-[#C2410C]" />
             <span>Interactive Sandbox Control</span>
           </p>
           <h3 className="font-bold text-xs text-slate-100">Review page states instantly</h3>
@@ -312,7 +312,7 @@ export default function VendorNotifications() {
             <button
               onClick={() => setIsLoading(!isLoading)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isLoading ? 'bg-[#00B074]' : 'bg-slate-600'
+                isLoading ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -329,7 +329,7 @@ export default function VendorNotifications() {
             <button
               onClick={() => setIsEmpty(!isEmpty)}
               className={`w-10 h-5 rounded-full transition-all relative ${
-                isEmpty ? 'bg-[#00B074]' : 'bg-slate-600'
+                isEmpty ? 'bg-[#F59E0B]' : 'bg-slate-600'
               }`}
             >
               <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.75 transition-all ${
@@ -343,7 +343,7 @@ export default function VendorNotifications() {
           {/* Simulator Trigger */}
           <button
             onClick={handleSimulateNewOrder}
-            className="px-3.5 py-1.5 bg-[#00B074] hover:bg-[#00B074]/90 text-white rounded-lg text-[10px] font-extrabold shadow-sm transition-all"
+            className="px-3.5 py-1.5 bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-white rounded-lg text-[10px] font-extrabold shadow-sm transition-all"
           >
             Simulate Alert
           </button>
@@ -454,7 +454,7 @@ export default function VendorNotifications() {
                     Notification Details
                   </span>
                   {activeNotification.pinned && (
-                    <span className="text-[10px] font-black uppercase tracking-wider text-[#F59E0B] bg-[#FFD200]/10 px-2 py-1 rounded-md flex items-center space-x-1">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#F59E0B] bg-[#C2410C]/10 px-2 py-1 rounded-md flex items-center space-x-1">
                       <span>Pinned</span>
                     </span>
                   )}
@@ -500,7 +500,7 @@ export default function VendorNotifications() {
                 </div>
 
                 {/* Main Message Block */}
-                <div className="bg-[#F4F9F6] p-5 rounded-2xl border border-[#00B074]/10">
+                <div className="bg-[#FFF8E7] p-5 rounded-2xl border border-[#F59E0B]/10">
                   <p className="text-xs md:text-sm font-semibold text-[#1F2937] leading-relaxed">
                     {activeNotification.message}
                   </p>
@@ -508,7 +508,7 @@ export default function VendorNotifications() {
 
                 {/* Quick Tips or Reminders box depending on category */}
                 <div className="p-4 rounded-xl border border-slate-100 bg-slate-50 flex items-start space-x-3">
-                  <ShieldAlert className="text-[#00B074] shrink-0 mt-0.5" size={16} />
+                  <ShieldAlert className="text-[#F59E0B] shrink-0 mt-0.5" size={16} />
                   <div className="space-y-0.5">
                     <h4 className="text-[11px] font-extrabold text-[#1F2937] uppercase">Operational Recommendation</h4>
                     <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
@@ -578,7 +578,7 @@ export default function VendorNotifications() {
         <div className="fixed bottom-6 right-6 z-50 animate-slideUp bg-[#1F2937] text-white px-5 py-3.5 rounded-2xl border border-slate-700 shadow-2xl flex items-center space-x-3 max-w-sm">
           <div className={`p-1.5 rounded-lg ${
             toast.type === 'success' 
-              ? 'bg-[#00B074]/20 text-[#00B074]' 
+              ? 'bg-[#F59E0B]/20 text-[#F59E0B]' 
               : toast.type === 'info' 
               ? 'bg-sky-500/20 text-sky-400' 
               : 'bg-red-500/20 text-red-400'
