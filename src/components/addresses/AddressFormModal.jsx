@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
+import LocationMap from '../common/LocationMap';
 
 export default function AddressFormModal({
   isOpen,
@@ -17,6 +18,8 @@ export default function AddressFormModal({
   const [state, setState] = useState('');
   const [pincode, setPincode] = useState('');
   const [isDefault, setIsDefault] = useState(false);
+  const [latitude, setLatitude] = useState(undefined);
+  const [longitude, setLongitude] = useState(undefined);
 
   useEffect(() => {
     if (initialData) {
@@ -29,6 +32,8 @@ export default function AddressFormModal({
       setState(initialData.state || '');
       setPincode(initialData.pincode || '');
       setIsDefault(initialData.isDefault || false);
+      setLatitude(initialData.latitude);
+      setLongitude(initialData.longitude);
     } else {
       setFullName('');
       setPhoneNumber('');
@@ -39,8 +44,28 @@ export default function AddressFormModal({
       setState('Gujarat');
       setPincode('');
       setIsDefault(false);
+      setLatitude(undefined);
+      setLongitude(undefined);
     }
   }, [initialData, isOpen]);
+
+  // Detect user geolocation
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        alert('Unable to retrieve location. Please select on the map or enter details.');
+      }
+    );
+  };
 
   if (!isOpen) return null;
 
@@ -71,6 +96,8 @@ export default function AddressFormModal({
       state,
       pincode,
       isDefault,
+      latitude,
+      longitude,
     });
   };
 
@@ -207,6 +234,39 @@ export default function AddressFormModal({
                 className="w-full bg-[#FFF8E7] border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#1F2937] focus:outline-none focus:border-[#F59E0B] transition-all"
               />
             </div>
+          </div>
+
+          {/* Map Selection */}
+          <div className="space-y-1">
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+              Select Location on Map
+            </label>
+            <div className="rounded-2xl overflow-hidden border border-slate-200">
+              <LocationMap
+                latitude={latitude}
+                longitude={longitude}
+                title={fullName || 'Selected Location'}
+                onMapClick={(lat, lng) => {
+                  setLatitude(lat);
+                  setLongitude(lng);
+                }}
+              />
+            </div>
+            <div className="flex justify-between items-center text-[10px] font-semibold text-slate-500">
+              <span>Click map to place a pin or detect geolocation.</span>
+              <button
+                type="button"
+                onClick={getLocation}
+                className="text-[#F59E0B] hover:text-[#C2410C] font-extrabold cursor-pointer"
+              >
+                📍 Detect Location
+              </button>
+            </div>
+            {latitude && longitude && (
+              <div className="text-[10px] text-emerald-600 font-extrabold">
+                Selected Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+              </div>
+            )}
           </div>
 
           {/* isDefault Checkbox */}

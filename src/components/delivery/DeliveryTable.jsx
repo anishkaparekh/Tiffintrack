@@ -70,10 +70,7 @@ export default function DeliveryTable({ deliveries, onNavigate, onViewDetails, o
 
                     {/* Navigate */}
                     <button
-                      onClick={() => {
-                        const destination = encodeURIComponent(delivery.address);
-                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank');
-                      }}
+                      onClick={() => onNavigate(delivery)}
                       className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg border border-slate-200 cursor-pointer transition-colors"
                       title="Navigate using Maps"
                     >

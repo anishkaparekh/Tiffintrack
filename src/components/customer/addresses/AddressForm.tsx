@@ -43,7 +43,9 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
         pincode: address.pincode || '',
         landmark: address.landmark || '',
         deliveryInstructions: address.deliveryInstructions || '',
-        isDefault: address.isDefault || false
+        isDefault: address.isDefault || false,
+        latitude: address.latitude,
+        longitude: address.longitude,
       });
     }
   }, [address]);
@@ -346,6 +348,38 @@ export default function AddressForm({ address, onSave, onCancel }: AddressFormPr
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#F59E0B] rounded-xl text-xs font-semibold placeholder-slate-400 text-[#1F2937]"
             />
           </div>
+        </div>
+
+        {/* Map Selection */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+            Select Location on Map *
+          </label>
+          <div className="rounded-2xl overflow-hidden border border-slate-200">
+            <LocationMap
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              title={formData.fullName || 'Selected Location'}
+              onMapClick={(lat: number, lng: number) => {
+                setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+              }}
+            />
+          </div>
+          <div className="flex justify-between items-center text-[10px] font-semibold text-slate-500">
+            <span>Click on the map to place a pin or detect location manually.</span>
+            <button
+              type="button"
+              onClick={getLocation}
+              className="text-[#F59E0B] hover:text-[#C2410C] font-extrabold cursor-pointer"
+            >
+              📍 Detect My Geolocation
+            </button>
+          </div>
+          {formData.latitude && formData.longitude && (
+            <div className="text-[10px] text-emerald-600 font-extrabold">
+              Selected: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+            </div>
+          )}
         </div>
 
         {/* Set as Default Switch */}

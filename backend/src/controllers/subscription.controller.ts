@@ -15,7 +15,7 @@ import { generateDeliveriesFromSubscription } from '../services/delivery.service
  * POST /api/v1/subscriptions
  */
 export const createSubscription = asyncHandler(async (req: Request, res: Response) => {
-  const { customerId, vendorId, planId, startDate, deliveryAddress, preferences, razorpayPaymentId } = req.body;
+  const { customerId, vendorId, planId, startDate, deliveryAddress, preferences, razorpayPaymentId, latitude, longitude } = req.body;
 
   // Validate fields
   if (!customerId || !vendorId || !planId || !startDate || !deliveryAddress) {
@@ -59,6 +59,8 @@ export const createSubscription = asyncHandler(async (req: Request, res: Respons
     mealsRemaining: firstMeal ? mealsRemaining - 1 : mealsRemaining,
     deliveryAddress,
     preferences: preferences || [],
+    latitude,
+    longitude,
   });
 
   // Generate deliveries for the active subscription
@@ -219,7 +221,7 @@ export const getSubscriptionById = asyncHandler(async (req: Request, res: Respon
  */
 export const updateSubscription = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { status, mealsRemaining, deliveryAddress, preferences } = req.body;
+  const { status, mealsRemaining, deliveryAddress, preferences, latitude, longitude } = req.body;
 
   const subscription = await Subscription.findById(id);
   if (!subscription) {
@@ -311,6 +313,14 @@ export const updateSubscription = asyncHandler(async (req: Request, res: Respons
 
   if (preferences) {
     subscription.preferences = preferences;
+  }
+
+  if (latitude !== undefined) {
+    (subscription as any).latitude = latitude;
+  }
+
+  if (longitude !== undefined) {
+    (subscription as any).longitude = longitude;
   }
 
   await subscription.save();

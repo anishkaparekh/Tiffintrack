@@ -165,6 +165,7 @@ export const getOrdersByCustomer = asyncHandler(async (req: Request, res: Respon
     .populate('vendorId', 'name businessName phone email')
     .populate('mealId')
     .populate('deliveryPartnerId', 'name email phone vehicleType vehicleNumber')
+    .populate('subscriptionId')
     .sort({ createdAt: -1 });
 
   res.status(200).json({

@@ -130,7 +130,9 @@ export default function CustomerAddresses() {
       city: addressData.city,
       state: addressData.state,
       pincode: addressData.pincode,
-      isDefault: addressData.isDefault
+      isDefault: addressData.isDefault,
+      latitude: addressData.latitude,
+      longitude: addressData.longitude,
     };
 
     try {

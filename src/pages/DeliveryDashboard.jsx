@@ -86,7 +86,9 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
               customerName: customer.name || "Customer",
               customerPhone: customer.phone || "+91 98765 00111",
               mealType: meal.mealName || "Standard Tiffin Meal",
-              address: order.deliveryAddress || "Anand, Gujarat",
+              address: subscription.deliveryAddress || order.deliveryAddress || "Anand, Gujarat",
+              latitude: subscription.latitude,
+              longitude: subscription.longitude,
               landmark: order.landmark || "Near City Center",
               deliveryInstructions: order.deliveryInstructions || "Deliver carefully.",
               timeSlot: subscription.deliveryTime || "12:30 PM - 1:00 PM",
@@ -276,9 +278,15 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
     }
   };
 
-  // Google Maps Placeholder Navigation Trigger
+  // Google Maps Navigation Trigger
   const handleNavigate = (delivery) => {
-    setActiveNavigation(delivery);
+    if (!delivery) return;
+    if (delivery.latitude && delivery.longitude) {
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${delivery.latitude},${delivery.longitude}`, '_blank');
+    } else {
+      const destination = encodeURIComponent(delivery.address || '');
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank');
+    }
   };
 
   // Notification Mark Read Handler

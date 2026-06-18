@@ -405,7 +405,9 @@ export default function Checkout() {
               startDate: new Date(),
               deliveryAddress: deliveryAddressStr,
               preferences: mealPrefs,
-              razorpayPaymentId: response.razorpay_payment_id
+              razorpayPaymentId: response.razorpay_payment_id,
+              latitude: selectedAddressObj?.latitude,
+              longitude: selectedAddressObj?.longitude,
             };
 
             const subResponse = await fetch('/api/v1/subscriptions', {

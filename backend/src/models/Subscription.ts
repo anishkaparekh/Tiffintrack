@@ -13,6 +13,8 @@ export interface ISubscription extends Document {
   deliveryAddress: string;
   preferences: string[];
   deliveryTime?: string;
+  latitude?: number;
+  longitude?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,6 +68,12 @@ const SubscriptionSchema = new Schema<ISubscription>(
       type: String,
       required: [true, 'Delivery address is required'],
       trim: true,
+    },
+    latitude: {
+      type: Number,
+    },
+    longitude: {
+      type: Number,
     },
     preferences: {
       type: [String],

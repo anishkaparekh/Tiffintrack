@@ -15,6 +15,7 @@ import {
 // Import Sidebar component
 import Sidebar from '../components/Sidebar';
 import DeliveryTimeline from '../components/delivery/workflow/DeliveryTimeline';
+import LocationMap from '../components/common/LocationMap';
 
 // REUSABLE SKELETON LOADERS FOR TRACKING
 const SkeletonTrackingCard = () => (
@@ -470,7 +471,17 @@ export default function TrackOrders() {
                     <span className="text-[10px] text-slate-400 font-bold">Route: Kitchen → Home</span>
                   </div>
 
-                  <MapPlaceholder currentStep={timelineStep} partnerName={partnerName} />
+                  {order?.subscriptionId?.latitude && order?.subscriptionId?.longitude ? (
+                    <div className="rounded-2xl overflow-hidden border border-slate-200">
+                      <LocationMap
+                        latitude={order.subscriptionId.latitude}
+                        longitude={order.subscriptionId.longitude}
+                        title="Your Delivery Target Location"
+                      />
+                    </div>
+                  ) : (
+                    <MapPlaceholder currentStep={timelineStep} partnerName={partnerName} />
+                  )}
                 </div>
 
                 {/* 2. Stepper Timeline */}
