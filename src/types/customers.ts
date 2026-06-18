@@ -24,6 +24,8 @@ export interface CustomerItem {
   activityFeed: ActivityLog[];
   isNew?: boolean; // Joined within last 30 days
   isLoyal?: boolean; // Subscribed for 6+ months
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface CustomerStats {

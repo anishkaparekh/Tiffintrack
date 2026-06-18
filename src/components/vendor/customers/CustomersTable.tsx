@@ -67,6 +67,7 @@ export default function CustomersTable({
               <tr className="bg-slate-50/75 border-b border-[#E5E7EB] text-slate-400 font-black uppercase tracking-wider">
                 <th className="py-4 px-5 font-black">Customer</th>
                 <th className="py-4 px-5 font-black">Current Plan</th>
+                <th className="py-4 px-5 font-black">Delivery Address</th>
                 <th className="py-4 px-5 font-black">Join Date</th>
                 <th className="py-4 px-5 font-black">Status</th>
                 <th className="py-4 px-5 font-black">Lifetime Value</th>
@@ -87,6 +88,16 @@ export default function CustomersTable({
                     <div>
                       <p className="font-extrabold text-slate-800">{c.currentPlan}</p>
                       <p className="text-[10px] text-slate-400 font-semibold">{c.mealsPerWeek}</p>
+                    </div>
+                  </td>
+                  <td className="py-4 px-5 max-w-[200px] truncate" title={c.deliveryAddress}>
+                    <div>
+                      <p className="font-semibold text-slate-600 truncate">{c.deliveryAddress}</p>
+                      {c.latitude !== undefined && c.longitude !== undefined && (
+                        <p className="text-[10px] text-blue-500 font-black mt-0.5">
+                          📍 {c.latitude.toFixed(6)}, {c.longitude.toFixed(6)}
+                        </p>
+                      )}
                     </div>
                   </td>
                   <td className="py-4 px-5 text-slate-400 font-semibold">{c.joinDate}</td>
@@ -199,6 +210,15 @@ export default function CustomersTable({
                 <span className="text-slate-400 block uppercase tracking-wide">Lifetime Value</span>
                 <span className="text-[#F59E0B] font-black">₹{c.lifetimeValue.toLocaleString()}</span>
               </div>
+            </div>
+
+            {/* Address & coordinates */}
+            <div className="text-[10px] font-semibold text-slate-500 border-t border-slate-100 pt-3">
+              <span className="text-slate-400 block uppercase tracking-wide">Delivery Address</span>
+              <p className="text-slate-700 font-bold mt-0.5">{c.deliveryAddress}</p>
+              {c.latitude !== undefined && c.longitude !== undefined && (
+                <p className="text-blue-500 font-black mt-1">📍 GPS: {c.latitude.toFixed(6)}, {c.longitude.toFixed(6)}</p>
+              )}
             </div>
 
             {/* Dates info */}

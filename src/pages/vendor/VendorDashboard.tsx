@@ -561,10 +561,13 @@ export default function VendorDashboard() {
       ? dbSubscriptions.map((sub: any) => ({
           id: sub._id,
           name: sub.customerId?.name || 'Customer',
+          phone: sub.customerId?.phone || 'N/A',
           email: sub.customerId?.email || 'N/A',
           activePlan: sub.planName || 'Meal Plan',
           address: sub.deliveryAddress || 'No Address',
-          status: sub.status || 'Active'
+          status: sub.status || 'Active',
+          latitude: sub.latitude,
+          longitude: sub.longitude
         }))
       : mockCustomers;
 
@@ -591,10 +594,24 @@ export default function VendorDashboard() {
             <tbody className="divide-y divide-[#E5E7EB]">
               {customersToRender.map((cust) => (
                 <tr key={cust.id} className="hover:bg-[#FFF8E7]/30 transition-colors">
-                  <td className="py-4 px-6 font-bold text-[#1F2937]">{cust.name}</td>
+                  <td className="py-4 px-6">
+                    <div>
+                      <p className="font-bold text-[#1F2937]">{cust.name}</p>
+                      <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{cust.phone}</p>
+                    </div>
+                  </td>
                   <td className="py-4 px-6 text-slate-500 font-semibold">{cust.email}</td>
                   <td className="py-4 px-6 text-[#F59E0B] font-extrabold">{cust.activePlan}</td>
-                  <td className="py-4 px-6 text-slate-500 font-semibold max-w-[200px] truncate">{cust.address}</td>
+                  <td className="py-4 px-6 max-w-[250px] truncate" title={cust.address}>
+                    <div>
+                      <p className="text-slate-500 font-semibold truncate">{cust.address}</p>
+                      {cust.latitude !== undefined && cust.longitude !== undefined && (
+                        <p className="text-[10px] text-blue-500 font-black mt-0.5">
+                          📍 {cust.latitude.toFixed(6)}, {cust.longitude.toFixed(6)}
+                        </p>
+                      )}
+                    </div>
+                  </td>
                   <td className="py-4 px-6">
                     <span className={`border px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                       cust.status === 'Active' 

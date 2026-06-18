@@ -21,6 +21,8 @@ export interface DeliveryAssignment {
   status: 'Pending Assignment' | 'Assigned' | 'Preparing' | 'Out for Delivery' | 'Delivered' | 'Failed';
   assignedPartnerId: string | null;
   assignedPartnerName: string | null;
+  latitude?: number;
+  longitude?: number;
 }
 
 export const RAJKOT_ZONES = [

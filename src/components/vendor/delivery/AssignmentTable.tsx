@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserCheck, UserMinus, Eye, RefreshCw } from 'lucide-react';
+import { UserCheck, UserMinus, Eye, RefreshCw, Navigation } from 'lucide-react';
 import { DeliveryAssignment } from '../../../data/vendorDeliveryMockData';
 
 interface AssignmentTableProps {
@@ -15,6 +15,15 @@ export default function AssignmentTable({
   onRemove, 
   onViewDetails 
 }: AssignmentTableProps) {
+  
+  const handleNavigate = (delivery: DeliveryAssignment) => {
+    if (delivery.latitude && delivery.longitude) {
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${delivery.latitude},${delivery.longitude}`, '_blank');
+    } else {
+      const destination = encodeURIComponent(delivery.deliveryAddress || '');
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank');
+    }
+  };
   
   const getStatusBadge = (status: DeliveryAssignment['status']) => {
     switch (status) {
@@ -80,6 +89,13 @@ export default function AssignmentTable({
                 </td>
                 <td className="py-4 px-6 text-right">
                   <div className="flex items-center justify-end space-x-2">
+                    <button
+                      onClick={() => handleNavigate(delivery)}
+                      className="p-1.5 hover:bg-blue-50 rounded-lg text-blue-500 hover:text-blue-700 cursor-pointer"
+                      title="Navigate on Google Maps"
+                    >
+                      <Navigation size={14} />
+                    </button>
                     <button
                       onClick={() => onViewDetails(delivery)}
                       className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 cursor-pointer"

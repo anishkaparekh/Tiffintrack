@@ -81,7 +81,9 @@ export default function VendorCustomers() {
               activityFeed: [
                 { id: `act-1-${sub._id}`, text: 'Subscribed to plan', timestamp: 'Initial checkout' }
               ],
-              isNew: true
+              isNew: true,
+              latitude: sub.latitude,
+              longitude: sub.longitude
             };
           });
           setCustomers(mapped);

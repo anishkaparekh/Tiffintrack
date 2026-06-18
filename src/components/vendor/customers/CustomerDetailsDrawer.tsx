@@ -1,5 +1,4 @@
-import React from 'react';
-import { X, User, Phone, Mail, MapPin, Calendar, CreditCard, Heart, ShoppingBag, TrendingUp, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, User, Phone, Mail, MapPin, Compass, Calendar, CreditCard, Heart, ShoppingBag, TrendingUp, Sparkles, CheckCircle2 } from 'lucide-react';
 import { CustomerItem, SubscriptionStatus } from '../../../types/customers';
 
 interface CustomerDetailsDrawerProps {
@@ -110,6 +109,12 @@ export default function CustomerDetailsDrawer({
                 <MapPin size={13} className="text-slate-400 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">{customer.deliveryAddress}</span>
               </div>
+              {customer.latitude !== undefined && customer.longitude !== undefined && (
+                <div className="flex items-center space-x-2.5 text-blue-600 pl-0.5">
+                  <Compass size={13} className="shrink-0 text-blue-500 animate-spin-slow" />
+                  <span className="font-extrabold text-[10px]">GPS: {customer.latitude.toFixed(6)}, {customer.longitude.toFixed(6)}</span>
+                </div>
+              )}
             </div>
           </div>
 

@@ -145,6 +145,9 @@ export const getCustomerSubscriptions = asyncHandler(async (req: Request, res: R
     mealsRemaining: sub.mealsRemaining,
     deliveryAddress: sub.deliveryAddress,
     preferences: sub.preferences,
+    latitude: sub.latitude,
+    longitude: sub.longitude,
+    deliveryTime: sub.deliveryTime,
     createdAt: sub.createdAt,
     updatedAt: sub.updatedAt,
   }));
@@ -182,6 +185,9 @@ export const getVendorSubscriptions = asyncHandler(async (req: Request, res: Res
     mealsRemaining: sub.mealsRemaining,
     deliveryAddress: sub.deliveryAddress,
     preferences: sub.preferences,
+    latitude: sub.latitude,
+    longitude: sub.longitude,
+    deliveryTime: sub.deliveryTime,
     createdAt: sub.createdAt,
     updatedAt: sub.updatedAt,
   }));

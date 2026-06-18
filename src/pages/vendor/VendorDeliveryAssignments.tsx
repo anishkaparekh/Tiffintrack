@@ -83,7 +83,9 @@ export default function VendorDeliveryAssignments() {
               deliveryTime: d.deliveryTime || subscription.deliveryTime || '12:30 PM',
               status: mappedStatus,
               assignedPartnerId: partner._id || null,
-              assignedPartnerName: partner.name || null
+              assignedPartnerName: partner.name || null,
+              latitude: subscription.latitude,
+              longitude: subscription.longitude
             };
           });
           setDeliveries(mapped);
