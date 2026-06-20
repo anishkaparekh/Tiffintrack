@@ -27,7 +27,6 @@ export default function DeliveryPartnerTable({
               <th className="py-4 px-6">Name</th>
               <th className="py-4 px-6">Phone Number</th>
               <th className="py-4 px-6">Vehicle</th>
-              <th className="py-4 px-6">Delivery Zones</th>
               <th className="py-4 px-6">Status</th>
               <th className="py-4 px-6">Today's Deliveries</th>
               <th className="py-4 px-6 text-right">Actions</th>
@@ -45,21 +44,7 @@ export default function DeliveryPartnerTable({
                     <span>{partner.vehicleType}</span>
                   </span>
                 </td>
-                <td className="py-4 px-6 max-w-[200px] truncate" title={partner.deliveryZones.join(', ')}>
-                  <div className="flex flex-wrap gap-1">
-                    {partner.deliveryZones.slice(0, 2).map((zone, idx) => (
-                      <span 
-                        key={idx} 
-                        className="bg-slate-100 border border-slate-200/40 text-slate-600 px-1.5 py-0.5 rounded text-[9px] font-bold"
-                      >
-                        {zone.replace(', Rajkot', '')}
-                      </span>
-                    ))}
-                    {partner.deliveryZones.length > 2 && (
-                      <span className="text-[9px] text-slate-400 font-bold">+{partner.deliveryZones.length - 2} more</span>
-                    )}
-                  </div>
-                </td>
+
                 <td className="py-4 px-6">
                   <button
                     onClick={() => onToggleStatus(partner.id)}

@@ -611,7 +611,10 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
     const matchesSearch = a.name.toLowerCase().includes(searchText.toLowerCase()) || 
                           a.owner.toLowerCase().includes(searchText.toLowerCase()) || 
                           a.location.toLowerCase().includes(searchText.toLowerCase());
-    const matchesStatus = verificationStatusFilter === "All" || a.status === verificationStatusFilter;
+    const matchesStatus = verificationStatusFilter === "All" || 
+                          (verificationStatusFilter === "Pending Review" 
+                            ? (a.status === "Pending Review" || a.status === "Under Review")
+                            : a.status === verificationStatusFilter);
     return matchesSearch && matchesStatus;
   });
 
@@ -804,7 +807,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
               {/* Stats overview rows */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-4">
                 {[
-                  { title: "Pending Approvals", count: applications.length, desc: "Vendors awaiting audit", icon: FileCheck, color: "text-amber-500 bg-amber-50 border-amber-100" },
+                  { title: "Pending Approvals", count: applications.filter(a => a.status === "Pending Review" || a.status === "Under Review").length, desc: "Vendors awaiting audit", icon: FileCheck, color: "text-amber-500 bg-amber-50 border-amber-100" },
                   { title: "Open Complaints", count: complaints.filter(c => c.status === "Open").length, desc: "Awaiting resolution", icon: AlertTriangle, color: "text-red-500 bg-red-50 border-red-100" },
                   { title: "Reported Vendors", count: vendors.filter(v => v.status === "Warned").length, desc: "Warned accounts", icon: ChefHat, color: "text-amber-600 bg-amber-50 border-amber-100" },
                   { title: "Reported Customers", count: customers.filter(c => c.status === "Warned").length, desc: "Warned users", icon: Users, color: "text-slate-600 bg-slate-50 border-slate-100" },
@@ -943,7 +946,14 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
 
               {/* VERIFICATION DASHBOARD STATS CARDS */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card flex items-center justify-between">
+                <button 
+                  onClick={() => setVerificationStatusFilter(verificationStatusFilter === "Pending Review" ? "All" : "Pending Review")}
+                  className={`p-5 rounded-3xl shadow-card flex items-center justify-between transition-all duration-200 cursor-pointer text-left ${
+                    verificationStatusFilter === "Pending Review"
+                      ? "bg-amber-50/70 border-2 border-amber-400 scale-[1.02]"
+                      : "bg-white border border-slate-200/50 hover:border-amber-300 hover:shadow-card-hover"
+                  }`}
+                >
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pending Vendor Requests</span>
                     <span className="text-2xl font-black text-primary-text block mt-1">{applications.filter(a => a.status === "Pending Review" || a.status === "Under Review").length} Requests</span>
@@ -952,8 +962,15 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                   <div className="p-3 bg-amber-50 border border-amber-100 rounded-2xl text-amber-500">
                     <FileCheck size={20} />
                   </div>
-                </div>
-                <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card flex items-center justify-between">
+                </button>
+                <button 
+                  onClick={() => setVerificationStatusFilter(verificationStatusFilter === "Approved" ? "All" : "Approved")}
+                  className={`p-5 rounded-3xl shadow-card flex items-center justify-between transition-all duration-200 cursor-pointer text-left ${
+                    verificationStatusFilter === "Approved"
+                      ? "bg-mint-light/40 border-2 border-mint scale-[1.02]"
+                      : "bg-white border border-slate-200/50 hover:border-mint/50 hover:shadow-card-hover"
+                  }`}
+                >
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Approved Vendors</span>
                     <span className="text-2xl font-black text-primary-text block mt-1">{applications.filter(a => a.status === "Approved").length} Vendors</span>
@@ -962,8 +979,15 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                   <div className="p-3 bg-mint-light border border-mint/20 rounded-2xl text-mint">
                     <CheckCircle size={20} />
                   </div>
-                </div>
-                <div className="bg-white border border-slate-200/50 p-5 rounded-3xl shadow-card flex items-center justify-between">
+                </button>
+                <button 
+                  onClick={() => setVerificationStatusFilter(verificationStatusFilter === "Rejected" ? "All" : "Rejected")}
+                  className={`p-5 rounded-3xl shadow-card flex items-center justify-between transition-all duration-200 cursor-pointer text-left ${
+                    verificationStatusFilter === "Rejected"
+                      ? "bg-red-50/75 border-2 border-red-400 scale-[1.02]"
+                      : "bg-white border border-slate-200/50 hover:border-red-300 hover:shadow-card-hover"
+                  }`}
+                >
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Rejected Applications</span>
                     <span className="text-2xl font-black text-primary-text block mt-1">{applications.filter(a => a.status === "Rejected").length} Vendors</span>
@@ -972,7 +996,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
                   <div className="p-3 bg-red-50 border border-red-100 rounded-2xl text-red-500">
                     <AlertTriangle size={20} />
                   </div>
-                </div>
+                </button>
               </div>
 
               {/* Status and Search filter bar */}

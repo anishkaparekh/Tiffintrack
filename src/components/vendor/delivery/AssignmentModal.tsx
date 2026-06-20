@@ -22,20 +22,10 @@ export default function AssignmentModal({
     return partners.filter(p => p.status === 'Active');
   }, [partners]);
 
-  // Extract zone name from delivery address to recommend matching partners
-  const recommendedPartners = useMemo(() => {
-    if (!delivery) return [];
-    
-    // Find matching zones in deliveryAddress (e.g., Kalawad Road)
-    const addr = delivery.deliveryAddress.toLowerCase();
-    
-    return activePartners.map(partner => {
-      const coversZone = partner.deliveryZones.some(zone => 
-        addr.includes(zone.split(',')[0].toLowerCase().trim())
-      );
-      return { ...partner, coversZone };
-    }).sort((a, b) => (b.coversZone ? 1 : 0) - (a.coversZone ? 1 : 0)); // Put recommended ones first
-  }, [delivery, activePartners]);
+  // List available partners
+  const availablePartners = useMemo(() => {
+    return activePartners;
+  }, [activePartners]);
 
   if (!isOpen || !delivery) return null;
 
@@ -80,27 +70,18 @@ export default function AssignmentModal({
           <div className="space-y-2">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Available Delivery Partners</h4>
             
-            {recommendedPartners.length === 0 ? (
+            {availablePartners.length === 0 ? (
               <p className="text-xs text-slate-400 text-center py-4 font-semibold">No active delivery partners registered.</p>
             ) : (
               <div className="space-y-2.5">
-                {recommendedPartners.map((partner) => (
+                {availablePartners.map((partner) => (
                   <div 
                     key={partner.id} 
-                    className={`p-4 border rounded-xl flex items-center justify-between transition-all hover:bg-slate-50/50 ${
-                      partner.coversZone 
-                        ? 'border-[#F59E0B]/30 bg-[#F59E0B]/5' 
-                        : 'border-slate-200/70'
-                    }`}
+                    className="p-4 border border-slate-200/70 rounded-xl flex items-center justify-between transition-all hover:bg-slate-50/50"
                   >
                     <div className="space-y-1.5 flex-grow pr-4">
                       <div className="flex items-center space-x-2">
                         <span className="font-extrabold text-xs text-[#1F2937]">{partner.name}</span>
-                        {partner.coversZone && (
-                          <span className="bg-[#F59E0B]/15 text-[#F59E0B] px-2 py-0.5 rounded text-[8px] font-extrabold uppercase">
-                            Zone Match
-                          </span>
-                        )}
                       </div>
                       
                       <div className="flex flex-wrap items-center gap-3 text-[10px] text-slate-500 font-semibold">
@@ -117,14 +98,6 @@ export default function AssignmentModal({
                             {partner.todayDeliveriesCount} Assigned
                           </strong>
                         </span>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1 pt-1">
-                        {partner.deliveryZones.map((z, idx) => (
-                          <span key={idx} className="bg-slate-100 text-slate-600 px-1 py-0.5 rounded text-[8px] font-bold">
-                            {z.replace(', Rajkot', '')}
-                          </span>
-                        ))}
                       </div>
                     </div>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Bike, Mail, Phone, Calendar, MapPin, CheckCircle } from 'lucide-react';
+import { X, Bike, Mail, Phone, Calendar, CheckCircle } from 'lucide-react';
 import { DeliveryPartner } from '../../../data/vendorDeliveryMockData';
 
 interface DeliveryPartnerCardProps {
@@ -52,23 +52,6 @@ export default function DeliveryPartnerCard({ partner, onClose }: DeliveryPartne
             <div className="flex items-center space-x-3">
               <Bike size={14} className="text-slate-400" />
               <span>Vehicle: <strong className="text-[#1F2937]">{partner.vehicleType}</strong></span>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <MapPin size={14} className="text-slate-400 mt-0.5" />
-              <div>
-                <span className="block mb-1">Assigned Delivery Zones:</span>
-                <div className="flex flex-wrap gap-1">
-                  {partner.deliveryZones.map((zone, idx) => (
-                    <span 
-                      key={idx} 
-                      className="bg-slate-100 border border-slate-200/40 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold"
-                    >
-                      {zone}
-                    </span>
-                  ))}
-                </div>
-              </div>
             </div>
 
             <div className="flex items-center space-x-3">

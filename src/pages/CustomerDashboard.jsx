@@ -944,7 +944,7 @@ export default function CustomerDashboard() {
               <div>
                 <h3 className="text-base font-bold text-primary-text mb-2">Commonly Searched Locations</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['Anand', 'Vallabh Vidyanagar', 'Nadiad', 'Ahmedabad', 'Vadodara'].map((area) => (
+                  {['Anand', 'Vallabh Vidyanagar', 'Nadiad', 'Ahmedabad', 'Vadodara', 'Rajkot', 'Bhavnagar'].map((area) => (
                     <button
                       key={area}
                       onClick={() => {
@@ -1148,11 +1148,9 @@ export default function CustomerDashboard() {
                           className="w-full px-3 py-2 bg-snow border border-slate-200 rounded-xl text-xs text-primary-text focus:outline-none focus:border-mint font-medium"
                         >
                           <option value="All">All Locations</option>
-                          <option value="Anand">Anand</option>
-                          <option value="Vallabh Vidyanagar">Vidyanagar</option>
-                          <option value="Nadiad">Nadiad</option>
-                          <option value="Ahmedabad">Ahmedabad</option>
-                          <option value="Vadodara">Vadodara</option>
+                          {[...new Set(vendors.map(v => v.area).filter(Boolean))].sort().map((area) => (
+                            <option key={area} value={area}>{area}</option>
+                          ))}
                         </select>
                       </div>
 

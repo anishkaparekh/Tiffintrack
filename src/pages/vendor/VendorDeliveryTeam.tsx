@@ -11,8 +11,7 @@ import NotificationBanner from '../../components/vendor/delivery/NotificationBan
 import { 
   DeliveryPartner, 
   getStoredPartners, 
-  savePartners, 
-  RAJKOT_ZONES 
+  savePartners 
 } from '../../data/vendorDeliveryMockData';
 
 export default function VendorDeliveryTeam() {
@@ -31,7 +30,7 @@ export default function VendorDeliveryTeam() {
   const [vehicleType, setVehicleType] = useState<DeliveryPartner['vehicleType']>('Bike');
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [status, setStatus] = useState<DeliveryPartner['status']>('Active');
-  const [selectedZones, setSelectedZones] = useState<string[]>([]);
+
 
   // Simulation Toggles
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +64,7 @@ export default function VendorDeliveryTeam() {
             email: p.email,
             vehicleType: p.vehicleType || 'Bike',
             vehicleNumber: p.vehicleNumber || '',
-            deliveryZones: p.deliveryZones || [RAJKOT_ZONES[0], RAJKOT_ZONES[1]],
+            deliveryZones: p.deliveryZones || [],
             status: p.status || 'Active',
             todayDeliveriesCount: p.activeDeliveriesCount || 0,
             activeDeliveriesCount: p.activeDeliveriesCount || 0,
@@ -135,7 +134,6 @@ export default function VendorDeliveryTeam() {
     setVehicleType('Bike');
     setVehicleNumber('');
     setStatus('Active');
-    setSelectedZones([]);
     setIsFormModalOpen(true);
   };
 
@@ -149,18 +147,10 @@ export default function VendorDeliveryTeam() {
     setVehicleType(partner.vehicleType);
     setVehicleNumber((partner as any).vehicleNumber || '');
     setStatus(partner.status);
-    setSelectedZones(partner.deliveryZones);
     setIsFormModalOpen(true);
   };
 
-  // Toggle zone checklist selection
-  const handleZoneToggle = (zone: string) => {
-    setSelectedZones(prev => 
-      prev.includes(zone) 
-        ? prev.filter(z => z !== zone) 
-        : [...prev, zone]
-    );
-  };
+
 
   // Save Partner Form Submit
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -475,32 +465,7 @@ export default function VendorDeliveryTeam() {
                 )}
               </div>
 
-              {/* Delivery Zone checkboxes */}
-              <div className="space-y-2">
-                <label className="uppercase tracking-wider block">Assigned Delivery Zones * (Select at least one)</label>
-                <div className="grid grid-cols-2 gap-2 bg-[#FFF8E7] p-4.5 rounded-xl border border-[#E5E7EB] max-h-[140px] overflow-y-auto">
-                  {RAJKOT_ZONES.map((zone) => {
-                    const isChecked = selectedZones.includes(zone);
-                    return (
-                      <div key={zone} className="flex items-center space-x-2">
-                        <input
-                          id={`zone-${zone}`}
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => handleZoneToggle(zone)}
-                          className="h-3.5 w-3.5 text-[#F59E0B] border-slate-300 rounded focus:ring-[#F59E0B] cursor-pointer"
-                        />
-                        <label 
-                          htmlFor={`zone-${zone}`}
-                          className="text-[10px] font-semibold text-[#1F2937] cursor-pointer select-none"
-                        >
-                          {zone.replace(', Rajkot', '')}
-                        </label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+
 
               <div className="flex space-x-3 pt-3">
                 <button

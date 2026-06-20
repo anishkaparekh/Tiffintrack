@@ -107,7 +107,7 @@ export default function VendorDeliveryAssignments() {
             phone: p.phone,
             email: p.email,
             vehicleType: p.vehicleType || 'Bike',
-            deliveryZones: p.deliveryZones || [RAJKOT_ZONES[0], RAJKOT_ZONES[1]],
+            deliveryZones: p.deliveryZones || [],
             status: p.status || 'Active',
             todayDeliveriesCount: p.activeDeliveriesCount || 0
           }));
