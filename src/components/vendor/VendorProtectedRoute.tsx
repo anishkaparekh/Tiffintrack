@@ -25,9 +25,6 @@ const getPayload = (token: string) => {
 };
 
 export default function VendorProtectedRoute({ children }: VendorProtectedRouteProps) {
-  // Temporarily bypass authentication check for vendor role for local testing
-  return <>{children}</>;
-
   const authenticated = isVendorAuthenticated();
   const token = localStorage.getItem('token');
   

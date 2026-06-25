@@ -19,6 +19,8 @@ coverage/
 **/build
 **/coverage
 Tiffintrack/
+Tiffintrack-old/
+Tiffintrack_backup/
 
 # Editor directories and files
 .vscode/*
