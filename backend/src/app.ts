@@ -25,6 +25,7 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+app.set('trust proxy', 1);
 
 // Development/Production HTTP logging
 if (process.env.NODE_ENV === 'development') {
