@@ -331,15 +331,17 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors/${appId}/verify`, {, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: backendStatus })
-      });
-      
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/vendors/${appId}/verify`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: backendStatus })
+        }
+      );
       const resData = await response.json();
       if (!response.ok || !resData.success) {
         showToast(resData.message || 'Failed to verify vendor.', 'error');
