@@ -425,7 +425,7 @@ export default function VendorDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Revenue Overview */}
           <div className="lg:col-span-2">
-            <RevenueCard data={revenueData || undefined} />
+            {revenueData ? <RevenueCard data={revenueData} /> : <SkeletonLoader type="chart" />}
           </div>
 
           {/* Quick Actions & Activity Feed */}
@@ -640,7 +640,7 @@ export default function VendorDashboard() {
 
     return (
       <div className="space-y-6">
-        <RevenueCard data={revenueData || undefined} />
+        {revenueData ? <RevenueCard data={revenueData} /> : <SkeletonLoader type="chart" />}
         
         {/* Financial metrics list */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
