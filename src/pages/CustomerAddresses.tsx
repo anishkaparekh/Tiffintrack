@@ -47,7 +47,7 @@ export default function CustomerAddresses() {
         return;
       }
       setIsLoading(true);
-      const response = await fetch(`/api/v1/addresses/customer/${customerId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/customer/${customerId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -139,7 +139,7 @@ export default function CustomerAddresses() {
       let response;
       if (addressData.id) {
         // Edit mode (PUT)
-        response = await fetch(`/api/v1/addresses/${addressData.id}`, {
+        response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/${addressData.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ export default function CustomerAddresses() {
         });
       } else {
         // Create mode (POST)
-        response = await fetch('/api/v1/addresses', {
+        response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -193,7 +193,7 @@ export default function CustomerAddresses() {
       if (!token) return;
 
       try {
-        const response = await fetch(`/api/v1/addresses/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -222,7 +222,7 @@ export default function CustomerAddresses() {
     if (!token) return;
 
     try {
-      const response = await fetch(`/api/v1/addresses/${id}/default`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/${id}/default`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`

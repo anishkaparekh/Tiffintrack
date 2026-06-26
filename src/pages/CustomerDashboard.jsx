@@ -106,7 +106,7 @@ export default function CustomerDashboard() {
   const fetchApprovedVendors = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/v1/vendors');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors`);
       if (response.ok) {
         const resData = await response.json();
         if (resData.success && Array.isArray(resData.data)) {
@@ -163,7 +163,7 @@ export default function CustomerDashboard() {
       return;
     }
     try {
-      const response = await fetch(`/api/v1/subscriptions/customer/${customerId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/customer/${customerId}`);
       if (response.ok) {
         const resData = await response.json();
         if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
@@ -192,7 +192,7 @@ export default function CustomerDashboard() {
     if (!token || !cId) return;
     try {
       setPaymentsLoading(true);
-      const response = await fetch(`/api/v1/payments/customer/${cId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/customer/${cId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -248,7 +248,7 @@ export default function CustomerDashboard() {
   const fetchCustomerLatestOrder = async (customerId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/orders/customer/${customerId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/orders/customer/${customerId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -399,7 +399,7 @@ export default function CustomerDashboard() {
     };
 
     try {
-      const response = await fetch('/api/v1/subscriptions', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -437,7 +437,7 @@ export default function CustomerDashboard() {
     const newStatus = isPaused ? 'Active' : 'Paused';
     
     try {
-      const response = await fetch(`/api/v1/subscriptions/${subscription._id || subscription.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/${subscription._id || subscription.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -468,7 +468,7 @@ export default function CustomerDashboard() {
     if (!subscription) return;
     const subId = subscription._id || subscription.id;
     try {
-      const response = await fetch(`/api/v1/subscriptions/${subId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/${subId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

@@ -51,7 +51,7 @@ export default function VendorDeliveryAssignments() {
     try {
       const token = localStorage.getItem('token');
       // 1. Fetch Today's Deliveries
-      const dResponse = await fetch('/api/v1/deliveries/vendor/today', {
+      const dResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/vendor/today', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -93,7 +93,7 @@ export default function VendorDeliveryAssignments() {
       }
       
       // 2. Fetch Active Partners
-      const pResponse = await fetch('/api/v1/deliveries/vendor/partners', {
+      const pResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/vendor/partners', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -116,7 +116,7 @@ export default function VendorDeliveryAssignments() {
       }
 
       // 3. Fetch Notifications & Activity Logs
-      const notifResponse = await fetch('/api/v1/notifications', {
+      const notifResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -186,7 +186,7 @@ export default function VendorDeliveryAssignments() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/deliveries/${activeDelivery.id}/assign`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/${activeDelivery.id}/assign`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ export default function VendorDeliveryAssignments() {
   const handleRemoveAssignment = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/deliveries/${id}/assign`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/${id}/assign`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

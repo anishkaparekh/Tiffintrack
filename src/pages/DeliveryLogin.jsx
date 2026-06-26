@@ -76,7 +76,7 @@ export default function DeliveryLogin() {
     setMessage(null);
 
     try {
-      const response = await fetch('/api/v1/auth/delivery/login', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/delivery/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

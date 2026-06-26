@@ -20,7 +20,7 @@ export default function VendorReviews() {
     setIsLoading(true);
     try {
       // 1. Fetch Stats
-      const statsRes = await fetch(`/api/v1/reviews/vendor/${vId}/stats`);
+      const statsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/vendor/${vId}/stats`);
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         if (statsData.success && statsData.data) {
@@ -29,7 +29,7 @@ export default function VendorReviews() {
       }
 
       // 2. Fetch Reviews
-      const reviewsRes = await fetch(`/api/v1/reviews/vendor/${vId}`);
+      const reviewsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/vendor/${vId}`);
       if (reviewsRes.ok) {
         const reviewsData = await reviewsRes.json();
         if (reviewsData.success && Array.isArray(reviewsData.data)) {

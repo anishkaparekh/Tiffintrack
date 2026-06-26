@@ -103,7 +103,7 @@ export default function Checkout() {
     const fetchChefProfile = async () => {
       if (typeof chefId === 'string' && chefId.length === 24) {
         try {
-          const response = await fetch(`/api/v1/vendors/${chefId}`);
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors/${chefId}`);
           if (response.ok) {
             const resData = await response.json();
             if (resData.success && resData.data) {
@@ -150,7 +150,7 @@ export default function Checkout() {
         return;
       }
       setAddressesLoading(true);
-      const response = await fetch(`/api/v1/addresses/customer/${customerId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/customer/${customerId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -245,7 +245,7 @@ export default function Checkout() {
         if (userStr) {
           const u = JSON.parse(userStr);
           const customerId = u._id || u.id;
-          const fetchResponse = await fetch(`/api/v1/addresses/customer/${customerId}`, {
+          const fetchResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/customer/${customerId}`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -377,7 +377,7 @@ export default function Checkout() {
           try {
             setIsSubmitting(true);
             // 3. Verify signature on backend
-            const verifyResponse = await fetch('/api/v1/payments/verify', {
+            const verifyResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/verify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -410,7 +410,7 @@ export default function Checkout() {
               longitude: selectedAddressObj?.longitude,
             };
 
-            const subResponse = await fetch('/api/v1/subscriptions', {
+            const subResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

@@ -169,7 +169,7 @@ export default function MySubscriptions() {
         return;
       }
       setIsLoading(true);
-      const response = await fetch(`/api/v1/subscriptions/customer/${customerId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/customer/${customerId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -259,7 +259,7 @@ export default function MySubscriptions() {
   const handlePauseSubscription = async (subId) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`/api/v1/subscriptions/${subId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/${subId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -286,7 +286,7 @@ export default function MySubscriptions() {
   const handleResumeSubscription = async (subId) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`/api/v1/subscriptions/${subId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/${subId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

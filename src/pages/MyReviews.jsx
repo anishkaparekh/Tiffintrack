@@ -28,7 +28,7 @@ export default function MyReviews() {
   const fetchCustomerReviews = async (custId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/v1/reviews/customer/${custId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/customer/${custId}`);
       if (response.ok) {
         const resData = await response.json();
         if (resData.success && Array.isArray(resData.data)) {
@@ -94,7 +94,7 @@ export default function MyReviews() {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/reviews/${editingReview._id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/${editingReview._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export default function MyReviews() {
     if (!window.confirm('Are you sure you want to delete this review?')) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/reviews/${reviewId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/${reviewId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

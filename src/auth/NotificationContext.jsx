@@ -67,7 +67,7 @@ export const NotificationProvider = ({ children }) => {
   const markAsRead = async (id) => {
     if (!token) return;
     try {
-      const response = await fetch(`/api/v1/notifications/${id}/read`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications/${id}/read`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -109,7 +109,7 @@ export const NotificationProvider = ({ children }) => {
   const deleteNotification = async (id) => {
     if (!token) return;
     try {
-      const response = await fetch(`/api/v1/notifications/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

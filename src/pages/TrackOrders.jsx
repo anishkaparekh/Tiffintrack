@@ -214,7 +214,7 @@ export default function TrackOrders() {
     }
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/orders/customer/${customerId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/orders/customer/${customerId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

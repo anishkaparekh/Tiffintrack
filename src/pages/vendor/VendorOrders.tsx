@@ -47,7 +47,7 @@ export default function VendorOrders() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/orders/vendor/${vId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/orders/vendor/${vId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -114,7 +114,7 @@ export default function VendorOrders() {
     const dbStatus = newStatus === 'Out for Delivery' ? 'Out For Delivery' : newStatus;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/orders/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/orders/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -517,7 +517,7 @@ export default function VendorMeals() {
       setIsLoading(true);
       try {
         // 1. Fetch vendor profile
-        const vendorRes = await fetch(`/api/v1/vendors/${id}`);
+        const vendorRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors/${id}`);
         if (!vendorRes.ok) {
           setChefStatus("Suspended");
           setIsLoading(false);
@@ -547,7 +547,7 @@ export default function VendorMeals() {
           setChefStatus(v.verificationStatus === 'approved' ? 'Approved' : 'Pending Review');
 
           // 2. Fetch meals
-          const mealsRes = await fetch(`/api/v1/meals/vendor/${v._id}`);
+          const mealsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals/vendor/${v._id}`);
           if (mealsRes.ok) {
             const mealsData = await mealsRes.json();
             const mealsArr = mealsData.success && Array.isArray(mealsData.data) ? mealsData.data : (Array.isArray(mealsData) ? mealsData : []);

@@ -49,7 +49,7 @@ export default function VendorDeliveryTeam() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/v1/deliveries/vendor/partners', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/vendor/partners', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -103,7 +103,7 @@ export default function VendorDeliveryTeam() {
     const nextStatus = partner.status === 'Active' ? 'Inactive' : 'Active';
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/deliveries/vendor/partners/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/vendor/partners/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ export default function VendorDeliveryTeam() {
       const token = localStorage.getItem('token');
       let response;
       if (editingPartner) {
-        response = await fetch(`/api/v1/deliveries/vendor/partners/${editingPartner.id}`, {
+        response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/vendor/partners/${editingPartner.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ export default function VendorDeliveryTeam() {
           })
         });
       } else {
-        response = await fetch('/api/v1/deliveries/vendor/partners', {
+        response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/vendor/partners', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -50,7 +50,7 @@ export default function VendorCustomers() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/subscriptions/vendor/${vId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/vendor/${vId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -124,7 +124,7 @@ export default function VendorCustomers() {
       const newStatus = actionType === 'pause' ? 'Paused' : 'Active';
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/v1/subscriptions/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

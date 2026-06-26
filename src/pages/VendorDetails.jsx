@@ -148,7 +148,7 @@ export default function VendorDetails({ preSelectedTab }) {
     setIsLoading(true);
     try {
       // 1. Fetch vendor profile
-      const vendorRes = await fetch(`/api/v1/vendors/${id}`);
+      const vendorRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors/${id}`);
       if (!vendorRes.ok) {
         setVendorStatus("Suspended");
         setIsLoading(false);
@@ -184,7 +184,7 @@ export default function VendorDetails({ preSelectedTab }) {
         setVendorStatus(v.verificationStatus === 'approved' ? 'Approved' : 'Pending Review');
         
         // 2. Fetch vendor meals
-        const mealsRes = await fetch(`/api/v1/meals/vendor/${v._id}`);
+        const mealsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals/vendor/${v._id}`);
         if (mealsRes.ok) {
           const mealsData = await mealsRes.json();
           const mealsArr = mealsData.success && Array.isArray(mealsData.data) ? mealsData.data : (Array.isArray(mealsData) ? mealsData : []);
@@ -198,7 +198,7 @@ export default function VendorDetails({ preSelectedTab }) {
         }
         
         // 3. Fetch vendor plans
-        const plansRes = await fetch(`/api/v1/plans/vendor/${v._id}`);
+        const plansRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans/vendor/${v._id}`);
         if (plansRes.ok) {
           const plansData = await plansRes.json();
           const plansArr = plansData.success && Array.isArray(plansData.data) ? plansData.data : (Array.isArray(plansData) ? plansData : []);
@@ -214,7 +214,7 @@ export default function VendorDetails({ preSelectedTab }) {
 
         // 4. Fetch other approved vendors for recommendation
         try {
-          const otherRes = await fetch('/api/v1/vendors');
+          const otherRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors');
           if (otherRes.ok) {
             const otherData = await otherRes.json();
             if (otherData.success && Array.isArray(otherData.data)) {
@@ -260,7 +260,7 @@ export default function VendorDetails({ preSelectedTab }) {
     setIsReviewsLoading(true);
     try {
       // Fetch stats
-      const statsRes = await fetch(`/api/v1/reviews/vendor/${vendorId}/stats`);
+      const statsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/vendor/${vendorId}/stats`);
       if (statsRes.ok) {
         const res = await statsRes.json();
         if (res.success && res.data) {
@@ -269,7 +269,7 @@ export default function VendorDetails({ preSelectedTab }) {
       }
 
       // Fetch reviews
-      const reviewsRes = await fetch(`/api/v1/reviews/vendor/${vendorId}`);
+      const reviewsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/vendor/${vendorId}`);
       let fetchedReviews = [];
       if (reviewsRes.ok) {
         const res = await reviewsRes.json();
@@ -285,7 +285,7 @@ export default function VendorDetails({ preSelectedTab }) {
 
         // 1. Fetch Subscriptions
         try {
-          const subsRes = await fetch(`/api/v1/subscriptions/customer/${currentCustId}`);
+          const subsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/customer/${currentCustId}`);
           if (subsRes.ok) {
             const subsData = await subsRes.json();
             if (subsData.success && Array.isArray(subsData.data)) {
@@ -308,7 +308,7 @@ export default function VendorDetails({ preSelectedTab }) {
 
         // 2. Fetch Orders
         try {
-          const ordersRes = await fetch(`/api/v1/orders/customer/${currentCustId}`);
+          const ordersRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/orders/customer/${currentCustId}`);
           if (ordersRes.ok) {
             const ordersData = await ordersRes.json();
             if (ordersData.success && Array.isArray(ordersData.data)) {
@@ -366,7 +366,7 @@ export default function VendorDetails({ preSelectedTab }) {
     try {
       const token = localStorage.getItem('token');
       if (editingReview) {
-        const response = await fetch(`/api/v1/reviews/${editingReview._id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/${editingReview._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -387,7 +387,7 @@ export default function VendorDetails({ preSelectedTab }) {
           setMessage({ type: 'error', text: resData.message || 'Failed to update review.' });
         }
       } else {
-        const response = await fetch(`/api/v1/reviews`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -422,7 +422,7 @@ export default function VendorDetails({ preSelectedTab }) {
     if (!window.confirm('Are you sure you want to delete this review?')) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/reviews/${reviewId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/reviews/${reviewId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

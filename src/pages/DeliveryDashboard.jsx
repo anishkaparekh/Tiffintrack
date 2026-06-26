@@ -62,7 +62,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
     try {
       const token = localStorage.getItem('token');
       // Fetch Today's Active Deliveries
-      const todayResponse = await fetch('/api/v1/deliveries/delivery-partner/deliveries/today', {
+      const todayResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/delivery-partner/deliveries/today`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -107,7 +107,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
       }
 
       // Fetch History Deliveries
-      const historyResponse = await fetch('/api/v1/deliveries/delivery-partner/deliveries/history', {
+      const historyResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/delivery-partner/deliveries/history`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -162,7 +162,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const response = await fetch('/api/v1/notifications', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -282,7 +282,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/deliveries/delivery-partner/deliveries/${id}/status`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/deliveries/delivery-partner/deliveries/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -332,7 +332,7 @@ export default function DeliveryDashboard({ defaultTab = 'dashboard' }) {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const response = await fetch(`/api/v1/notifications/${id}/read`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications/${id}/read`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`

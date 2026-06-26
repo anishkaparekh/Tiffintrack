@@ -57,9 +57,9 @@ export default function VendorPlans() {
       }
 
       const [plansRes, subsRes, paymentsRes] = await Promise.all([
-        fetch(`/api/v1/plans/vendor/${vId}`, { headers }),
-        fetch(`/api/v1/subscriptions/vendor/${vId}`, { headers }),
-        fetch(`/api/v1/payments/vendor/${vId}`, { headers })
+        fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans/vendor/${vId}`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/vendor/${vId}`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/vendor/${vId}`, { headers })
       ]);
 
       let dbPlansList: any[] = [];
@@ -181,7 +181,7 @@ export default function VendorPlans() {
 
       if (editingPlan) {
         // Edit mode
-        const response = await fetch(`/api/v1/plans/${editingPlan.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans/${editingPlan.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ export default function VendorPlans() {
         setEditingPlan(null);
       } else {
         // Add mode
-        const response = await fetch('/api/v1/plans', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -226,7 +226,7 @@ export default function VendorPlans() {
     const planName = plans.find(p => p.id === id)?.name;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/plans/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -262,7 +262,7 @@ export default function VendorPlans() {
       }
       const priceNumeric = parseInt(plan.monthlyPrice.replace(/[^\d]/g, '')) || 0;
 
-      const response = await fetch('/api/v1/plans', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -297,7 +297,7 @@ export default function VendorPlans() {
     if (confirm(`Are you sure you want to delete "${planName}"?`)) {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/v1/plans/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`

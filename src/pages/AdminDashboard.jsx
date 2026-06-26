@@ -331,7 +331,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/vendors/${appId}/verify`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors/${appId}/verify`, {, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

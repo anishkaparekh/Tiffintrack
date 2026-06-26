@@ -38,7 +38,7 @@ export default function VendorMeals() {
     if (!vId) return;
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/v1/meals/vendor/${vId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals/vendor/${vId}`);
       if (response.ok) {
         const resData = await response.json();
         if (resData.success && Array.isArray(resData.data)) {
@@ -105,7 +105,7 @@ export default function VendorMeals() {
 
       if (editingMeal) {
         // Edit mode
-        const response = await fetch(`/api/v1/meals/${editingMeal.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals/${editingMeal.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export default function VendorMeals() {
         setEditingMeal(null);
       } else {
         // Add mode
-        const response = await fetch('/api/v1/meals', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ export default function VendorMeals() {
     const mealName = meals.find(m => m.id === id)?.name;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/meals/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ export default function VendorMeals() {
   const handleDuplicate = async (meal: MealItem) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/v1/meals', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ export default function VendorMeals() {
     if (confirm(`Are you sure you want to delete "${mealName}"?`)) {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/v1/meals/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`

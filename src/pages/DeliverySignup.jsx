@@ -37,7 +37,7 @@ export default function DeliverySignup() {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await fetch('/api/v1/vendors');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors`);
         if (response.ok) {
           const resData = await response.json();
           if (resData.success && Array.isArray(resData.data)) {
@@ -130,7 +130,7 @@ export default function DeliverySignup() {
     setMessage(null);
 
     try {
-      const response = await fetch('/api/v1/auth/delivery/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/delivery/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

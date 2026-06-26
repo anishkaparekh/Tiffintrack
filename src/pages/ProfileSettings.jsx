@@ -250,7 +250,7 @@ export default function ProfileSettings() {
         return;
       }
       setAddressesLoading(true);
-      const response = await fetch(`/api/v1/addresses/customer/${customerId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/customer/${customerId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -274,8 +274,8 @@ export default function ProfileSettings() {
     setIsAddressSubmitting(true);
     try {
       const url = editingAddress
-        ? `/api/v1/addresses/${editingAddress._id}`
-        : '/api/v1/addresses';
+        ? `${import.meta.env.VITE_API_URL}/api/v1/addresses/${editingAddress._id}`
+        : `${import.meta.env.VITE_API_URL}/api/v1/addresses`;
       const method = editingAddress ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -308,7 +308,7 @@ export default function ProfileSettings() {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const response = await fetch(`/api/v1/addresses/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -332,7 +332,7 @@ export default function ProfileSettings() {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const response = await fetch(`/api/v1/addresses/${id}/default`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses/${id}/default`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`

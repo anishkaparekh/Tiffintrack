@@ -189,7 +189,7 @@ export default function VendorPlans() {
       setIsLoading(true);
       try {
         // 1. Fetch vendor profile
-        const vendorRes = await fetch(`/api/v1/vendors/${id}`);
+        const vendorRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors/${id}`);
         if (!vendorRes.ok) {
           setChefStatus("Suspended");
           setIsLoading(false);
@@ -217,7 +217,7 @@ export default function VendorPlans() {
           setChefStatus(v.verificationStatus === 'approved' ? 'Approved' : 'Pending Review');
 
           // 2. Fetch plans
-          const plansRes = await fetch(`/api/v1/plans/vendor/${v._id}`);
+          const plansRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans/vendor/${v._id}`);
           if (plansRes.ok) {
             const plansData = await plansRes.json();
             const plansArr = plansData.success && Array.isArray(plansData.data) ? plansData.data : (Array.isArray(plansData) ? plansData : []);
