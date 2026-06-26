@@ -229,7 +229,7 @@ export default function Checkout() {
     if (!token) return;
     setIsAddressSubmitting(true);
     try {
-      const response = await fetch('/api/v1/addresses', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/addresses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -342,7 +342,7 @@ export default function Checkout() {
 
     try {
       // 1. Create order on backend
-      const orderResponse = await fetch('/api/v1/payments/create-order', {
+      const orderResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

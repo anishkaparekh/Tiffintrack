@@ -16,7 +16,7 @@ const app = express();
 app.use(helmet());
 
 // Enable CORS
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5175';
+const CLIENT_URL = process.env.CLIENT_URL || 'https://tiffintrack.vercel.app';
 app.use(
   cors({
     origin: CLIENT_URL,

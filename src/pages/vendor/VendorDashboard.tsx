@@ -77,7 +77,7 @@ export default function VendorDashboard() {
   const [dbSubscriptions, setDbSubscriptions] = useState<any[]>([]);
   const [dbPayments, setDbPayments] = useState<any[]>([]);
   const [stats, setStats] = useState<StatsCardData[]>([]);
-  const [revenueData, setRevenueData] = useState<any>(null);
+  const [revenueData, setRevenueData] = useState<{ daily: any[]; weekly: any[]; monthly: any[] }>({ daily: [], weekly: [], monthly: [] });
   const [activities, setActivities] = useState<any[]>([]);
 
   const fetchDashboardData = async (vId: string) => {
@@ -91,10 +91,10 @@ export default function VendorDashboard() {
       }
       
       // Fetch meals
-      const mealsRes = await fetch(`/api/v1/meals/vendor/${vId}`, { headers });
+      const mealsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals/vendor/${vId}`, { headers });
       let mappedMeals: Meal[] = [];
       if (mealsRes.ok) {
-        const resData = await mealsRes.ok ? await mealsRes.json() : null;
+        const resData = await mealsRes.json();
         if (resData && resData.success && Array.isArray(resData.data)) {
           mappedMeals = resData.data.map((m: any) => ({
             id: m._id,
@@ -109,7 +109,7 @@ export default function VendorDashboard() {
       }
 
       // Fetch plans
-      const plansRes = await fetch(`/api/v1/plans/vendor/${vId}`, { headers });
+      const plansRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans/vendor/${vId}`, { headers });
       let mappedPlans: SubscriptionPlan[] = [];
       if (plansRes.ok) {
         const resData = await plansRes.json();
@@ -126,7 +126,7 @@ export default function VendorDashboard() {
       }
 
       // Fetch subscriptions
-      const subsRes = await fetch(`/api/v1/subscriptions/vendor/${vId}`, { headers });
+      const subsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/vendor/${vId}`, { headers });
       let mappedSubs: any[] = [];
       if (subsRes.ok) {
         const resData = await subsRes.json();
@@ -137,7 +137,7 @@ export default function VendorDashboard() {
       }
 
       // Fetch orders
-      const ordersRes = await fetch(`/api/v1/orders/vendor/${vId}`, { headers });
+      const ordersRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/orders/vendor/${vId}`, { headers });
       let mappedOrders: any[] = [];
       if (ordersRes.ok) {
         const resData = await ordersRes.json();
@@ -162,7 +162,7 @@ export default function VendorDashboard() {
       }
 
       // Fetch payments
-      const paymentsRes = await fetch(`/api/v1/payments/vendor/${vId}`, { headers });
+      const paymentsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/payments/vendor/${vId}`, { headers });
       let mappedPayments: any[] = [];
       if (paymentsRes.ok) {
         const resData = await paymentsRes.json();
@@ -178,37 +178,37 @@ export default function VendorDashboard() {
       const activeCustomers = mappedSubs.filter(s => s.status === 'Active');
       const uniqueCustomerIds = new Set(mappedSubs.map(s => s.customerId?._id || s.customerId || s.customerId?.id));
       
-      const totalRevenueVal = mappedPayments.reduce((acc, p) => acc + p.amount, 0);
-      const todayRevenueVal = mappedPayments
-        .filter(p => new Date(p.createdAt).toDateString() === todayStr)
-        .reduce((acc, p) => acc + p.amount, 0);
+      const totalRevenueVal = (mappedPayments || []).reduce((acc, p) => acc + (p?.amount ?? 0), 0);
+      const todayRevenueVal = (mappedPayments || [])
+        .filter(p => p?.createdAt && new Date(p.createdAt).toDateString() === todayStr)
+        .reduce((acc, p) => acc + (p?.amount ?? 0), 0);
 
       const computedStats: StatsCardData[] = [
         {
           title: "Today's Orders",
-          value: String(todayOrders.length),
+          value: String(todayOrders?.length ?? 0),
           changeText: "Real-time prepared",
           trend: "up",
           iconName: "ShoppingBag"
         },
         {
           title: "Total Customers",
-          value: String(uniqueCustomerIds.size),
+          value: String(uniqueCustomerIds?.size ?? 0),
           changeText: "Unique customer accounts",
           trend: "up",
           iconName: "Users"
         },
         {
           title: "Active Subscriptions",
-          value: String(activeCustomers.length),
+          value: String(activeCustomers?.length ?? 0),
           changeText: "Active subscription bookings",
           trend: "neutral",
           iconName: "Calendar"
         },
         {
           title: "Total Revenue",
-          value: `₹${totalRevenueVal.toLocaleString('en-IN')}`,
-          changeText: `Today's: ₹${todayRevenueVal.toLocaleString('en-IN')}`,
+          value: `₹${totalRevenueVal?.toLocaleString('en-IN') || '0'}`,
+          changeText: `Today's: ₹${todayRevenueVal?.toLocaleString('en-IN') || '0'}`,
           trend: "up",
           iconName: "IndianRupee"
         }
@@ -312,7 +312,7 @@ export default function VendorDashboard() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/v1/meals', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/meals`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -351,7 +351,7 @@ export default function VendorDashboard() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/v1/plans', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/plans`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

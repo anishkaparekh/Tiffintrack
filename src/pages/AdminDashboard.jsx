@@ -101,7 +101,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/v1/vendors/all', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/vendors/all`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -162,7 +162,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
 
   const fetchActiveSubscriptionCount = async () => {
     try {
-      const response = await fetch('/api/v1/subscriptions/count/active');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/subscriptions/count/active`);
       if (response.ok) {
         const resData = await response.json();
         if (resData.success && typeof resData.count === 'number') {
@@ -176,7 +176,7 @@ export default function AdminDashboard({ defaultTab = "dashboard" }) {
 
   const fetchOrderStats = async () => {
     try {
-      const response = await fetch('/api/v1/orders/count/stats');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/orders/count/stats`);
       if (response.ok) {
         const resData = await response.json();
         if (resData.success && resData.data) {

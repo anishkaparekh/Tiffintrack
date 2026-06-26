@@ -25,7 +25,7 @@ export const NotificationProvider = ({ children }) => {
     if (!token) return;
     setIsLoading(true);
     try {
-      const response = await fetch('/api/v1/notifications', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -47,7 +47,7 @@ export const NotificationProvider = ({ children }) => {
   const fetchUnreadCount = useCallback(async () => {
     if (!token) return;
     try {
-      const response = await fetch('/api/v1/notifications/unread-count', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications/unread-count`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -88,7 +88,7 @@ export const NotificationProvider = ({ children }) => {
   const markAllAsRead = async () => {
     if (!token) return;
     try {
-      const response = await fetch('/api/v1/notifications/read-all', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/notifications/read-all`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
