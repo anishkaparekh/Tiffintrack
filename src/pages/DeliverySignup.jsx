@@ -130,7 +130,7 @@ export default function DeliverySignup() {
     setMessage(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/delivery/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/delivery/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

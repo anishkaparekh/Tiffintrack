@@ -11,5 +11,8 @@ export default defineConfig({
     port: 5173,
     // proxy removed for production; API URLs are absolute via VITE_API_URL
   },
+  build: {
+    sourcemap: false,
+    chunkSizeWarningLimit: 2000,
+  },
 })
-
