@@ -12,6 +12,7 @@ import {
   Gift,
   Bike
 } from 'lucide-react';
+import heroBg from '../assets/tiffin_hero_bg.png';
 
 export default function RoleSelection() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export default function RoleSelection() {
           {/* Background Image Container */}
           <div className="absolute inset-0 z-0">
             <img 
-              src="/src/assets/tiffin_hero_bg.png" 
+              src={heroBg} 
               alt="Homemade food backdrop" 
               className="w-full h-full object-cover object-center filter blur-[1px] brightness-[0.4] scale-105"
             />
